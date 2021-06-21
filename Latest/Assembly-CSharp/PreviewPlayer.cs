@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: PreviewPlayer
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -20,13 +20,13 @@ public class PreviewPlayer : MonoBehaviour
     MonoBehaviour.print((object) ("armor slot: " + (object) armorSlot + ", item id: " + (object) itemId));
     if (itemId == -1)
     {
-      this.armor[armorSlot].gameObject.SetActive(false);
+      ((Component) this.armor[armorSlot]).get_gameObject().SetActive(false);
     }
     else
     {
-      this.armor[armorSlot].gameObject.SetActive(true);
+      ((Component) this.armor[armorSlot]).get_gameObject().SetActive(true);
       InventoryItem allItem = ItemManager.Instance.allItems[itemId];
-      this.armor[armorSlot].material = allItem.material;
+      ((Renderer) this.armor[armorSlot]).set_material(allItem.material);
     }
   }
 
@@ -34,17 +34,19 @@ public class PreviewPlayer : MonoBehaviour
   {
     if (itemId == -1)
     {
-      this.filter.mesh = (Mesh) null;
+      this.filter.set_mesh((Mesh) null);
     }
     else
     {
       InventoryItem allItem = ItemManager.Instance.allItems[itemId];
-      this.filter.mesh = allItem.mesh;
-      this.render.material = allItem.material;
+      this.filter.set_mesh(allItem.mesh);
+      this.render.set_material(allItem.material);
     }
   }
 
   private void Update()
   {
   }
+
+  public PreviewPlayer() => base.\u002Ector();
 }

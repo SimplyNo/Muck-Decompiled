@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ThreadManagerServer
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ public class ThreadManagerServer : MonoBehaviour
   private static readonly List<Action> executeCopiedOnMainThread = new List<Action>();
   private static bool actionToExecuteOnMainThread = false;
   public static ThreadManagerServer Instance;
-  private int minPlayerAmount = 3;
+  private int minPlayerAmount;
 
   public static void ExecuteOnMainThread(Action _action)
   {
@@ -66,4 +66,6 @@ public class ThreadManagerServer : MonoBehaviour
     for (int index = 0; index < ThreadManagerServer.executeCopiedOnMainThread.Count; ++index)
       ThreadManagerServer.executeCopiedOnMainThread[index]();
   }
+
+  public ThreadManagerServer() => base.\u002Ector();
 }

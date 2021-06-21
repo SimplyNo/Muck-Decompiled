@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: StatusUI
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
 using UnityEngine;
@@ -19,32 +19,34 @@ public class StatusUI : MonoBehaviour
   public TextMeshProUGUI hpText;
   private float currentHp;
   private PlayerStatus playerStatus;
-  private float speed = 10f;
+  private float speed;
 
   private void Start()
   {
-    if (!(bool) (Object) PlayerMovement.Instance)
+    if (!Object.op_Implicit((Object) PlayerMovement.Instance))
       return;
-    this.playerStatus = PlayerMovement.Instance.gameObject.GetComponent<PlayerStatus>();
+    this.playerStatus = (PlayerStatus) ((Component) PlayerMovement.Instance).get_gameObject().GetComponent<PlayerStatus>();
   }
 
   private void Update()
   {
-    if ((Object) this.playerStatus == (Object) null)
+    if (Object.op_Equality((Object) this.playerStatus, (Object) null))
     {
-      if ((Object) PlayerMovement.Instance == (Object) null)
+      if (Object.op_Equality((Object) PlayerMovement.Instance, (Object) null))
         return;
-      this.playerStatus = PlayerMovement.Instance.gameObject.GetComponent<PlayerStatus>();
+      this.playerStatus = (PlayerStatus) ((Component) PlayerMovement.Instance).get_gameObject().GetComponent<PlayerStatus>();
     }
     else
     {
-      this.currentHp = Mathf.Lerp(this.currentHp, PlayerStatus.Instance.hp + PlayerStatus.Instance.shield, Time.deltaTime * 3f);
-      this.hpText.text = Mathf.Round(this.currentHp).ToString() + " / " + (object) (PlayerStatus.Instance.maxHp + PlayerStatus.Instance.maxShield);
-      this.hpBar.localScale = new Vector3(Mathf.Lerp(this.hpBar.localScale.x, this.playerStatus.GetHpRatio(), Time.deltaTime * this.speed), 1f, 1f);
-      this.shieldBar.localScale = new Vector3(Mathf.Lerp(this.shieldBar.localScale.x, this.playerStatus.GetShieldRatio(), Time.deltaTime * this.speed), 1f, 1f);
-      this.hungerBar.localScale = new Vector3(Mathf.Lerp(this.hungerBar.localScale.x, this.playerStatus.GetHungerRatio(), Time.deltaTime * this.speed), 1f, 1f);
-      this.staminaBar.localScale = new Vector3(Mathf.Lerp(this.staminaBar.localScale.x, this.playerStatus.GetStaminaRatio(), Time.deltaTime * this.speed), 1f, 1f);
-      this.armorBar.localScale = new Vector3(Mathf.Lerp(this.armorBar.localScale.x, this.playerStatus.GetArmorRatio(), Time.deltaTime * this.speed), 1f, 1f);
+      this.currentHp = Mathf.Lerp(this.currentHp, PlayerStatus.Instance.hp + PlayerStatus.Instance.shield, Time.get_deltaTime() * 3f);
+      ((TMP_Text) this.hpText).set_text(Mathf.Round(this.currentHp).ToString() + " / " + (object) (PlayerStatus.Instance.maxHp + PlayerStatus.Instance.maxShield));
+      ((Transform) this.hpBar).set_localScale(new Vector3(Mathf.Lerp((float) ((Transform) this.hpBar).get_localScale().x, this.playerStatus.GetHpRatio(), Time.get_deltaTime() * this.speed), 1f, 1f));
+      ((Transform) this.shieldBar).set_localScale(new Vector3(Mathf.Lerp((float) ((Transform) this.shieldBar).get_localScale().x, this.playerStatus.GetShieldRatio(), Time.get_deltaTime() * this.speed), 1f, 1f));
+      this.hungerBar.set_localScale(new Vector3(Mathf.Lerp((float) this.hungerBar.get_localScale().x, this.playerStatus.GetHungerRatio(), Time.get_deltaTime() * this.speed), 1f, 1f));
+      this.staminaBar.set_localScale(new Vector3(Mathf.Lerp((float) this.staminaBar.get_localScale().x, this.playerStatus.GetStaminaRatio(), Time.get_deltaTime() * this.speed), 1f, 1f));
+      ((Transform) this.armorBar).set_localScale(new Vector3(Mathf.Lerp((float) ((Transform) this.armorBar).get_localScale().x, this.playerStatus.GetArmorRatio(), Time.get_deltaTime() * this.speed), 1f, 1f));
     }
   }
+
+  public StatusUI() => base.\u002Ector();
 }

@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ResourceGenerator
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,8 +13,8 @@ public class ResourceGenerator : MonoBehaviour
   public StructureSpawner.WeightedSpawn[] resourcePrefabs;
   private float totalWeight;
   public MapGenerator mapGenerator;
-  private int density = 1;
-  public float spawnThreshold = 0.45f;
+  private int density;
+  public float spawnThreshold;
   public AnimationCurve noiseDistribution;
   public AnimationCurve heightDistribution;
   public List<GameObject>[] resources;
@@ -23,17 +23,17 @@ public class ResourceGenerator : MonoBehaviour
   [Header("Variety")]
   public Vector3 randomRotation;
   public Vector2 randomScale;
-  public int randPos = 12;
+  public int randPos;
   private int totalResources;
-  public int forceSeedOffset = -1;
-  public float minSpawnHeight = 0.4f;
-  public float maxSpawnHeight = 0.35f;
+  public int forceSeedOffset;
+  public float minSpawnHeight;
+  public float maxSpawnHeight;
   public int width;
   public int height;
-  public bool useFalloffMap = true;
+  public bool useFalloffMap;
   public ResourceGenerator.SpawnType type;
 
-  public float worldScale { get; set; } = 12f;
+  public float worldScale { get; set; }
 
   private void Start()
   {
@@ -41,7 +41,7 @@ public class ResourceGenerator : MonoBehaviour
     foreach (StructureSpawner.WeightedSpawn resourcePrefab in this.resourcePrefabs)
       this.totalWeight += resourcePrefab.weight;
     this.GenerateForest();
-    if (!(bool) (Object) ResourceManager.Instance)
+    if (!Object.op_Implicit((Object) ResourceManager.Instance))
       return;
     ResourceManager.Instance.AddResources(this.resources);
   }
@@ -80,16 +80,16 @@ public class ResourceGenerator : MonoBehaviour
             double num7 = 1.0 - (double) num5;
             if (num6 > num7)
             {
-              Vector3 vector3 = new Vector3(this.topLeftX + (float) x, 100f, this.topLeftZ - (float) y) * this.worldScale + new Vector3((float) this.randomGen.Next(-this.randPos, this.randPos), 0.0f, (float) this.randomGen.Next(-this.randPos, this.randPos));
-              RaycastHit hitInfo;
-              if (Physics.Raycast(vector3, Vector3.down, out hitInfo, 1200f))
+              Vector3 pos = Vector3.op_Addition(Vector3.op_Multiply(new Vector3(this.topLeftX + (float) x, 100f, this.topLeftZ - (float) y), this.worldScale), new Vector3((float) this.randomGen.Next(-this.randPos, this.randPos), 0.0f, (float) this.randomGen.Next(-this.randPos, this.randPos)));
+              RaycastHit raycastHit;
+              if (Physics.Raycast(pos, Vector3.get_down(), ref raycastHit, 1200f))
               {
-                vector3.y = hitInfo.point.y;
+                pos.y = ((RaycastHit) ref raycastHit).get_point().y;
                 ++num3;
                 int index = this.drawChunks.FindChunk(x, y);
                 if (index >= this.drawChunks.nChunks)
                   index = this.drawChunks.nChunks - 1;
-                this.resources[index].Add(this.SpawnTree(vector3));
+                this.resources[index].Add(this.SpawnTree(pos));
               }
             }
           }
@@ -103,19 +103,20 @@ public class ResourceGenerator : MonoBehaviour
 
   private GameObject SpawnTree(Vector3 pos)
   {
-    Quaternion rotation = Quaternion.Euler((float) ((this.randomGen.NextDouble() - 0.5) * (double) this.randomRotation.x * 2.0), (float) ((this.randomGen.NextDouble() - 0.5) * (double) this.randomRotation.y * 2.0), (float) ((this.randomGen.NextDouble() - 0.5) * (double) this.randomRotation.z * 2.0));
-    Vector3 scale = Vector3.one * (this.randomScale.x + (float) this.randomGen.NextDouble() * (this.randomScale.y - this.randomScale.x));
-    GameObject gameObject = Object.Instantiate<GameObject>(this.FindObjectToSpawn(this.resourcePrefabs, this.totalWeight), pos, rotation);
-    gameObject.transform.localScale = scale;
-    gameObject.GetComponentInChildren<SharedObject>().SetId(ResourceManager.Instance.GetNextId());
-    HitableResource component = gameObject.GetComponent<HitableResource>();
-    if ((bool) (Object) component)
+    Quaternion quaternion = Quaternion.Euler((float) ((this.randomGen.NextDouble() - 0.5) * this.randomRotation.x * 2.0), (float) ((this.randomGen.NextDouble() - 0.5) * this.randomRotation.y * 2.0), (float) ((this.randomGen.NextDouble() - 0.5) * this.randomRotation.z * 2.0));
+    float num = (float) this.randomGen.NextDouble() * (float) (this.randomScale.y - this.randomScale.x);
+    Vector3 scale = Vector3.op_Multiply(Vector3.get_one(), (float) this.randomScale.x + num);
+    M0 m0 = Object.Instantiate<GameObject>((M0) this.FindObjectToSpawn(this.resourcePrefabs, this.totalWeight), pos, quaternion);
+    ((GameObject) m0).get_transform().set_localScale(scale);
+    ((SharedObject) ((GameObject) m0).GetComponentInChildren<SharedObject>()).SetId(ResourceManager.Instance.GetNextId());
+    HitableResource component = (HitableResource) ((GameObject) m0).GetComponent<HitableResource>();
+    if (Object.op_Implicit((Object) component))
     {
       component.SetDefaultScale(scale);
       component.PopIn();
     }
-    gameObject.SetActive(false);
-    return gameObject;
+    ((GameObject) m0).SetActive(false);
+    return (GameObject) m0;
   }
 
   public GameObject FindObjectToSpawn(
@@ -132,6 +133,8 @@ public class ResourceGenerator : MonoBehaviour
     }
     return structurePrefabs[0].prefab;
   }
+
+  public ResourceGenerator() => base.\u002Ector();
 
   public enum SpawnType
   {

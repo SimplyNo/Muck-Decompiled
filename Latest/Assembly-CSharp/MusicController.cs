@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: MusicController
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -14,8 +14,8 @@ public class MusicController : MonoBehaviour
   private AudioSource audio;
   public static MusicController Instance;
   private AudioClip queuedSong;
-  private float fadeTime = 6f;
-  private float targetVolume = 0.2f;
+  private float fadeTime;
+  private float targetVolume;
   private MusicController.SongType currentSong;
   private float currentTime;
   private float newFadeTime;
@@ -25,7 +25,7 @@ public class MusicController : MonoBehaviour
   private void Awake()
   {
     MusicController.Instance = this;
-    this.audio = this.GetComponent<AudioSource>();
+    this.audio = (AudioSource) ((Component) this).GetComponent<AudioSource>();
   }
 
   private void Start() => this.targetVolume = CurrentSettings.Instance.music;
@@ -39,7 +39,7 @@ public class MusicController : MonoBehaviour
   public void PlaySong(MusicController.SongType s, bool chanceToSkip = true)
   {
     AudioClip song = (AudioClip) null;
-    if (this.currentSong == MusicController.SongType.Boss && (Object) BossUI.Instance.currentBoss != (Object) null)
+    if (this.currentSong == MusicController.SongType.Boss && Object.op_Inequality((Object) BossUI.Instance.currentBoss, (Object) null))
       return;
     this.currentSong = s;
     switch (s)
@@ -58,9 +58,9 @@ public class MusicController : MonoBehaviour
         song = this.boss[Random.Range(0, this.boss.Length)];
         break;
     }
-    if ((Object) song == (Object) null)
+    if (Object.op_Equality((Object) song, (Object) null))
       this.StartFade(this.audio, this.fadeTime, 0.0f);
-    else if (this.audio.isPlaying)
+    else if (this.audio.get_isPlaying())
     {
       this.queuedSong = song;
       this.StartFade(this.audio, this.fadeTime, 0.0f);
@@ -73,14 +73,14 @@ public class MusicController : MonoBehaviour
   private void NextSong()
   {
     this.StartFade(this.audio, this.fadeTime, this.targetVolume);
-    this.audio.clip = this.queuedSong;
+    this.audio.set_clip(this.queuedSong);
     this.audio.Play();
   }
 
   private void NextSong(AudioClip song)
   {
     this.StartFade(this.audio, this.fadeTime, this.targetVolume);
-    this.audio.clip = song;
+    this.audio.set_clip(song);
     this.audio.Play();
   }
 
@@ -88,8 +88,8 @@ public class MusicController : MonoBehaviour
 
   private void Update()
   {
-    this.currentTime += Time.deltaTime;
-    this.audio.volume = Mathf.Lerp(this.startVolume, this.desiredVolume * this.targetVolume, this.currentTime / this.newFadeTime);
+    this.currentTime += Time.get_deltaTime();
+    this.audio.set_volume(Mathf.Lerp(this.startVolume, this.desiredVolume * this.targetVolume, this.currentTime / this.newFadeTime));
   }
 
   private void StartFade(AudioSource audioSource, float duration, float targetVolume)
@@ -97,8 +97,10 @@ public class MusicController : MonoBehaviour
     this.currentTime = 0.0f;
     this.newFadeTime = duration;
     this.desiredVolume = targetVolume;
-    this.startVolume = audioSource.volume;
+    this.startVolume = audioSource.get_volume();
   }
+
+  public MusicController() => base.\u002Ector();
 
   public enum SongType
   {

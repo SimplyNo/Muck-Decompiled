@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ChatBox
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using System.Collections.Generic;
@@ -20,10 +20,10 @@ public class ChatBox : MonoBehaviour
   public Color localPlayer;
   public Color onlinePlayer;
   public Color deadPlayer;
-  private Color console = Color.cyan;
-  private int maxMsgLength = 120;
-  private int maxChars = 800;
-  private int purgeAmount = 400;
+  private Color console;
+  private int maxMsgLength;
+  private int maxChars;
+  private int purgeAmount;
   public static ChatBox Instance;
   public TextAsset profanityList;
   private List<string> profanity;
@@ -35,7 +35,7 @@ public class ChatBox : MonoBehaviour
     ChatBox.Instance = this;
     this.HideChat();
     this.profanity = new List<string>();
-    string text = this.profanityList.text;
+    string text = this.profanityList.get_text();
     char[] chArray = new char[1]{ '\n' };
     foreach (string input in text.Split(chArray))
       this.profanity.Add(ChatBox.RemoveWhitespace(input));
@@ -57,10 +57,15 @@ public class ChatBox : MonoBehaviour
       return;
     if (fromUser != -1 || fromUser == -1 && fromUsername != "")
       str2 = str2 + fromUsername + ": ";
-    this.messages.text += str2 + str1;
-    int length = this.messages.text.Length;
+    string str5 = str2 + str1;
+    TextMeshProUGUI messages = this.messages;
+    ((TMP_Text) messages).set_text(((TMP_Text) messages).get_text() + str5);
+    int length = ((TMP_Text) this.messages).get_text().Length;
     if (length > this.maxChars)
-      this.messages.text = this.messages.text.Substring(length - this.purgeAmount);
+    {
+      int startIndex = length - this.purgeAmount;
+      ((TMP_Text) this.messages).set_text(((TMP_Text) this.messages).get_text().Substring(startIndex));
+    }
     this.ShowChat();
     if (this.typing)
       return;
@@ -68,7 +73,7 @@ public class ChatBox : MonoBehaviour
     this.Invoke("HideChat", 5f);
   }
 
-  public new void SendMessage(string message)
+  public void SendMessage(string message)
   {
     this.typing = false;
     message = this.TrimMessage(message);
@@ -90,8 +95,8 @@ public class ChatBox : MonoBehaviour
 
   private void ClearMessage()
   {
-    this.inputField.text = "";
-    this.inputField.interactable = false;
+    this.inputField.set_text("");
+    ((Selectable) this.inputField).set_interactable(false);
   }
 
   private void ChatCommand(string message)
@@ -108,7 +113,7 @@ public class ChatBox : MonoBehaviour
         {
           if (!(str1 == "kill"))
             return;
-          PlayerStatus.Instance.Damage(0);
+          PlayerStatus.Instance.Damage(0, true);
         }
         else
           DebugNet.Instance.ToggleConsole();
@@ -120,7 +125,7 @@ public class ChatBox : MonoBehaviour
     {
       int seed = GameManager.gameSettings.Seed;
       this.AppendMessage(-1, "<color=" + str2 + ">Seed: " + (object) seed + " (copied to clipboard)<color=white>", "");
-      GUIUtility.systemCopyBuffer = string.Concat((object) seed);
+      GUIUtility.set_systemCopyBuffer(string.Concat((object) seed));
     }
   }
 
@@ -128,23 +133,23 @@ public class ChatBox : MonoBehaviour
 
   private void UserInput()
   {
-    if (Input.GetKeyDown(KeyCode.Return))
+    if (Input.GetKeyDown((KeyCode) 13))
     {
       if (this.typing)
       {
-        this.SendMessage(this.inputField.text);
+        this.SendMessage(this.inputField.get_text());
       }
       else
       {
         this.ShowChat();
-        this.inputField.interactable = true;
-        this.inputField.Select();
+        ((Selectable) this.inputField).set_interactable(true);
+        ((Selectable) this.inputField).Select();
         this.typing = true;
       }
     }
-    if (this.typing && !this.inputField.isFocused)
-      this.inputField.Select();
-    if (!Input.GetKeyDown(KeyCode.Escape) || !this.typing)
+    if (this.typing && !this.inputField.get_isFocused())
+      ((Selectable) this.inputField).Select();
+    if (!Input.GetKeyDown((KeyCode) 27) || !this.typing)
       return;
     this.ClearMessage();
     this.typing = false;
@@ -159,17 +164,19 @@ public class ChatBox : MonoBehaviour
     if (this.typing)
       return;
     this.typing = false;
-    this.overlay.CrossFadeAlpha(0.0f, 1f, true);
-    this.messages.CrossFadeAlpha(0.0f, 1f, true);
-    this.inputField.GetComponent<Image>().CrossFadeAlpha(0.0f, 1f, true);
-    this.inputField.GetComponentInChildren<TextMeshProUGUI>().CrossFadeAlpha(0.0f, 1f, true);
+    ((Graphic) this.overlay).CrossFadeAlpha(0.0f, 1f, true);
+    ((Graphic) this.messages).CrossFadeAlpha(0.0f, 1f, true);
+    ((Graphic) ((Component) this.inputField).GetComponent<Image>()).CrossFadeAlpha(0.0f, 1f, true);
+    ((Graphic) ((Component) this.inputField).GetComponentInChildren<TextMeshProUGUI>()).CrossFadeAlpha(0.0f, 1f, true);
   }
 
   private void ShowChat()
   {
-    this.overlay.CrossFadeAlpha(1f, 0.2f, true);
-    this.messages.CrossFadeAlpha(1f, 0.2f, true);
-    this.inputField.GetComponent<Image>().CrossFadeAlpha(0.2f, 1f, true);
-    this.inputField.GetComponentInChildren<TextMeshProUGUI>().CrossFadeAlpha(0.2f, 1f, true);
+    ((Graphic) this.overlay).CrossFadeAlpha(1f, 0.2f, true);
+    ((Graphic) this.messages).CrossFadeAlpha(1f, 0.2f, true);
+    ((Graphic) ((Component) this.inputField).GetComponent<Image>()).CrossFadeAlpha(0.2f, 1f, true);
+    ((Graphic) ((Component) this.inputField).GetComponentInChildren<TextMeshProUGUI>()).CrossFadeAlpha(0.2f, 1f, true);
   }
+
+  public ChatBox() => base.\u002Ector();
 }

@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ServerCommunication
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -12,9 +12,9 @@ public class ServerCommunication : MonoBehaviour
   public Transform cam;
   public PlayerStatus playerStatus;
   private int lastSentHp;
-  private float hpThreshold = 1f;
-  private float posThreshold = 0.075f;
-  private float rotThreshold = 6f;
+  private float hpThreshold;
+  private float posThreshold;
+  private float rotThreshold;
   private Vector3 lastSentPosition;
   private float lastSentRotationY;
   private float lastSentRotationX;
@@ -24,9 +24,9 @@ public class ServerCommunication : MonoBehaviour
   private static readonly float updatesPerSecond = 12f;
   private static readonly float slowUpdatesPerSecond = 8f;
   private static readonly float slowerUpdatesPerSecond = 2f;
-  private float updateFrequency = 1f / ServerCommunication.updatesPerSecond;
-  private float slowUpdateFrequency = 1f / ServerCommunication.slowUpdatesPerSecond;
-  private float slowerUpdateFrequency = 1f / ServerCommunication.slowerUpdatesPerSecond;
+  private float updateFrequency;
+  private float slowUpdateFrequency;
+  private float slowerUpdateFrequency;
 
   private void Awake()
   {
@@ -37,16 +37,16 @@ public class ServerCommunication : MonoBehaviour
 
   private void QuickUpdate()
   {
-    if ((double) Vector3.Distance(this.root.position, this.lastSentPosition) <= (double) this.posThreshold)
+    if ((double) Vector3.Distance(this.root.get_position(), this.lastSentPosition) <= (double) this.posThreshold)
       return;
-    ClientSend.PlayerPosition(this.root.position);
-    this.lastSentPosition = this.root.position;
+    ClientSend.PlayerPosition(this.root.get_position());
+    this.lastSentPosition = this.root.get_position();
   }
 
   private void SlowUpdate()
   {
-    float y = this.cam.eulerAngles.y;
-    float x = this.cam.eulerAngles.x;
+    float y = (float) this.cam.get_eulerAngles().y;
+    float x = (float) this.cam.get_eulerAngles().x;
     if ((double) x >= 270.0)
       x -= 360f;
     float num = Mathf.Abs(this.lastSentRotationY - y);
@@ -69,4 +69,6 @@ public class ServerCommunication : MonoBehaviour
     ClientSend.PlayerHp(this.playerStatus.HpAndShield(), this.playerStatus.MaxHpAndShield());
     this.lastSentHp = this.playerStatus.HpAndShield();
   }
+
+  public ServerCommunication() => base.\u002Ector();
 }

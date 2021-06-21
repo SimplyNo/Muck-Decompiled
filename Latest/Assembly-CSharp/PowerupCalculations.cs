@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: PowerupCalculations
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -21,11 +21,9 @@ public class PowerupCalculations : MonoBehaviour
     float speedWhileShooting = -1f)
   {
     bool crit = (double) Random.Range(0.0f, 1f) < (double) PowerupInventory.Instance.GetCritChance();
-    float num1 = Random.Range(PowerupCalculations.randomDamageRange.x, PowerupCalculations.randomDamageRange.y) * PowerupInventory.Instance.GetStrengthMultiplier((int[]) null);
+    float num1 = Random.Range((float) PowerupCalculations.randomDamageRange.x, (float) PowerupCalculations.randomDamageRange.y) * PowerupInventory.Instance.GetStrengthMultiplier((int[]) null);
     if (crit)
       num1 *= 2f;
-    if (crit)
-      PowerupInventory.Instance.StartJuice();
     float lifestealMultiplier = PowerupInventory.Instance.GetLifestealMultiplier();
     float sniperScopeMultiplier = PowerupInventory.Instance.GetSniperScopeMultiplier((int[]) null);
     bool sniped = false;
@@ -42,25 +40,25 @@ public class PowerupCalculations : MonoBehaviour
 
   public void HitEffect(AudioClip clip)
   {
-    GameObject gameObject = Object.Instantiate<GameObject>(this.hitFx);
-    gameObject.AddComponent<DestroyObject>().time = 2f;
-    AudioSource component = gameObject.GetComponent<AudioSource>();
-    component.clip = clip;
-    component.Play();
+    M0 m0 = Object.Instantiate<GameObject>((M0) this.hitFx);
+    ((DestroyObject) ((GameObject) m0).AddComponent<DestroyObject>()).time = 2f;
+    M0 component = ((GameObject) m0).GetComponent<AudioSource>();
+    ((AudioSource) component).set_clip(clip);
+    ((AudioSource) component).Play();
   }
 
   public void SpawnOnHitEffect(int id, bool owner, Vector3 pos, int damage)
   {
-    GameObject gameObject = Object.Instantiate<GameObject>(this.onHitEffects[id], pos, this.onHitEffects[id].transform.rotation);
+    GameObject gameObject = (GameObject) Object.Instantiate<GameObject>((M0) this.onHitEffects[id], pos, this.onHitEffects[id].get_transform().get_rotation());
     if (!owner)
       return;
-    gameObject.GetComponent<AreaEffect>().SetDamage(damage);
+    ((AreaEffect) gameObject.GetComponent<AreaEffect>()).SetDamage(damage);
   }
 
   public PowerupCalculations.DamageResult GetMaxMultiplier()
   {
     bool crit = true;
-    float num1 = PowerupCalculations.randomDamageRange.y * PowerupInventory.Instance.GetStrengthMultiplier((int[]) null);
+    float num1 = (float) PowerupCalculations.randomDamageRange.y * PowerupInventory.Instance.GetStrengthMultiplier((int[]) null);
     if (crit)
       num1 *= 2f;
     float lifestealMultiplier = PowerupInventory.Instance.GetLifestealMultiplier();
@@ -75,6 +73,8 @@ public class PowerupCalculations : MonoBehaviour
       num3 = PowerupInventory.Instance.GetFallWingsMultiplier();
     return new PowerupCalculations.DamageResult(num2 * num3, crit, lifestealMultiplier, sniped, lightningMultiplier, (double) num3 > 1.0);
   }
+
+  public PowerupCalculations() => base.\u002Ector();
 
   public class DamageResult
   {

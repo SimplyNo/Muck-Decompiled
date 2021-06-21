@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: TestRagdoll
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -11,7 +11,7 @@ public class TestRagdoll : MonoBehaviour
   private Transform cow;
   public PhysicMaterial mat;
 
-  private void Awake() => this.cow = this.transform.GetChild(0);
+  private void Awake() => this.cow = ((Component) this).get_transform().GetChild(0);
 
   private void Update()
   {
@@ -23,27 +23,27 @@ public class TestRagdoll : MonoBehaviour
 
   public void MakeRagdoll(Vector3 dir)
   {
-    Animator component = this.GetComponent<Animator>();
-    if ((bool) (Object) component)
-      component.enabled = false;
+    Animator component = (Animator) ((Component) this).GetComponent<Animator>();
+    if (Object.op_Implicit((Object) component))
+      ((Behaviour) component).set_enabled(false);
     this.cow.SetParent((Transform) null);
     Transform child = this.cow.GetChild(0);
     this.AddComponents(child, (Rigidbody) null, dir);
     this.Ragdoll(child, dir);
-    this.cow.gameObject.AddComponent<DestroyObject>().time = 10f;
-    this.cow.gameObject.layer = LayerMask.NameToLayer("GroundAndObjectOnly");
-    child.gameObject.layer = LayerMask.NameToLayer("GroundAndObjectOnly");
+    ((DestroyObject) ((Component) this.cow).get_gameObject().AddComponent<DestroyObject>()).time = 10f;
+    ((Component) this.cow).get_gameObject().set_layer(LayerMask.NameToLayer("GroundAndObjectOnly"));
+    ((Component) child).get_gameObject().set_layer(LayerMask.NameToLayer("GroundAndObjectOnly"));
   }
 
   private void Ragdoll(Transform part, Vector3 dir)
   {
-    part.gameObject.layer = LayerMask.NameToLayer("GroundAndObjectOnly");
-    for (int index = 0; index < part.childCount; ++index)
+    ((Component) part).get_gameObject().set_layer(LayerMask.NameToLayer("GroundAndObjectOnly"));
+    for (int index = 0; index < part.get_childCount(); ++index)
     {
       Transform child = part.GetChild(index);
-      if (!child.CompareTag("Ignore"))
+      if (!((Component) child).CompareTag("Ignore"))
       {
-        this.AddComponents(child, part.GetComponent<Rigidbody>(), dir);
+        this.AddComponents(child, (Rigidbody) ((Component) part).GetComponent<Rigidbody>(), dir);
         this.Ragdoll(child, dir);
       }
     }
@@ -51,24 +51,25 @@ public class TestRagdoll : MonoBehaviour
 
   private void AddComponents(Transform p, Rigidbody parent, Vector3 dir)
   {
-    p.gameObject.layer = LayerMask.NameToLayer("GroundAndObjectOnly");
-    Rigidbody rigidbody = p.gameObject.AddComponent<Rigidbody>();
-    if (!(bool) (Object) rigidbody)
+    ((Component) p).get_gameObject().set_layer(LayerMask.NameToLayer("GroundAndObjectOnly"));
+    Rigidbody rigidbody = (Rigidbody) ((Component) p).get_gameObject().AddComponent<Rigidbody>();
+    if (!Object.op_Implicit((Object) rigidbody))
     {
-      rigidbody = p.GetComponent<Rigidbody>();
-      rigidbody.isKinematic = false;
-      rigidbody.useGravity = true;
+      rigidbody = (Rigidbody) ((Component) p).GetComponent<Rigidbody>();
+      rigidbody.set_isKinematic(false);
+      rigidbody.set_useGravity(true);
     }
-    rigidbody.velocity = -dir.normalized * 8f;
-    rigidbody.interpolation = RigidbodyInterpolation.Interpolate;
-    rigidbody.angularDrag = 1f;
-    rigidbody.drag = 0.2f;
-    MonoBehaviour.print((object) ("problem is here: " + p.name));
-    p.gameObject.AddComponent<SphereCollider>().material = this.mat;
-    if (!((Object) parent != (Object) null))
+    rigidbody.set_velocity(Vector3.op_Multiply(Vector3.op_UnaryNegation(((Vector3) ref dir).get_normalized()), 8f));
+    rigidbody.set_interpolation((RigidbodyInterpolation) 1);
+    rigidbody.set_angularDrag(1f);
+    rigidbody.set_drag(0.2f);
+    ((Collider) ((Component) p).get_gameObject().AddComponent<SphereCollider>()).set_material(this.mat);
+    if (!Object.op_Inequality((Object) parent, (Object) null))
       return;
-    CharacterJoint characterJoint = p.gameObject.AddComponent<CharacterJoint>();
-    characterJoint.connectedBody = parent;
-    characterJoint.enableProjection = true;
+    M0 m0 = ((Component) p).get_gameObject().AddComponent<CharacterJoint>();
+    ((Joint) m0).set_connectedBody(parent);
+    ((CharacterJoint) m0).set_enableProjection(true);
   }
+
+  public TestRagdoll() => base.\u002Ector();
 }

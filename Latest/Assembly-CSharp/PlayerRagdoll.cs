@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: PlayerRagdoll
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -18,13 +18,13 @@ public class PlayerRagdoll : MonoBehaviour
     MonoBehaviour.print((object) ("armor slot: " + (object) armorSlot + ", item id: " + (object) itemId));
     if (itemId == -1)
     {
-      this.armor[armorSlot].gameObject.SetActive(false);
+      ((Component) this.armor[armorSlot]).get_gameObject().SetActive(false);
     }
     else
     {
-      this.armor[armorSlot].gameObject.SetActive(true);
+      ((Component) this.armor[armorSlot]).get_gameObject().SetActive(true);
       InventoryItem allItem = ItemManager.Instance.allItems[itemId];
-      this.armor[armorSlot].material = allItem.material;
+      ((Renderer) this.armor[armorSlot]).set_material(allItem.material);
     }
   }
 
@@ -32,13 +32,13 @@ public class PlayerRagdoll : MonoBehaviour
   {
     if (itemId == -1)
     {
-      this.filter.mesh = (Mesh) null;
+      this.filter.set_mesh((Mesh) null);
     }
     else
     {
       InventoryItem allItem = ItemManager.Instance.allItems[itemId];
-      this.filter.mesh = allItem.mesh;
-      this.render.material = allItem.material;
+      this.filter.set_mesh(allItem.mesh);
+      this.render.set_material(allItem.material);
     }
   }
 
@@ -47,11 +47,11 @@ public class PlayerRagdoll : MonoBehaviour
     this.ragdoll.MakeRagdoll(dir);
     if (LocalClient.instance.myId == id)
     {
-      if ((Object) Hotbar.Instance.currentItem != (Object) null)
+      if (Object.op_Inequality((Object) Hotbar.Instance.currentItem, (Object) null))
         this.WeaponInHand(Hotbar.Instance.currentItem.id);
       for (int armorSlot = 0; armorSlot < PlayerStatus.Instance.armor.Length; ++armorSlot)
       {
-        if ((bool) (Object) PlayerStatus.Instance.armor[armorSlot])
+        if (Object.op_Implicit((Object) PlayerStatus.Instance.armor[armorSlot]))
           this.SetArmor(armorSlot, PlayerStatus.Instance.armor[armorSlot].id);
       }
     }
@@ -61,12 +61,14 @@ public class PlayerRagdoll : MonoBehaviour
       this.WeaponInHand(onlinePlayer.currentWeaponId);
       for (int index = 0; index < onlinePlayer.armor.Length; ++index)
       {
-        if (onlinePlayer.armor[index].gameObject.activeInHierarchy)
+        if (((Component) onlinePlayer.armor[index]).get_gameObject().get_activeInHierarchy())
         {
-          this.armor[index].material = onlinePlayer.armor[index].material;
-          this.armor[index].gameObject.SetActive(true);
+          ((Renderer) this.armor[index]).set_material(((Renderer) onlinePlayer.armor[index]).get_material());
+          ((Component) this.armor[index]).get_gameObject().SetActive(true);
         }
       }
     }
   }
+
+  public PlayerRagdoll() => base.\u002Ector();
 }

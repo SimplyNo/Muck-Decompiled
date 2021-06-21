@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ItemPickedupUI
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
 using UnityEngine;
@@ -14,55 +14,56 @@ public class ItemPickedupUI : MonoBehaviour
   public TextMeshProUGUI item;
   private HorizontalLayoutGroup layout;
   private float desiredPad;
-  private float fadeStart = 6f;
-  private float fadeTime = 1f;
+  private float fadeStart;
+  private float fadeTime;
   private float padLeft;
 
   private void Awake()
   {
-    this.layout = this.GetComponent<HorizontalLayoutGroup>();
-    this.desiredPad = (float) this.layout.padding.left;
-    this.layout.padding.left = -300;
-    this.padLeft = (float) this.layout.padding.left;
+    this.layout = (HorizontalLayoutGroup) ((Component) this).GetComponent<HorizontalLayoutGroup>();
+    this.desiredPad = (float) ((LayoutGroup) this.layout).get_padding().get_left();
+    ((LayoutGroup) this.layout).get_padding().set_left(-300);
+    this.padLeft = (float) ((LayoutGroup) this.layout).get_padding().get_left();
     this.Invoke("StartFade", this.fadeStart);
   }
 
   private void StartFade()
   {
-    this.icon.CrossFadeAlpha(0.0f, this.fadeTime, true);
-    this.item.CrossFadeAlpha(0.0f, this.fadeTime, true);
+    ((Graphic) this.icon).CrossFadeAlpha(0.0f, this.fadeTime, true);
+    ((Graphic) this.item).CrossFadeAlpha(0.0f, this.fadeTime, true);
     this.Invoke("DestroySelf", this.fadeTime);
   }
 
-  private void DestroySelf() => Object.Destroy((Object) this.gameObject);
+  private void DestroySelf() => Object.Destroy((Object) ((Component) this).get_gameObject());
 
   public void SetItem(InventoryItem i)
   {
     if (i.amount < 1)
     {
-      this.icon.sprite = (Sprite) null;
-      this.item.text = "Inventory full";
+      this.icon.set_sprite((Sprite) null);
+      ((TMP_Text) this.item).set_text("Inventory full");
     }
     else
     {
-      this.icon.sprite = i.sprite;
-      this.item.text = string.Format("{0}x {1}", (object) i.amount, (object) i.name);
+      this.icon.set_sprite(i.sprite);
+      ((TMP_Text) this.item).set_text(string.Format("{0}x {1}", (object) i.amount, (object) i.name));
     }
   }
 
   public void SetPowerup(Powerup i)
   {
-    this.icon.sprite = i.sprite;
-    this.item.text = i.name + "\n<size=75%>" + i.description;
+    this.icon.set_sprite(i.sprite);
+    ((TMP_Text) this.item).set_text(i.name + "\n<size=75%>" + i.description);
   }
 
   public void Update()
   {
-    this.padLeft = Mathf.Lerp(this.padLeft, this.desiredPad, Time.deltaTime * 7f);
-    this.layout.padding = new RectOffset(this.layout.padding.left, this.layout.padding.right, this.layout.padding.top, this.layout.padding.bottom)
-    {
-      left = (int) this.padLeft
-    };
-    this.layout.padding.left = (int) this.padLeft;
+    this.padLeft = Mathf.Lerp(this.padLeft, this.desiredPad, Time.get_deltaTime() * 7f);
+    RectOffset rectOffset = new RectOffset(((LayoutGroup) this.layout).get_padding().get_left(), ((LayoutGroup) this.layout).get_padding().get_right(), ((LayoutGroup) this.layout).get_padding().get_top(), ((LayoutGroup) this.layout).get_padding().get_bottom());
+    rectOffset.set_left((int) this.padLeft);
+    ((LayoutGroup) this.layout).set_padding(rectOffset);
+    ((LayoutGroup) this.layout).get_padding().set_left((int) this.padLeft);
   }
+
+  public ItemPickedupUI() => base.\u002Ector();
 }

@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: CameraShaker
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using MilkShake;
 using UnityEngine;
@@ -18,7 +18,7 @@ public class CameraShaker : MonoBehaviour
   private void Awake()
   {
     CameraShaker.Instance = this;
-    this.shaker = this.GetComponent<Shaker>();
+    this.shaker = (Shaker) ((Component) this).GetComponent<Shaker>();
   }
 
   public void DamageShake(float shakeRatio)
@@ -27,14 +27,14 @@ public class CameraShaker : MonoBehaviour
       return;
     shakeRatio *= 2f;
     shakeRatio = Mathf.Clamp(shakeRatio, 0.2f, 1f);
-    this.shaker.Shake((IShakeParameters) this.damagePreset).StrengthScale = shakeRatio;
+    this.shaker.Shake((IShakeParameters) this.damagePreset, new int?()).StrengthScale = (__Null) (double) shakeRatio;
   }
 
   public void StepShake(float shakeRatio)
   {
     if (!CurrentSettings.cameraShake)
       return;
-    this.shaker.Shake((IShakeParameters) this.stepShakePreset).StrengthScale = shakeRatio;
+    this.shaker.Shake((IShakeParameters) this.stepShakePreset, new int?()).StrengthScale = (__Null) (double) shakeRatio;
   }
 
   public void ChargeShake(float shakeRatio)
@@ -42,6 +42,8 @@ public class CameraShaker : MonoBehaviour
     if (!CurrentSettings.cameraShake)
       return;
     shakeRatio = Mathf.Clamp(shakeRatio, 0.2f, 1f);
-    this.shaker.Shake((IShakeParameters) this.chargePreset).StrengthScale = shakeRatio;
+    this.shaker.Shake((IShakeParameters) this.chargePreset, new int?()).StrengthScale = (__Null) (double) shakeRatio;
   }
+
+  public CameraShaker() => base.\u002Ector();
 }

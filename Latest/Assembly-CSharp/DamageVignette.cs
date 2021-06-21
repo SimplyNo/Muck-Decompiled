@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: DamageVignette
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -16,10 +16,10 @@ public class DamageVignette : MonoBehaviour
 
   private void Update()
   {
-    if (!(bool) (Object) PlayerStatus.Instance)
+    if (!Object.op_Implicit((Object) PlayerStatus.Instance))
       return;
     float num1;
-    if ((bool) (Object) MoveCamera.Instance && MoveCamera.Instance.state == MoveCamera.CameraState.Spectate)
+    if (Object.op_Implicit((Object) MoveCamera.Instance) && MoveCamera.Instance.state == MoveCamera.CameraState.Spectate)
       num1 = 0.0f;
     else if ((double) PlayerStatus.Instance.hp <= 0.0)
     {
@@ -32,15 +32,22 @@ public class DamageVignette : MonoBehaviour
       int num4 = PlayerStatus.Instance.MaxHpAndShield();
       num1 = (double) ((float) num3 / (float) num4) <= (double) num2 ? (float) (1.0 - (double) num3 / ((double) num4 * (double) num2)) : 0.0f;
     }
-    Color color = this.vignette.color;
-    color.a = num1;
-    this.vignette.color = Color.Lerp(this.vignette.color, color, Time.deltaTime * 12f);
+    Color color = ((Graphic) this.vignette).get_color();
+    color.a = (__Null) (double) num1;
+    ((Graphic) this.vignette).set_color(Color.Lerp(((Graphic) this.vignette).get_color(), color, Time.get_deltaTime() * 12f));
   }
 
   public void VignetteHit()
   {
-    Color color = this.vignette.color;
-    color.a += 0.8f;
-    this.vignette.color = color;
+    Color color = ((Graphic) this.vignette).get_color();
+    ref __Null local = ref color.a;
+    // ISSUE: cast to a reference type
+    // ISSUE: explicit reference operation
+    // ISSUE: cast to a reference type
+    // ISSUE: explicit reference operation
+    ^(float&) ref local = ^(float&) ref local + 0.8f;
+    ((Graphic) this.vignette).set_color(color);
   }
+
+  public DamageVignette() => base.\u002Ector();
 }

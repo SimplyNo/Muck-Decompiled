@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: MeshData
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -31,9 +31,9 @@ public class MeshData
   public Mesh CreateMesh()
   {
     Mesh mesh = new Mesh();
-    mesh.vertices = this.vertices;
-    mesh.triangles = this.triangles;
-    mesh.uv = this.uvs;
+    mesh.set_vertices(this.vertices);
+    mesh.set_triangles(this.triangles);
+    mesh.set_uv(this.uvs);
     mesh.RecalculateNormals();
     return mesh;
   }

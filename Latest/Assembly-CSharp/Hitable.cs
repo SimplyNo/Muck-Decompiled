@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: Hitable
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -10,6 +10,7 @@ public abstract class Hitable : MonoBehaviour, SharedObject
 {
   protected int id;
   public string entityName;
+  public bool canHitMoreThanOnce;
   public LootDrop dropTable;
   public int hp;
   public int maxHp;
@@ -21,9 +22,9 @@ public abstract class Hitable : MonoBehaviour, SharedObject
   protected void Awake()
   {
     this.hp = this.maxHp;
-    foreach (Collider component in this.GetComponents<Collider>())
+    foreach (Collider component in (Collider[]) ((Component) this).GetComponents<Collider>())
     {
-      if (!component.isTrigger)
+      if (!component.get_isTrigger())
         this.hitCollider = component;
     }
   }
@@ -32,12 +33,13 @@ public abstract class Hitable : MonoBehaviour, SharedObject
 
   public virtual int Damage(int newHp, int fromClient, int hitEffect, Vector3 pos)
   {
-    Vector3 normalized = (GameManager.players[fromClient].transform.position + Vector3.up * 1.5f - pos).normalized;
+    Vector3 vector3 = Vector3.op_Subtraction(Vector3.op_Addition(((Component) GameManager.players[fromClient]).get_transform().get_position(), Vector3.op_Multiply(Vector3.get_up(), 1.5f)), pos);
+    Vector3 normalized = ((Vector3) ref vector3).get_normalized();
     this.SpawnParticles(pos, normalized, hitEffect);
     HitEffect hitEffect1 = (HitEffect) hitEffect;
     int num = this.hp - newHp;
-    if ((double) Vector3.Distance(PlayerMovement.Instance.playerCam.position, this.transform.position) < 100.0)
-      Object.Instantiate<GameObject>(this.numberFx, pos, Quaternion.identity).GetComponent<HitNumber>().SetTextAndDir((float) num, normalized, hitEffect1);
+    if ((double) Vector3.Distance(PlayerMovement.Instance.playerCam.get_position(), ((Component) this).get_transform().get_position()) < 100.0)
+      ((HitNumber) ((GameObject) Object.Instantiate<GameObject>((M0) this.numberFx, pos, Quaternion.get_identity())).GetComponent<HitNumber>()).SetTextAndDir((float) num, normalized, hitEffect1);
     this.hp = newHp;
     if (this.hp <= 0)
     {
@@ -50,21 +52,21 @@ public abstract class Hitable : MonoBehaviour, SharedObject
 
   protected virtual void SpawnParticles(Vector3 pos, Vector3 dir, int hitEffect)
   {
-    if ((double) Vector3.Distance(PlayerMovement.Instance.playerCam.position, this.transform.position) > 100.0)
+    if ((double) Vector3.Distance(PlayerMovement.Instance.playerCam.get_position(), ((Component) this).get_transform().get_position()) > 100.0)
       return;
-    GameObject gameObject = Object.Instantiate<GameObject>(this.hitFx);
-    gameObject.transform.position = pos;
-    gameObject.transform.rotation = Quaternion.LookRotation(dir);
+    GameObject gameObject = (GameObject) Object.Instantiate<GameObject>((M0) this.hitFx);
+    gameObject.get_transform().set_position(pos);
+    gameObject.get_transform().set_rotation(Quaternion.LookRotation(dir));
     HitEffect effect = (HitEffect) hitEffect;
     if (effect == HitEffect.Normal)
       return;
-    HitParticles componentInChildren = gameObject.GetComponentInChildren<HitParticles>();
-    if (!((Object) componentInChildren != (Object) null))
+    HitParticles componentInChildren = (HitParticles) gameObject.GetComponentInChildren<HitParticles>();
+    if (!Object.op_Inequality((Object) componentInChildren, (Object) null))
       return;
     componentInChildren.SetEffect(effect);
   }
 
-  protected virtual void SpawnDeathParticles() => Object.Instantiate<GameObject>(this.destroyFx, this.transform.position, this.destroyFx.transform.rotation);
+  protected virtual void SpawnDeathParticles() => Object.Instantiate<GameObject>((M0) this.destroyFx, ((Component) this).get_transform().get_position(), this.destroyFx.get_transform().get_rotation());
 
   public void KillObject(Vector3 dir)
   {
@@ -79,4 +81,6 @@ public abstract class Hitable : MonoBehaviour, SharedObject
   public void SetId(int id) => this.id = id;
 
   public int GetId() => this.id;
+
+  protected Hitable() => base.\u002Ector();
 }

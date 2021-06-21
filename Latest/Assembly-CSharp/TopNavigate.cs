@@ -1,11 +1,12 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: TopNavigate
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class TopNavigate : MonoBehaviour
 {
@@ -23,13 +24,15 @@ public class TopNavigate : MonoBehaviour
       if (index == selected)
       {
         this.settingMenus[index].SetActive(true);
-        this.texts[index].color = this.selectedColor;
+        ((Graphic) this.texts[index]).set_color(this.selectedColor);
       }
       else
       {
         this.settingMenus[index].SetActive(false);
-        this.texts[index].color = this.idleColor;
+        ((Graphic) this.texts[index]).set_color(this.idleColor);
       }
     }
   }
+
+  public TopNavigate() => base.\u002Ector();
 }

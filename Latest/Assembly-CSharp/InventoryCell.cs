@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: InventoryCell
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
 using UnityEngine;
@@ -21,17 +21,17 @@ public class InventoryCell : MonoBehaviour, IPointerDownHandler, IEventSystemHan
   public int cellId;
   public Color idle;
   public Color hover;
-  private bool ready = true;
+  private bool ready;
   private float lastClickTime;
-  private float doubleClickThreshold = 0.15f;
+  private float doubleClickThreshold;
   public InventoryItem.ItemTag[] tags;
   public RawImage overlay;
 
   private void Start()
   {
-    if ((bool) (Object) this.spawnItem)
+    if (Object.op_Implicit((Object) this.spawnItem))
     {
-      this.currentItem = ScriptableObject.CreateInstance<InventoryItem>();
+      this.currentItem = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
       this.currentItem.Copy(this.spawnItem, this.spawnItem.amount);
     }
     this.UpdateCell();
@@ -39,24 +39,24 @@ public class InventoryCell : MonoBehaviour, IPointerDownHandler, IEventSystemHan
 
   public void UpdateCell()
   {
-    if ((Object) this.currentItem == (Object) null)
+    if (Object.op_Equality((Object) this.currentItem, (Object) null))
     {
-      this.amount.text = "";
-      this.itemImage.sprite = (Sprite) null;
-      this.itemImage.color = Color.clear;
+      ((TMP_Text) this.amount).set_text("");
+      this.itemImage.set_sprite((Sprite) null);
+      ((Graphic) this.itemImage).set_color(Color.get_clear());
     }
     else
     {
-      this.amount.text = this.currentItem.GetAmount();
-      this.itemImage.sprite = this.currentItem.sprite;
-      this.itemImage.color = Color.white;
+      ((TMP_Text) this.amount).set_text(this.currentItem.GetAmount());
+      this.itemImage.set_sprite(this.currentItem.sprite);
+      ((Graphic) this.itemImage).set_color(Color.get_white());
     }
     this.SetColor(this.idle);
   }
 
   public void ForceAddItem(InventoryItem item, int amount)
   {
-    this.currentItem = Object.Instantiate<InventoryItem>(item);
+    this.currentItem = (InventoryItem) Object.Instantiate<InventoryItem>((M0) item);
     this.currentItem.amount = amount;
     this.UpdateCell();
   }
@@ -65,13 +65,13 @@ public class InventoryCell : MonoBehaviour, IPointerDownHandler, IEventSystemHan
   {
     InventoryItem currentItem = this.currentItem;
     int amount1 = pointerItem.amount;
-    if (eventData.button == PointerEventData.InputButton.Right)
+    if (eventData.get_button() == 1)
       amount1 = 1;
     InventoryItem inventoryItem1;
     InventoryItem inventoryItem2;
-    if ((Object) currentItem == (Object) null)
+    if (Object.op_Equality((Object) currentItem, (Object) null))
     {
-      inventoryItem1 = ScriptableObject.CreateInstance<InventoryItem>();
+      inventoryItem1 = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
       inventoryItem1.Copy(pointerItem, amount1);
       if (pointerItem.amount - amount1 < 1)
       {
@@ -79,7 +79,7 @@ public class InventoryCell : MonoBehaviour, IPointerDownHandler, IEventSystemHan
       }
       else
       {
-        inventoryItem2 = ScriptableObject.CreateInstance<InventoryItem>();
+        inventoryItem2 = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
         inventoryItem2.Copy(pointerItem, pointerItem.amount - amount1);
       }
     }
@@ -87,7 +87,7 @@ public class InventoryCell : MonoBehaviour, IPointerDownHandler, IEventSystemHan
     {
       if (currentItem.amount + amount1 > currentItem.max)
         amount1 = currentItem.max - currentItem.amount;
-      inventoryItem1 = ScriptableObject.CreateInstance<InventoryItem>();
+      inventoryItem1 = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
       inventoryItem1.Copy(this.currentItem, this.currentItem.amount + amount1);
       if (pointerItem.amount - amount1 < 1)
       {
@@ -95,7 +95,7 @@ public class InventoryCell : MonoBehaviour, IPointerDownHandler, IEventSystemHan
       }
       else
       {
-        inventoryItem2 = ScriptableObject.CreateInstance<InventoryItem>();
+        inventoryItem2 = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
         inventoryItem2.Copy(pointerItem, pointerItem.amount - amount1);
       }
     }
@@ -112,7 +112,7 @@ public class InventoryCell : MonoBehaviour, IPointerDownHandler, IEventSystemHan
       MonoBehaviour.print((object) ("sending chest updates, currentchest:  " + (object) OtherInput.Instance.currentChest.id));
       int itemId = -1;
       int amount2 = 0;
-      if ((bool) (Object) this.currentItem)
+      if (Object.op_Implicit((Object) this.currentItem))
       {
         itemId = this.currentItem.id;
         amount2 = this.currentItem.amount;
@@ -127,17 +127,17 @@ public class InventoryCell : MonoBehaviour, IPointerDownHandler, IEventSystemHan
 
   public InventoryItem PickupItem(PointerEventData eventData)
   {
-    if (!(bool) (Object) this.currentItem)
+    if (!Object.op_Implicit((Object) this.currentItem))
       return (InventoryItem) null;
     InventoryItem inventoryItem1;
     InventoryItem inventoryItem2;
-    if (eventData.button == PointerEventData.InputButton.Right && this.currentItem.amount > 1)
+    if (eventData.get_button() == 1 && this.currentItem.amount > 1)
     {
       int amount1 = this.currentItem.amount / 2;
       int amount2 = this.currentItem.amount - amount1;
-      inventoryItem1 = ScriptableObject.CreateInstance<InventoryItem>();
+      inventoryItem1 = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
       inventoryItem1.Copy(this.currentItem, amount1);
-      inventoryItem2 = ScriptableObject.CreateInstance<InventoryItem>();
+      inventoryItem2 = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
       inventoryItem2.Copy(this.currentItem, amount2);
     }
     else
@@ -151,7 +151,7 @@ public class InventoryCell : MonoBehaviour, IPointerDownHandler, IEventSystemHan
     {
       int itemId = -1;
       int amount = 0;
-      if ((bool) (Object) this.currentItem)
+      if (Object.op_Implicit((Object) this.currentItem))
       {
         itemId = this.currentItem.id;
         amount = this.currentItem.amount;
@@ -167,12 +167,12 @@ public class InventoryCell : MonoBehaviour, IPointerDownHandler, IEventSystemHan
     if (!this.ready)
       return;
     this.ready = false;
-    this.Invoke("GetReady", Time.deltaTime * 2f);
+    this.Invoke("GetReady", Time.get_deltaTime() * 2f);
     if (this.cellType == InventoryCell.CellType.Crafting)
       InventoryUI.Instance.CraftItem(this.currentItem);
-    else if ((double) Time.time - (double) this.lastClickTime < 0.25 && eventData.button == PointerEventData.InputButton.Left && InventoryUI.Instance.HoldingItem())
+    else if ((double) Time.get_time() - (double) this.lastClickTime < 0.25 && eventData.get_button() == null && InventoryUI.Instance.HoldingItem())
       this.DoubleClick();
-    else if (Input.GetKey(KeyCode.LeftShift))
+    else if (Input.GetKey((KeyCode) 304))
     {
       this.ShiftClick();
     }
@@ -188,9 +188,9 @@ public class InventoryCell : MonoBehaviour, IPointerDownHandler, IEventSystemHan
       }
       else
         InventoryUI.Instance.PickupItem(this.PickupItem(eventData));
-      if (eventData.button != PointerEventData.InputButton.Left)
+      if (eventData.get_button() != null)
         return;
-      this.lastClickTime = Time.time;
+      this.lastClickTime = Time.get_time();
     }
   }
 
@@ -219,7 +219,7 @@ public class InventoryCell : MonoBehaviour, IPointerDownHandler, IEventSystemHan
       return;
     foreach (InventoryCell cell in InventoryUI.Instance.cells)
     {
-      if (!((Object) cell.currentItem == (Object) null) && cell.currentItem.Compare(currentMouseItem))
+      if (!Object.op_Equality((Object) cell.currentItem, (Object) null) && cell.currentItem.Compare(currentMouseItem))
       {
         if (currentMouseItem.amount + cell.currentItem.amount > currentMouseItem.max)
         {
@@ -239,31 +239,41 @@ public class InventoryCell : MonoBehaviour, IPointerDownHandler, IEventSystemHan
 
   private bool ShiftClick()
   {
-    if (this.cellType != InventoryCell.CellType.Chest || !InventoryUI.Instance.CanPickup(this.currentItem))
-      return false;
-    InventoryUI.Instance.AddItemToInventory(this.currentItem);
-    this.RemoveItem();
-    int itemId = -1;
-    int amount = 0;
-    if ((bool) (Object) this.currentItem)
+    if (this.cellType == InventoryCell.CellType.Chest)
     {
-      itemId = this.currentItem.id;
-      amount = this.currentItem.amount;
+      if (!InventoryUI.Instance.CanPickup(this.currentItem))
+        return false;
+      InventoryUI.Instance.AddItemToInventory(this.currentItem);
+      this.RemoveItem();
+      int itemId = -1;
+      int amount = 0;
+      if (Object.op_Implicit((Object) this.currentItem))
+      {
+        itemId = this.currentItem.id;
+        amount = this.currentItem.amount;
+      }
+      ClientSend.ChestUpdate(OtherInput.Instance.currentChest.id, this.cellId, itemId, amount);
+      return true;
     }
-    ClientSend.ChestUpdate(OtherInput.Instance.currentChest.id, this.cellId, itemId, amount);
-    return true;
+    if (this.cellType == InventoryCell.CellType.Inventory)
+    {
+      int craftingState1 = (int) OtherInput.Instance.craftingState;
+      int craftingState2 = (int) OtherInput.Instance.craftingState;
+      int craftingState3 = (int) OtherInput.Instance.craftingState;
+    }
+    return false;
   }
 
   public void OnPointerEnter(PointerEventData eventData)
   {
     this.SetColor(this.hover);
-    if (!(bool) (Object) this.currentItem)
+    if (!Object.op_Implicit((Object) this.currentItem))
       return;
     if (this.cellType == InventoryCell.CellType.Inventory)
     {
       string t = this.currentItem.name + "\n<size=50%><i>" + this.currentItem.description;
       if (this.currentItem.IsArmour())
-        t = t + "\n+" + (object) this.currentItem.armor + " armor";
+        t = t + "\n+" + (object) this.currentItem.armor + " armor" + "\n" + this.currentItem.armorComponent.setBonus;
       ItemInfo.Instance.SetText(t);
     }
     else
@@ -295,11 +305,25 @@ public class InventoryCell : MonoBehaviour, IPointerDownHandler, IEventSystemHan
   {
   }
 
+  public void AddItemToChest(InventoryItem item)
+  {
+  }
+
+  public void AddItemToCauldron()
+  {
+  }
+
+  public void AddItemToFurnace()
+  {
+  }
+
   public void SetOverlayAlpha(float f)
   {
     MonoBehaviour.print((object) ("overlay set to: " + (object) f));
-    this.overlay.color = new Color(0.0f, 0.0f, 0.0f, f);
+    ((Graphic) this.overlay).set_color(new Color(0.0f, 0.0f, 0.0f, f));
   }
+
+  public InventoryCell() => base.\u002Ector();
 
   public enum CellType
   {

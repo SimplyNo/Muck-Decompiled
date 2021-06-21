@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: GeometryGrassPainter
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,32 +16,32 @@ public class GeometryGrassPainter : MonoBehaviour
   private MeshFilter filter;
   public Color AdjustedColor;
   [Range(1f, 600000f)]
-  public int grassLimit = 50000;
-  private Vector3 lastPosition = Vector3.zero;
+  public int grassLimit;
+  private Vector3 lastPosition;
   public int toolbarInt;
   [SerializeField]
-  private List<Vector3> positions = new List<Vector3>();
+  private List<Vector3> positions;
   [SerializeField]
-  private List<Color> colors = new List<Color>();
+  private List<Color> colors;
   [SerializeField]
-  private List<int> indicies = new List<int>();
+  private List<int> indicies;
   [SerializeField]
-  private List<Vector3> normals = new List<Vector3>();
+  private List<Vector3> normals;
   [SerializeField]
-  private List<Vector2> length = new List<Vector2>();
+  private List<Vector2> length;
   public bool painting;
   public bool removing;
   public bool editing;
   public int i;
-  public float sizeWidth = 1f;
-  public float sizeLength = 1f;
-  public float density = 1f;
-  public float normalLimit = 1f;
+  public float sizeWidth;
+  public float sizeLength;
+  public float density;
+  public float normalLimit;
   public float rangeR;
   public float rangeG;
   public float rangeB;
-  public LayerMask hitMask = (LayerMask) 1;
-  public LayerMask paintMask = (LayerMask) 1;
+  public LayerMask hitMask;
+  public LayerMask paintMask;
   public float brushSize;
   private Vector3 mousePos;
   [HideInInspector]
@@ -50,4 +50,6 @@ public class GeometryGrassPainter : MonoBehaviour
   [HideInInspector]
   public Vector3 hitNormal;
   private int[] indi;
+
+  public GeometryGrassPainter() => base.\u002Ector();
 }

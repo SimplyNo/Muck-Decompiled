@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: Server
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using System.Collections.Generic;
@@ -128,6 +128,10 @@ public class Server
       new Server.PacketHandler(ServerHandle.JoinRequest)
     },
     {
+      33,
+      new Server.PacketHandler(ServerHandle.StartedLoading)
+    },
+    {
       29,
       new Server.PacketHandler(ServerHandle.PlayerFinishedLoading)
     },
@@ -226,6 +230,10 @@ public class Server
     {
       22,
       new Server.PacketHandler(ServerHandle.ShrineCombatStartRequest)
+    },
+    {
+      32,
+      new Server.PacketHandler(ServerHandle.Interact)
     },
     {
       23,

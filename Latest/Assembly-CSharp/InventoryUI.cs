@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: InventoryUI
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using JetBrains.Annotations;
 using System.Collections.Generic;
@@ -43,14 +43,14 @@ public class InventoryUI : MonoBehaviour
 
   public bool CanPickup(InventoryItem i)
   {
-    if ((Object) i == (Object) null)
+    if (Object.op_Equality((Object) i, (Object) null))
       return false;
     int amount = i.amount;
     if (!this.IsInventoryFull())
       return true;
     foreach (InventoryCell cell in this.cells)
     {
-      if ((Object) cell != (Object) null && cell.currentItem.id == i.id)
+      if (Object.op_Inequality((Object) cell, (Object) null) && cell.currentItem.id == i.id)
       {
         amount -= cell.currentItem.max - cell.currentItem.amount;
         if (amount <= 0)
@@ -64,10 +64,37 @@ public class InventoryUI : MonoBehaviour
   {
     foreach (InventoryCell cell in this.cells)
     {
-      if ((Object) cell.currentItem == (Object) null)
+      if (Object.op_Equality((Object) cell.currentItem, (Object) null))
         return false;
     }
     return true;
+  }
+
+  public bool pickupCooldown { get; set; }
+
+  public void CooldownPickup()
+  {
+    this.pickupCooldown = true;
+    this.Invoke("ResetCooldown", (float) (NetStatus.GetPing() * 2) / 1000f);
+  }
+
+  private void ResetCooldown() => this.pickupCooldown = false;
+
+  public void CheckInventoryAlmostFull()
+  {
+    int num = 0;
+    foreach (InventoryCell cell in this.cells)
+    {
+      if (Object.op_Equality((Object) cell.currentItem, (Object) null))
+      {
+        ++num;
+        if (num > 2)
+          return;
+      }
+    }
+    if (num != 1)
+      return;
+    this.CooldownPickup();
   }
 
   public void PickupItem(InventoryItem item)
@@ -86,28 +113,28 @@ public class InventoryUI : MonoBehaviour
 
   private void UpdateMouseSprite()
   {
-    if ((Object) this.currentMouseItem != (Object) null)
+    if (Object.op_Inequality((Object) this.currentMouseItem, (Object) null))
     {
-      this.mouseItemSprite.sprite = this.currentMouseItem.sprite;
-      this.mouseItemSprite.color = Color.white;
-      this.mouseItemText.text = this.currentMouseItem.GetAmount();
+      this.mouseItemSprite.set_sprite(this.currentMouseItem.sprite);
+      ((Graphic) this.mouseItemSprite).set_color(Color.get_white());
+      ((TMP_Text) this.mouseItemText).set_text(this.currentMouseItem.GetAmount());
     }
     else
     {
-      this.mouseItemSprite.sprite = (Sprite) null;
-      this.mouseItemSprite.color = Color.clear;
-      this.mouseItemText.text = "";
+      this.mouseItemSprite.set_sprite((Sprite) null);
+      ((Graphic) this.mouseItemSprite).set_color(Color.get_clear());
+      ((TMP_Text) this.mouseItemText).set_text("");
     }
-    if (!(bool) (Object) this.CraftingUi)
+    if (!Object.op_Implicit((Object) this.CraftingUi))
       return;
     this.CraftingUi.UpdateCraftables();
   }
 
-  private void Update() => this.mouseItemSprite.transform.position = Input.mousePosition;
+  private void Update() => ((Component) this.mouseItemSprite).get_transform().set_position(Input.get_mousePosition());
 
   public void DropItem([CanBeNull] PointerEventData eventData)
   {
-    if ((Object) this.currentMouseItem == (Object) null)
+    if (Object.op_Equality((Object) this.currentMouseItem, (Object) null))
       return;
     this.hotbar.UpdateHotbar();
     if (eventData == null)
@@ -118,11 +145,11 @@ public class InventoryUI : MonoBehaviour
     else
     {
       int amount = this.currentMouseItem.amount;
-      if (eventData.button == PointerEventData.InputButton.Right)
+      if (eventData.get_button() == 1)
         amount = 1;
-      InventoryItem instance = ScriptableObject.CreateInstance<InventoryItem>();
+      InventoryItem instance = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
       instance.Copy(this.currentMouseItem, amount);
-      InventoryItem inventoryItem = ScriptableObject.CreateInstance<InventoryItem>();
+      InventoryItem inventoryItem = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
       inventoryItem.Copy(this.currentMouseItem, this.currentMouseItem.amount - amount);
       if (inventoryItem.amount < 1)
         inventoryItem = (InventoryItem) null;
@@ -134,7 +161,7 @@ public class InventoryUI : MonoBehaviour
 
   public void DropItemIntoWorld(InventoryItem item)
   {
-    if ((Object) item == (Object) null)
+    if (Object.op_Equality((Object) item, (Object) null))
       return;
     ClientSend.DropItem(item.id, item.amount);
   }
@@ -142,9 +169,9 @@ public class InventoryUI : MonoBehaviour
   private void FillCellList()
   {
     this.cells = new List<InventoryCell>();
-    foreach (InventoryCell componentsInChild in this.inventoryParent.GetComponentsInChildren<InventoryCell>())
+    foreach (InventoryCell componentsInChild in (InventoryCell[]) ((Component) this.inventoryParent).GetComponentsInChildren<InventoryCell>())
       this.cells.Add(componentsInChild);
-    foreach (InventoryCell componentsInChild in this.hotkeysTransform.GetComponentsInChildren<InventoryCell>())
+    foreach (InventoryCell componentsInChild in (InventoryCell[]) ((Component) this.hotkeysTransform).GetComponentsInChildren<InventoryCell>())
       this.cells.Add(componentsInChild);
   }
 
@@ -156,23 +183,23 @@ public class InventoryUI : MonoBehaviour
 
   public void ToggleInventory()
   {
-    this.backDrop.SetActive(!this.backDrop.activeInHierarchy);
-    if (this.transform.parent.gameObject.activeInHierarchy || !((Object) this.currentMouseItem != (Object) null))
+    this.backDrop.SetActive(!this.backDrop.get_activeInHierarchy());
+    if (((Component) ((Component) this).get_transform().get_parent()).get_gameObject().get_activeInHierarchy() || !Object.op_Inequality((Object) this.currentMouseItem, (Object) null))
       return;
     this.DropItem((PointerEventData) null);
   }
 
   public int AddItemToInventory(InventoryItem item)
   {
-    InventoryItem instance = ScriptableObject.CreateInstance<InventoryItem>();
+    InventoryItem instance = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
     instance.Copy(item, item.amount);
     InventoryCell inventoryCell = (InventoryCell) null;
     UiSfx.Instance.PlayPickup();
     foreach (InventoryCell cell in this.cells)
     {
-      if ((Object) cell.currentItem == (Object) null)
+      if (Object.op_Equality((Object) cell.currentItem, (Object) null))
       {
-        if (!((Object) inventoryCell != (Object) null))
+        if (!Object.op_Inequality((Object) inventoryCell, (Object) null))
           inventoryCell = cell;
       }
       else if (cell.currentItem.Compare(instance) && cell.currentItem.stackable)
@@ -193,7 +220,7 @@ public class InventoryUI : MonoBehaviour
         }
       }
     }
-    if ((bool) (Object) inventoryCell)
+    if (Object.op_Implicit((Object) inventoryCell))
     {
       inventoryCell.currentItem = instance;
       inventoryCell.UpdateCell();
@@ -210,7 +237,7 @@ public class InventoryUI : MonoBehaviour
     int num = 0;
     foreach (InventoryCell cell in this.cells)
     {
-      if (!((Object) cell.currentItem == (Object) null) && cell.currentItem.name == "Coin")
+      if (!Object.op_Equality((Object) cell.currentItem, (Object) null) && cell.currentItem.name == "Coin")
         num += cell.currentItem.amount;
     }
     return num;
@@ -222,7 +249,7 @@ public class InventoryUI : MonoBehaviour
     InventoryItem itemByName = ItemManager.Instance.GetItemByName("Coin");
     foreach (InventoryCell cell in this.cells)
     {
-      if (!((Object) cell.currentItem == (Object) null) && cell.currentItem.Compare(itemByName))
+      if (!Object.op_Equality((Object) cell.currentItem, (Object) null) && cell.currentItem.Compare(itemByName))
       {
         if (cell.currentItem.amount <= amount)
         {
@@ -249,7 +276,7 @@ public class InventoryUI : MonoBehaviour
       int num = 0;
       foreach (InventoryCell cell in this.cells)
       {
-        if (!((Object) cell.currentItem == (Object) null) && cell.currentItem.Compare(requirement.item))
+        if (!Object.op_Equality((Object) cell.currentItem, (Object) null) && cell.currentItem.Compare(requirement.item))
         {
           num += cell.currentItem.amount;
           if (num >= requirement.amount)
@@ -264,14 +291,14 @@ public class InventoryUI : MonoBehaviour
 
   public void CraftItem(InventoryItem item)
   {
-    if (!this.IsCraftable(item) || (Object) this.currentMouseItem != (Object) null && (!item.Compare(this.currentMouseItem) || this.currentMouseItem.amount + item.craftAmount > this.currentMouseItem.max))
+    if (!this.IsCraftable(item) || Object.op_Inequality((Object) this.currentMouseItem, (Object) null) && (!item.Compare(this.currentMouseItem) || this.currentMouseItem.amount + item.craftAmount > this.currentMouseItem.max))
       return;
     foreach (InventoryItem.CraftRequirement requirement in item.requirements)
     {
       int num1 = 0;
       foreach (InventoryCell cell in this.cells)
       {
-        if (!((Object) cell.currentItem == (Object) null) && cell.currentItem.Compare(requirement.item))
+        if (!Object.op_Equality((Object) cell.currentItem, (Object) null) && cell.currentItem.Compare(requirement.item))
         {
           if (cell.currentItem.amount <= requirement.amount)
           {
@@ -289,13 +316,13 @@ public class InventoryUI : MonoBehaviour
       }
     }
     this.CraftingUi.UpdateCraftables();
-    if ((Object) this.currentMouseItem != (Object) null)
+    if (Object.op_Inequality((Object) this.currentMouseItem, (Object) null))
     {
       this.currentMouseItem.amount += item.craftAmount;
     }
     else
     {
-      this.currentMouseItem = ScriptableObject.CreateInstance<InventoryItem>();
+      this.currentMouseItem = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
       this.currentMouseItem.Copy(item, item.craftAmount);
     }
     UiEvents.Instance.CheckNewUnlocks(item.id);
@@ -306,7 +333,7 @@ public class InventoryUI : MonoBehaviour
   {
     for (int index = 0; index < this.armorCells.Length; ++index)
     {
-      if ((Object) this.armorCells[index].currentItem == (Object) null && item.tag == this.armorCells[index].tags[0])
+      if (Object.op_Equality((Object) this.armorCells[index].currentItem, (Object) null) && item.tag == this.armorCells[index].tags[0])
       {
         this.armorCells[index].currentItem = item;
         this.armorCells[index].UpdateCell();
@@ -316,5 +343,7 @@ public class InventoryUI : MonoBehaviour
     return false;
   }
 
-  public bool HoldingItem() => (Object) this.currentMouseItem != (Object) null;
+  public bool HoldingItem() => Object.op_Inequality((Object) this.currentMouseItem, (Object) null);
+
+  public InventoryUI() => base.\u002Ector();
 }

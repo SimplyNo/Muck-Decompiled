@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: GameSettings
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 public class GameSettings
 {
@@ -18,27 +18,38 @@ public class GameSettings
 
   public GameSettings.GameLength gameLength { get; set; }
 
+  public GameSettings.Multiplayer multiplayer { get; set; }
+
   public GameSettings(
     int seed,
     GameSettings.GameMode gameMode = GameSettings.GameMode.Survival,
     GameSettings.FriendlyFire friendlyFire = GameSettings.FriendlyFire.Off,
     GameSettings.Difficulty difficulty = GameSettings.Difficulty.Normal,
-    GameSettings.GameLength gameLength = GameSettings.GameLength.Short)
+    GameSettings.GameLength gameLength = GameSettings.GameLength.Short,
+    GameSettings.Multiplayer multiplayer = GameSettings.Multiplayer.On)
   {
     this.Seed = seed;
     this.gameMode = gameMode;
     this.friendlyFire = friendlyFire;
     this.difficulty = difficulty;
     this.gameLength = gameLength;
+    this.multiplayer = multiplayer;
   }
 
-  public GameSettings(int seed, int gameMode, int friendlyFire, int difficulty, int gameLength)
+  public GameSettings(
+    int seed,
+    int gameMode,
+    int friendlyFire,
+    int difficulty,
+    int gameLength,
+    int multiplayer)
   {
     this.Seed = seed;
     this.gameMode = (GameSettings.GameMode) gameMode;
     this.friendlyFire = (GameSettings.FriendlyFire) friendlyFire;
     this.difficulty = (GameSettings.Difficulty) difficulty;
     this.gameLength = (GameSettings.GameLength) gameLength;
+    this.multiplayer = (GameSettings.Multiplayer) multiplayer;
   }
 
   public int BossDay()
@@ -48,7 +59,7 @@ public class GameSettings
       case GameSettings.Difficulty.Easy:
         return 6;
       case GameSettings.Difficulty.Normal:
-        return 5;
+        return 4;
       case GameSettings.Difficulty.Gamer:
         return 3;
       default:
@@ -61,11 +72,11 @@ public class GameSettings
     switch (this.difficulty)
     {
       case GameSettings.Difficulty.Easy:
-        return 9f;
+        return 8f;
       case GameSettings.Difficulty.Normal:
-        return 7f;
-      case GameSettings.Difficulty.Gamer:
         return 6f;
+      case GameSettings.Difficulty.Gamer:
+        return 5f;
       default:
         return 5f;
     }
@@ -117,5 +128,11 @@ public class GameSettings
     Short = 3,
     Medium = 8,
     Long = 14, // 0x0000000E
+  }
+
+  public enum Multiplayer
+  {
+    Off,
+    On,
   }
 }

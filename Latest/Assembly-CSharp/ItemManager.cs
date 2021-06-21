@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ItemManager
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -86,89 +86,90 @@ public class ItemManager : MonoBehaviour
   public void DropItem(int fromClient, int itemId, int amount, int objectID)
   {
     int key = objectID;
-    GameObject gameObject1 = Object.Instantiate<GameObject>(this.dropItem);
-    InventoryItem instance = ScriptableObject.CreateInstance<InventoryItem>();
+    GameObject gameObject = (GameObject) Object.Instantiate<GameObject>((M0) this.dropItem);
+    InventoryItem instance = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
     instance.Copy(this.allItems[itemId], amount);
-    Item component = gameObject1.GetComponent<Item>();
-    component.item = instance;
-    component.UpdateMesh();
-    gameObject1.AddComponent<BoxCollider>();
-    Vector3 position = GameManager.players[fromClient].transform.position;
-    Transform transform = GameManager.players[fromClient].transform;
+    M0 component = gameObject.GetComponent<Item>();
+    ((Item) component).item = instance;
+    ((Item) component).UpdateMesh();
+    gameObject.AddComponent<BoxCollider>();
+    Vector3 position = ((Component) GameManager.players[fromClient]).get_transform().get_position();
+    Transform transform = ((Component) GameManager.players[fromClient]).get_transform();
     if (fromClient == LocalClient.instance.myId)
-      transform = transform.transform.GetChild(0);
-    Vector3 normalized = (transform.forward + Vector3.up * 0.35f).normalized;
-    gameObject1.transform.position = position;
-    gameObject1.GetComponent<Rigidbody>().AddForce(normalized * InventoryUI.throwForce);
+      transform = ((Component) transform).get_transform().GetChild(0);
+    Vector3 vector3 = Vector3.op_Addition(transform.get_forward(), Vector3.op_Multiply(Vector3.get_up(), 0.35f));
+    Vector3 normalized = ((Vector3) ref vector3).get_normalized();
+    gameObject.get_transform().set_position(position);
+    ((Rigidbody) gameObject.GetComponent<Rigidbody>()).AddForce(Vector3.op_Multiply(normalized, InventoryUI.throwForce));
     if (this.attatchDebug)
     {
-      GameObject gameObject2 = Object.Instantiate<GameObject>(this.debug, gameObject1.transform);
-      gameObject2.GetComponent<DebugObject>().text = string.Concat((object) key);
-      gameObject2.transform.localPosition = Vector3.up * 1.25f;
+      M0 m0 = Object.Instantiate<GameObject>((M0) this.debug, gameObject.get_transform());
+      ((DebugObject) ((GameObject) m0).GetComponent<DebugObject>()).text = string.Concat((object) key);
+      ((GameObject) m0).get_transform().set_localPosition(Vector3.op_Multiply(Vector3.get_up(), 1.25f));
     }
-    gameObject1.GetComponent<Item>().objectID = key;
-    this.list.Add(key, gameObject1);
+    ((Item) gameObject.GetComponent<Item>()).objectID = key;
+    this.list.Add(key, gameObject);
   }
 
   public void DropItemAtPosition(int itemId, int amount, Vector3 pos, int objectID)
   {
     int key = objectID;
-    GameObject gameObject1 = Object.Instantiate<GameObject>(this.dropItem);
-    InventoryItem instance = ScriptableObject.CreateInstance<InventoryItem>();
+    GameObject gameObject = (GameObject) Object.Instantiate<GameObject>((M0) this.dropItem);
+    InventoryItem instance = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
     instance.Copy(this.allItems[itemId], amount);
-    Item component = gameObject1.GetComponent<Item>();
-    component.item = instance;
-    component.UpdateMesh();
-    gameObject1.AddComponent<BoxCollider>();
+    M0 component = gameObject.GetComponent<Item>();
+    ((Item) component).item = instance;
+    ((Item) component).UpdateMesh();
+    gameObject.AddComponent<BoxCollider>();
     Vector3 vector3 = pos;
-    gameObject1.transform.position = vector3;
+    gameObject.get_transform().set_position(vector3);
     if (this.attatchDebug)
     {
-      GameObject gameObject2 = Object.Instantiate<GameObject>(this.debug, gameObject1.transform);
-      gameObject2.GetComponent<DebugObject>().text = string.Concat((object) key);
-      gameObject2.transform.localPosition = Vector3.up * 1.25f;
+      M0 m0 = Object.Instantiate<GameObject>((M0) this.debug, gameObject.get_transform());
+      ((DebugObject) ((GameObject) m0).GetComponent<DebugObject>()).text = string.Concat((object) key);
+      ((GameObject) m0).get_transform().set_localPosition(Vector3.op_Multiply(Vector3.get_up(), 1.25f));
     }
-    gameObject1.GetComponent<Item>().objectID = key;
-    this.list.Add(key, gameObject1);
+    ((Item) gameObject.GetComponent<Item>()).objectID = key;
+    this.list.Add(key, gameObject);
   }
 
   public void DropResource(int fromClient, int dropTableId, int droppedObjectID)
   {
     int key = droppedObjectID;
-    GameObject gameObject1 = Object.Instantiate<GameObject>(this.dropItem);
-    InventoryItem instance = ScriptableObject.CreateInstance<InventoryItem>();
-    Item component = gameObject1.GetComponent<Item>();
-    component.item = instance;
-    component.UpdateMesh();
-    gameObject1.AddComponent<BoxCollider>();
+    GameObject gameObject = (GameObject) Object.Instantiate<GameObject>((M0) this.dropItem);
+    InventoryItem instance = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
+    M0 component = gameObject.GetComponent<Item>();
+    ((Item) component).item = instance;
+    ((Item) component).UpdateMesh();
+    gameObject.AddComponent<BoxCollider>();
     if (this.attatchDebug)
     {
-      GameObject gameObject2 = Object.Instantiate<GameObject>(this.debug, gameObject1.transform);
-      gameObject2.GetComponent<DebugObject>().text = string.Concat((object) key);
-      gameObject2.transform.localPosition = Vector3.up * 1.25f;
+      M0 m0 = Object.Instantiate<GameObject>((M0) this.debug, gameObject.get_transform());
+      ((DebugObject) ((GameObject) m0).GetComponent<DebugObject>()).text = string.Concat((object) key);
+      ((GameObject) m0).get_transform().set_localPosition(Vector3.op_Multiply(Vector3.get_up(), 1.25f));
     }
-    gameObject1.GetComponent<Item>().objectID = key;
-    this.list.Add(key, gameObject1);
+    ((Item) gameObject.GetComponent<Item>()).objectID = key;
+    this.list.Add(key, gameObject);
   }
 
   public void DropPowerupAtPosition(int powerupId, Vector3 pos, int objectID)
   {
     int key = objectID;
-    GameObject gameObject1 = Object.Instantiate<GameObject>(this.dropItem);
-    Powerup powerup = Object.Instantiate<Powerup>(this.allPowerups[powerupId]);
-    Item component = gameObject1.GetComponent<Item>();
-    component.powerup = powerup;
-    component.UpdateMesh();
-    gameObject1.AddComponent<BoxCollider>();
-    gameObject1.transform.position = pos;
+    GameObject gameObject = (GameObject) Object.Instantiate<GameObject>((M0) this.dropItem);
+    Powerup powerup = (Powerup) Object.Instantiate<Powerup>((M0) this.allPowerups[powerupId]);
+    M0 component = gameObject.GetComponent<Item>();
+    ((Item) component).powerup = powerup;
+    ((Item) component).UpdateMesh();
+    gameObject.AddComponent<BoxCollider>();
+    gameObject.get_transform().set_position(pos);
     if (this.attatchDebug)
     {
-      GameObject gameObject2 = Object.Instantiate<GameObject>(this.debug, gameObject1.transform);
-      gameObject2.GetComponent<DebugObject>().text = string.Concat((object) key);
-      gameObject2.transform.localPosition = Vector3.up * 1.25f;
+      M0 m0 = Object.Instantiate<GameObject>((M0) this.debug, gameObject.get_transform());
+      ((DebugObject) ((GameObject) m0).GetComponent<DebugObject>()).text = string.Concat((object) key);
+      ((GameObject) m0).get_transform().set_localPosition(Vector3.op_Multiply(Vector3.get_up(), 1.25f));
     }
-    gameObject1.GetComponent<Item>().objectID = key;
-    this.list.Add(key, gameObject1);
+    ((Item) gameObject.GetComponent<Item>()).objectID = key;
+    this.list.Add(key, gameObject);
   }
 
   public Powerup GetRandomPowerup(float whiteWeight, float blueWeight, float orangeWeight)
@@ -186,4 +187,6 @@ public class ItemManager : MonoBehaviour
     this.list.Remove(objectID);
     return true;
   }
+
+  public ItemManager() => base.\u002Ector();
 }

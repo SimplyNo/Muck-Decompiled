@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ClientHandle
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using System.Net;
@@ -18,7 +18,7 @@ public class ClientHandle : MonoBehaviour
     Debug.Log((object) ("Message from server: " + str));
     UiManager.instance.ConnectionSuccessful();
     LocalClient.instance.myId = id;
-    ClientSend.WelcomeReceived(id, LocalClient.instance.name);
+    ClientSend.WelcomeReceived(id, ((Object) LocalClient.instance).get_name());
     if (NetworkController.Instance.networkType != NetworkController.NetworkType.Classic)
       return;
     LocalClient.instance.udp.Connect(((IPEndPoint) LocalClient.instance.tcp.socket.Client.LocalEndPoint).Port);
@@ -73,10 +73,10 @@ public class ClientHandle : MonoBehaviour
     int num2 = packet.ReadInt();
     if (LocalClient.instance.myId == num1 && !LocalClient.serverOwner)
     {
-      Item component = ItemManager.Instance.list[num2].GetComponent<Item>();
-      if ((bool) (UnityEngine.Object) component.item)
+      Item component = (Item) ItemManager.Instance.list[num2].GetComponent<Item>();
+      if (Object.op_Implicit((Object) component.item))
         InventoryUI.Instance.AddItemToInventory(component.item);
-      else if ((bool) (UnityEngine.Object) component.powerup)
+      else if (Object.op_Implicit((Object) component.powerup))
         PowerupInventory.Instance.AddPowerup(component.powerup.name, component.powerup.id, num2);
     }
     if (LocalClient.serverOwner)
@@ -123,7 +123,7 @@ public class ClientHandle : MonoBehaviour
     int newHp = packet.ReadInt();
     int hitEffect = packet.ReadInt();
     Vector3 pos = packet.ReadVector3();
-    ResourceManager.Instance.list[key].GetComponent<Hitable>().Damage(newHp, fromClient, hitEffect, pos);
+    ((Hitable) ResourceManager.Instance.list[key].GetComponent<Hitable>()).Damage(newHp, fromClient, hitEffect, pos);
   }
 
   public static void RemoveResource(Packet packet)
@@ -183,13 +183,13 @@ public class ClientHandle : MonoBehaviour
     ChestManager.Instance.UseChest(num2, inUse);
     if (!inUse || num1 != LocalClient.instance.myId)
       return;
-    if ((UnityEngine.Object) OtherInput.Instance.currentChest != (UnityEngine.Object) null)
+    if (Object.op_Inequality((Object) OtherInput.Instance.currentChest, (Object) null))
     {
       ClientSend.RequestChest(OtherInput.Instance.currentChest.id, false);
       OtherInput.Instance.currentChest = (Chest) null;
     }
     OtherInput.Instance.currentChest = ChestManager.Instance.chests[num2];
-    OtherInput.CraftingState state = ChestManager.Instance.chests[num2].GetComponentInChildren<ChestInteract>().state;
+    OtherInput.CraftingState state = ((ChestInteract) ((Component) ChestManager.Instance.chests[num2]).GetComponentInChildren<ChestInteract>()).state;
     OtherInput.Instance.ToggleInventory(state);
   }
 
@@ -208,7 +208,7 @@ public class ClientHandle : MonoBehaviour
     int num1 = packet.ReadInt();
     int num2 = packet.ReadInt();
     Debug.Log((object) ("Received pickup with id: " + (object) num2));
-    Interactable componentInChildren = ResourceManager.Instance.list[num2].GetComponentInChildren<Interactable>();
+    Interactable componentInChildren = (Interactable) ResourceManager.Instance.list[num2].GetComponentInChildren<Interactable>();
     componentInChildren.AllExecute();
     if (LocalClient.instance.myId == num1 && !LocalClient.serverOwner)
       componentInChildren.LocalExecute();
@@ -224,23 +224,27 @@ public class ClientHandle : MonoBehaviour
     Vector3 vector3 = packet.ReadVector3();
     Vector3 position = packet.ReadVector3();
     float orientationY = packet.ReadFloat();
-    GameManager.instance.SpawnPlayer(id, username, new Color(vector3.x, vector3.y, vector3.z), position, orientationY);
+    GameManager.instance.SpawnPlayer(id, username, new Color((float) vector3.x, (float) vector3.y, (float) vector3.z), position, orientationY);
     GameManager.instance.StartGame();
   }
 
   public static void StartGame(Packet packet)
   {
+    if (NetworkController.Instance.loading)
+      return;
     LocalClient.instance.myId = packet.ReadInt();
     int seed = packet.ReadInt();
     int num1 = packet.ReadInt();
     int num2 = packet.ReadInt();
     int num3 = packet.ReadInt();
     int num4 = packet.ReadInt();
+    int num5 = packet.ReadInt();
     int gameMode = num1;
     int friendlyFire = num2;
     int difficulty = num3;
     int gameLength = num4;
-    GameManager.gameSettings = new GameSettings(seed, gameMode, friendlyFire, difficulty, gameLength);
+    int multiplayer = num5;
+    GameManager.gameSettings = new GameSettings(seed, gameMode, friendlyFire, difficulty, gameLength, multiplayer);
     MonoBehaviour.print((object) "Game settings successfully loaded");
     MonoBehaviour.print((object) ("loading game scene, assigned id: " + (object) LocalClient.instance.myId));
     int length = packet.ReadInt();
@@ -252,6 +256,7 @@ public class ClientHandle : MonoBehaviour
       names[index] = str;
     }
     NetworkController.Instance.LoadGame(names);
+    ClientSend.StartedLoading();
   }
 
   public static void PlayerPosition(Packet packet)
@@ -324,8 +329,8 @@ public class ClientHandle : MonoBehaviour
   {
     int key = packet.ReadInt();
     int length = packet.ReadInt();
-    ShrineInteractable componentInChildren = ResourceManager.Instance.list[key].GetComponentInChildren<ShrineInteractable>();
-    if (!(bool) (UnityEngine.Object) componentInChildren)
+    ShrineInteractable componentInChildren = (ShrineInteractable) ResourceManager.Instance.list[key].GetComponentInChildren<ShrineInteractable>();
+    if (!Object.op_Implicit((Object) componentInChildren))
       return;
     MonoBehaviour.print((object) ("starting new shrine with mobs: " + (object) length));
     int[] mobIds = new int[length];
@@ -339,17 +344,17 @@ public class ClientHandle : MonoBehaviour
     int num1 = packet.ReadInt();
     int num2 = packet.ReadInt();
     bool flag = packet.ReadBool();
-    GameManager.instance.RespawnPlayer(num2, Vector3.zero);
+    GameManager.instance.RespawnPlayer(num2, Vector3.get_zero());
     int id = LocalClient.instance.myId;
     if (num1 == id && !flag)
       InventoryUI.Instance.UseMoney(RespawnTotemUI.Instance.GetRevivePrice());
-    if (!flag && (UnityEngine.Object) GameManager.players[num2] != (UnityEngine.Object) null)
+    if (!flag && Object.op_Inequality((Object) GameManager.players[num2], (Object) null))
       GameManager.players[num2].RemoveGrave();
     RespawnTotemUI.Instance.Refresh();
     int key = packet.ReadInt();
     if (!ResourceManager.Instance.list.ContainsKey(key))
       return;
-    ResourceManager.Instance.list[key].GetComponentInChildren<Interactable>().AllExecute();
+    ((Interactable) ResourceManager.Instance.list[key].GetComponentInChildren<Interactable>()).AllExecute();
   }
 
   public static void MobSpawn(Packet packet)
@@ -366,7 +371,7 @@ public class ClientHandle : MonoBehaviour
   {
     int key = packet.ReadInt();
     Vector3 nextPosition = packet.ReadVector3();
-    if (!(bool) (UnityEngine.Object) MobManager.Instance.mobs[key])
+    if (!Object.op_Implicit((Object) MobManager.Instance.mobs[key]))
       return;
     MobManager.Instance.mobs[key].SetPosition(nextPosition);
   }
@@ -376,6 +381,13 @@ public class ClientHandle : MonoBehaviour
     int key = packet.ReadInt();
     Vector3 dest = packet.ReadVector3();
     MobManager.Instance.mobs[key].SetDestination(dest);
+  }
+
+  public static void MobSetTarget(Packet packet)
+  {
+    int key = packet.ReadInt();
+    int targetId = packet.ReadInt();
+    MobManager.Instance.mobs[key].SetTarget(targetId);
   }
 
   public static void MobAttack(Packet packet)
@@ -415,6 +427,20 @@ public class ClientHandle : MonoBehaviour
     if (!MobManager.Instance.mobs.ContainsKey(key))
       return;
     MobManager.Instance.mobs[key].Knockback(dir);
+  }
+
+  public static void Interact(Packet packet)
+  {
+    int key = packet.ReadInt();
+    int num = packet.ReadInt();
+    if (!ResourceManager.Instance.list.ContainsKey(key))
+      return;
+    Interactable componentInChildren = (Interactable) ResourceManager.Instance.list[key].GetComponentInChildren<Interactable>();
+    if (componentInChildren.IsStarted())
+      return;
+    if (num == LocalClient.instance.myId)
+      componentInChildren.LocalExecute();
+    componentInChildren.AllExecute();
   }
 
   public static void MobZoneToggle(Packet packet)
@@ -478,4 +504,6 @@ public class ClientHandle : MonoBehaviour
     int winnerId = packet.ReadInt();
     GameManager.instance.GameOver(winnerId);
   }
+
+  public ClientHandle() => base.\u002Ector();
 }

@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: UiEvents
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -49,17 +49,17 @@ public class UiEvents : MonoBehaviour
 
   public void AddPowerup(Powerup p)
   {
-    GameObject gameObject = Object.Instantiate<GameObject>(this.pickupPrefab, this.pickupParent);
-    gameObject.GetComponent<ItemPickedupUI>().SetPowerup(p);
-    gameObject.transform.SetSiblingIndex(0);
+    M0 m0 = Object.Instantiate<GameObject>((M0) this.pickupPrefab, this.pickupParent);
+    ((ItemPickedupUI) ((GameObject) m0).GetComponent<ItemPickedupUI>()).SetPowerup(p);
+    ((GameObject) m0).get_transform().SetSiblingIndex(0);
   }
 
   public void AddPickup(InventoryItem item)
   {
     Hotbar.Instance.UpdateHotbar();
-    GameObject gameObject = Object.Instantiate<GameObject>(this.pickupPrefab, this.pickupParent);
-    gameObject.GetComponent<ItemPickedupUI>().SetItem(item);
-    gameObject.transform.SetSiblingIndex(0);
+    M0 m0 = Object.Instantiate<GameObject>((M0) this.pickupPrefab, this.pickupParent);
+    ((ItemPickedupUI) ((GameObject) m0).GetComponent<ItemPickedupUI>()).SetItem(item);
+    ((GameObject) m0).get_transform().SetSiblingIndex(0);
     MonoBehaviour.print((object) "checking");
     if (this.unlockedHard[item.id])
       return;
@@ -109,7 +109,7 @@ public class UiEvents : MonoBehaviour
       {
         InventoryItem allItem = ItemManager.Instance.allItems[key];
         InventoryItem.CraftRequirement[] requirements = allItem.requirements;
-        if ((!((Object) allItem.stationRequirement != (Object) null) || this.stationsUnlocked[allItem.stationRequirement.id]) && this.CanUnlock(requirements, allItem.unlockWithFirstRequirementOnly))
+        if ((!Object.op_Inequality((Object) allItem.stationRequirement, (Object) null) || this.stationsUnlocked[allItem.stationRequirement.id]) && this.CanUnlock(requirements, allItem.unlockWithFirstRequirementOnly))
           intList.Add(key);
       }
     }
@@ -136,11 +136,13 @@ public class UiEvents : MonoBehaviour
     if (this.idsToUnlock.Count < 1 || this.IsInvoking(nameof (Unlock)))
       return;
     int key = this.idsToUnlock.Dequeue();
-    GameObject gameObject = Object.Instantiate<GameObject>(this.unlockPrefab, this.unlockParent);
-    gameObject.GetComponent<ItemUnlcokedUI>().SetItem(ItemManager.Instance.allItems[key]);
-    gameObject.transform.SetSiblingIndex(0);
+    M0 m0 = Object.Instantiate<GameObject>((M0) this.unlockPrefab, this.unlockParent);
+    ((ItemUnlcokedUI) ((GameObject) m0).GetComponent<ItemUnlcokedUI>()).SetItem(ItemManager.Instance.allItems[key]);
+    ((GameObject) m0).get_transform().SetSiblingIndex(0);
     if (this.idsToUnlock.Count <= 0)
       return;
     this.Invoke(nameof (Unlock), 2f);
   }
+
+  public UiEvents() => base.\u002Ector();
 }

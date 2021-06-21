@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ResourceManager
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,7 +40,7 @@ public class ResourceManager : MonoBehaviour
       for (int index2 = 0; index2 < trees[index1].Count; ++index2)
       {
         GameObject o = trees[index1][index2] = trees[index1][index2];
-        this.AddObject(o.GetComponentInChildren<SharedObject>().GetId(), o);
+        this.AddObject(((SharedObject) o.GetComponentInChildren<SharedObject>()).GetId(), o);
       }
     }
   }
@@ -50,7 +50,7 @@ public class ResourceManager : MonoBehaviour
     for (int index = 0; index < trees.Count; ++index)
     {
       GameObject o = trees[index] = trees[index];
-      this.AddObject(o.GetComponentInChildren<SharedObject>().GetId(), o);
+      this.AddObject(((SharedObject) o.GetComponentInChildren<SharedObject>()).GetId(), o);
     }
   }
 
@@ -65,7 +65,7 @@ public class ResourceManager : MonoBehaviour
       this.list.Add(key, o);
       if (!this.attatchDebug)
         return;
-      Object.Instantiate<GameObject>(this.debug, o.transform).GetComponentInChildren<DebugObject>().text = "id" + (object) key;
+      ((DebugObject) ((GameObject) Object.Instantiate<GameObject>((M0) this.debug, o.get_transform())).GetComponentInChildren<DebugObject>()).text = "id" + (object) key;
     }
   }
 
@@ -76,7 +76,7 @@ public class ResourceManager : MonoBehaviour
     this.builds.Add(key, o);
     if (!this.attatchDebug)
       return;
-    Object.Instantiate<GameObject>(this.debug, o.transform).GetComponentInChildren<DebugObject>().text = "id" + (object) key;
+    ((DebugObject) ((GameObject) Object.Instantiate<GameObject>((M0) this.debug, o.get_transform())).GetComponentInChildren<DebugObject>()).text = "id" + (object) key;
   }
 
   public void RemoveItem(int id)
@@ -92,11 +92,13 @@ public class ResourceManager : MonoBehaviour
   {
     if (!this.list.ContainsKey(id))
       return false;
-    Interactable componentInChildren = this.list[id].GetComponentInChildren<Interactable>();
+    M0 componentInChildren = this.list[id].GetComponentInChildren<Interactable>();
     this.list.Remove(id);
-    componentInChildren.RemoveObject();
+    ((Interactable) componentInChildren).RemoveObject();
     return true;
   }
 
   public int GetNextId() => ResourceManager.globalId++;
+
+  public ResourceManager() => base.\u002Ector();
 }

@@ -1,40 +1,42 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: GroundRollAttack
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
 public class GroundRollAttack : MonoBehaviour
 {
   public Rigidbody rb;
-  public float speed = 60f;
+  public float speed;
   public LayerMask whatIsGround;
   public Transform rollRock;
   public GameObject rollPrefab;
   private bool child;
   private Vector3 rollAxis;
-  private float rollSpeed = 10f;
+  private float rollSpeed;
 
   private void Start()
   {
-    Vector3 forward = this.transform.forward;
-    forward.y = 0.0f;
-    this.rb.velocity = forward * this.speed;
-    this.rollAxis = Vector3.Cross(this.rb.velocity, Vector3.up);
-    Debug.DrawLine(this.transform.position, this.transform.position + forward * 10f, Color.red, 10f);
+    Vector3 forward = ((Component) this).get_transform().get_forward();
+    forward.y = (__Null) 0.0;
+    this.rb.set_velocity(Vector3.op_Multiply(forward, this.speed));
+    this.rollAxis = Vector3.Cross(this.rb.get_velocity(), Vector3.get_up());
+    Debug.DrawLine(((Component) this).get_transform().get_position(), Vector3.op_Addition(((Component) this).get_transform().get_position(), Vector3.op_Multiply(forward, 10f)), Color.get_red(), 10f);
+    Debug.LogError((object) ("collider: " + (object) ((Component) this).GetComponent<Collider>()));
+    ((Collider) ((Component) this).GetComponent<Collider>()).set_enabled(true);
     if (this.child)
       return;
     int num1 = 2;
     int num2 = 25;
-    Collider component = this.GetComponent<Collider>();
+    Collider component = (Collider) ((Component) this).GetComponent<Collider>();
     for (int index = 0; index < num1; ++index)
     {
-      Transform transform = Object.Instantiate<GameObject>(this.rollPrefab, this.transform.position, this.transform.rotation).transform;
-      transform.GetComponent<GroundRollAttack>().child = true;
-      transform.eulerAngles = new Vector3(transform.eulerAngles.x, transform.eulerAngles.y + (float) (num2 * 2 * index) - (float) num2, transform.eulerAngles.z);
-      Physics.IgnoreCollision(component, transform.GetComponent<Collider>());
+      Transform transform = ((GameObject) Object.Instantiate<GameObject>((M0) this.rollPrefab, ((Component) this).get_transform().get_position(), ((Component) this).get_transform().get_rotation())).get_transform();
+      ((GroundRollAttack) ((Component) transform).GetComponent<GroundRollAttack>()).child = true;
+      transform.set_eulerAngles(new Vector3((float) transform.get_eulerAngles().x, (float) transform.get_eulerAngles().y + (float) (num2 * 2 * index) - (float) num2, (float) transform.get_eulerAngles().z));
+      Physics.IgnoreCollision(component, (Collider) ((Component) transform).GetComponent<Collider>());
     }
   }
 
@@ -46,13 +48,15 @@ public class GroundRollAttack : MonoBehaviour
 
   private void KeepRockGrounded()
   {
-    RaycastHit hitInfo;
-    if (!Physics.Raycast(this.transform.position + Vector3.up * 50f, Vector3.down, out hitInfo, 100f, (int) this.whatIsGround))
+    RaycastHit raycastHit;
+    if (!Physics.Raycast(Vector3.op_Addition(((Component) this).get_transform().get_position(), Vector3.op_Multiply(Vector3.get_up(), 50f)), Vector3.get_down(), ref raycastHit, 100f, LayerMask.op_Implicit(this.whatIsGround)))
       return;
-    Vector3 position = this.rb.position;
-    position.y = hitInfo.point.y;
+    Vector3 position = this.rb.get_position();
+    position.y = ((RaycastHit) ref raycastHit).get_point().y;
     this.rb.MovePosition(position);
   }
 
-  private void SpinRock() => this.rollRock.transform.Rotate(this.rollAxis * this.rollSpeed * Time.deltaTime);
+  private void SpinRock() => ((Component) this.rollRock).get_transform().Rotate(Vector3.op_Multiply(Vector3.op_Multiply(this.rollAxis, this.rollSpeed), Time.get_deltaTime()));
+
+  public GroundRollAttack() => base.\u002Ector();
 }

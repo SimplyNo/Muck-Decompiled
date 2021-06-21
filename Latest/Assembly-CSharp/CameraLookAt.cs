@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: CameraLookAt
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -10,5 +10,11 @@ public class CameraLookAt : MonoBehaviour
 {
   public Transform target;
 
-  private void Update() => this.transform.rotation = Quaternion.Lerp(this.transform.rotation, Quaternion.LookRotation(this.target.position - this.transform.position), Time.deltaTime * 6.4f);
+  private void Update()
+  {
+    Quaternion quaternion = Quaternion.LookRotation(Vector3.op_Subtraction(this.target.get_position(), ((Component) this).get_transform().get_position()));
+    ((Component) this).get_transform().set_rotation(Quaternion.Lerp(((Component) this).get_transform().get_rotation(), quaternion, Time.get_deltaTime() * 6.4f));
+  }
+
+  public CameraLookAt() => base.\u002Ector();
 }

@@ -1,14 +1,13 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: OtherInput
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
 public class OtherInput : MonoBehaviour
 {
-  private OtherInput.CraftingState craftingState;
   public InventoryExtensions handcrafts;
   public InventoryExtensions furnace;
   public InventoryExtensions workbench;
@@ -27,35 +26,41 @@ public class OtherInput : MonoBehaviour
   public UiSfx UiSfx;
   public RectTransform craftingOverlay;
 
+  public OtherInput.CraftingState craftingState { get; set; }
+
   private void Awake() => OtherInput.Instance = this;
 
   public void Unpause()
   {
-    Cursor.visible = false;
-    Cursor.lockState = CursorLockMode.Locked;
+    if (GameManager.gameSettings.multiplayer == GameSettings.Multiplayer.Off)
+      Time.set_timeScale(1f);
+    Cursor.set_visible(false);
+    Cursor.set_lockState((CursorLockMode) 1);
     this.paused = false;
     this.pauseUi.SetActive(false);
   }
 
   public void Pause()
   {
-    Cursor.visible = true;
-    Cursor.lockState = CursorLockMode.None;
+    if (GameManager.gameSettings.multiplayer == GameSettings.Multiplayer.Off)
+      Time.set_timeScale(0.0f);
+    Cursor.set_visible(true);
+    Cursor.set_lockState((CursorLockMode) 0);
     this.paused = true;
     this.pauseUi.SetActive(true);
   }
 
   public bool paused { get; set; }
 
-  public bool OtherUiActive() => this.pauseUi.activeInHierarchy || this.settingsUi.activeInHierarchy || (ChatBox.Instance.typing || Map.Instance.active) || (RespawnTotemUI.Instance.root.activeInHierarchy || InventoryUI.Instance.gameObject.activeInHierarchy && this.craftingState != OtherInput.CraftingState.Inventory);
+  public bool OtherUiActive() => this.pauseUi.get_activeInHierarchy() || this.settingsUi.get_activeInHierarchy() || (ChatBox.Instance.typing || Map.Instance.active) || (RespawnTotemUI.Instance.root.get_activeInHierarchy() || ((Component) InventoryUI.Instance).get_gameObject().get_activeInHierarchy() && this.craftingState != OtherInput.CraftingState.Inventory);
 
   private void Update()
   {
-    if (this.pauseUi.activeInHierarchy || this.settingsUi.activeInHierarchy)
+    if (this.pauseUi.get_activeInHierarchy() || this.settingsUi.get_activeInHierarchy())
     {
-      if (!Input.GetKeyDown(KeyCode.Escape))
+      if (!Input.GetKeyDown((KeyCode) 27))
         return;
-      if (this.settingsUi.activeInHierarchy)
+      if (this.settingsUi.get_activeInHierarchy())
       {
         this.settingsUi.SetActive(false);
         this.pauseUi.SetActive(true);
@@ -65,7 +70,7 @@ public class OtherInput : MonoBehaviour
     }
     else
     {
-      if (RespawnTotemUI.Instance.root.activeInHierarchy || ChatBox.Instance.typing)
+      if (RespawnTotemUI.Instance.root.get_activeInHierarchy() || ChatBox.Instance.typing)
         return;
       if (Input.GetKeyDown(InputManager.map))
         Map.Instance.ToggleMap();
@@ -73,7 +78,7 @@ public class OtherInput : MonoBehaviour
         return;
       if (Input.GetKeyDown(InputManager.inventory) && !PlayerStatus.Instance.IsPlayerDead())
         this.ToggleInventory(OtherInput.CraftingState.Inventory);
-      if (Input.GetButton("Cancel") && InventoryUI.Instance.gameObject.activeInHierarchy)
+      if (Input.GetButton("Cancel") && ((Component) InventoryUI.Instance).get_gameObject().get_activeInHierarchy())
       {
         this.ToggleInventory(OtherInput.CraftingState.Inventory);
       }
@@ -81,7 +86,7 @@ public class OtherInput : MonoBehaviour
       {
         if (Input.GetKeyDown(InputManager.interact))
           DetectInteractables.Instance.currentInteractable?.Interact();
-        if (!Input.GetKeyDown(KeyCode.Escape))
+        if (!Input.GetKeyDown((KeyCode) 27))
           return;
         this.Pause();
       }
@@ -92,17 +97,17 @@ public class OtherInput : MonoBehaviour
   {
     this.craftingState = state;
     InventoryUI.Instance.ToggleInventory();
-    OtherInput.lockCamera = InventoryUI.Instance.gameObject.activeInHierarchy;
-    if (InventoryUI.Instance.gameObject.activeInHierarchy)
+    OtherInput.lockCamera = ((Component) InventoryUI.Instance).get_gameObject().get_activeInHierarchy();
+    if (((Component) InventoryUI.Instance).get_gameObject().get_activeInHierarchy())
     {
       this.UiSfx.PlayInventory(true);
-      Cursor.visible = true;
-      Cursor.lockState = CursorLockMode.None;
+      Cursor.set_visible(true);
+      Cursor.set_lockState((CursorLockMode) 0);
       this.crosshair.SetActive(false);
       this.hotbar.SetActive(false);
       this.FindCurrentCraftingState();
       InventoryUI.Instance.CraftingUi = this._currentCraftingUiMenu;
-      this._currentCraftingUiMenu.gameObject.SetActive(true);
+      ((Component) this._currentCraftingUiMenu).get_gameObject().SetActive(true);
       this._currentCraftingUiMenu.UpdateCraftables();
       this.CheckStationUnlock();
       this.CenterInventory();
@@ -110,14 +115,14 @@ public class OtherInput : MonoBehaviour
     else
     {
       this.UiSfx.PlayInventory(false);
-      Cursor.visible = false;
-      Cursor.lockState = CursorLockMode.Locked;
+      Cursor.set_visible(false);
+      Cursor.set_lockState((CursorLockMode) 1);
       this.crosshair.SetActive(true);
       this.hotbar.SetActive(true);
       InventoryUI.Instance.CraftingUi = (InventoryExtensions) null;
-      this._currentCraftingUiMenu.gameObject.SetActive(false);
+      ((Component) this._currentCraftingUiMenu).get_gameObject().SetActive(false);
       this._currentCraftingUiMenu = (InventoryExtensions) null;
-      if ((bool) (Object) this.currentChest)
+      if (Object.op_Implicit((Object) this.currentChest))
       {
         MonoBehaviour.print((object) "closing chest");
         ClientSend.RequestChest(this.currentChest.id, false);
@@ -142,13 +147,13 @@ public class OtherInput : MonoBehaviour
 
   private void CenterInventory()
   {
-    if (!(bool) (Object) this._currentCraftingUiMenu)
+    if (!Object.op_Implicit((Object) this._currentCraftingUiMenu))
       Debug.LogError((object) "no current ui menu");
     else
-      this.craftingOverlay.offsetMax = new Vector2(0.0f, -(400f - this._currentCraftingUiMenu.GetComponent<RectTransform>().sizeDelta.y));
+      this.craftingOverlay.set_offsetMax(new Vector2(0.0f, -(400f - (float) ((RectTransform) ((Component) this._currentCraftingUiMenu).GetComponent<RectTransform>()).get_sizeDelta().y)));
   }
 
-  public bool IsAnyMenuOpen() => InventoryUI.Instance.gameObject.activeInHierarchy;
+  public bool IsAnyMenuOpen() => ((Component) InventoryUI.Instance).get_gameObject().get_activeInHierarchy();
 
   private void CheckStationUnlock()
   {
@@ -204,6 +209,8 @@ public class OtherInput : MonoBehaviour
         break;
     }
   }
+
+  public OtherInput() => base.\u002Ector();
 
   public enum CraftingState
   {

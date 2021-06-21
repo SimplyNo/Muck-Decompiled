@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: UiSettings
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
 using UnityEngine;
@@ -13,8 +13,8 @@ public class UiSettings : MonoBehaviour
 {
   public GameObject settingButton;
   private TextMeshProUGUI[] texts;
-  private Color selected = Color.white;
-  private Color deselected = Color.gray;
+  private Color selected;
+  private Color deselected;
 
   public int setting { get; private set; }
 
@@ -22,13 +22,20 @@ public class UiSettings : MonoBehaviour
   {
     this.setting = defaultValue;
     this.texts = new TextMeshProUGUI[enumNames.Length];
-    for (int index1 = 0; index1 < enumNames.Length; ++index1)
+    for (int index = 0; index < enumNames.Length; ++index)
     {
-      int index = index1;
-      Button component = Object.Instantiate<GameObject>(this.settingButton, this.transform).GetComponent<Button>();
-      component.onClick.AddListener((UnityAction) (() => this.UpdateSetting(index)));
-      this.texts[index1] = component.GetComponentInChildren<TextMeshProUGUI>();
-      this.texts[index1].text = enumNames[index1];
+      // ISSUE: object of a compiler-generated type is created
+      // ISSUE: variable of a compiler-generated type
+      UiSettings.\u003C\u003Ec__DisplayClass8_0 cDisplayClass80 = new UiSettings.\u003C\u003Ec__DisplayClass8_0();
+      // ISSUE: reference to a compiler-generated field
+      cDisplayClass80.\u003C\u003E4__this = this;
+      // ISSUE: reference to a compiler-generated field
+      cDisplayClass80.index = index;
+      Button component = (Button) ((GameObject) Object.Instantiate<GameObject>((M0) this.settingButton, ((Component) this).get_transform())).GetComponent<Button>();
+      // ISSUE: method pointer
+      ((UnityEvent) component.get_onClick()).AddListener(new UnityAction((object) cDisplayClass80, __methodptr(\u003CAddSettings\u003Eb__0)));
+      this.texts[index] = (TextMeshProUGUI) ((Component) component).GetComponentInChildren<TextMeshProUGUI>();
+      ((TMP_Text) this.texts[index]).set_text(enumNames[index]);
     }
     this.UpdateSelection();
   }
@@ -38,9 +45,9 @@ public class UiSettings : MonoBehaviour
     for (int index = 0; index < this.texts.Length; ++index)
     {
       if (index == this.setting)
-        this.texts[index].color = this.selected;
+        ((Graphic) this.texts[index]).set_color(this.selected);
       else
-        this.texts[index].color = this.deselected;
+        ((Graphic) this.texts[index]).set_color(this.deselected);
     }
   }
 
@@ -49,4 +56,6 @@ public class UiSettings : MonoBehaviour
     this.setting = i;
     this.UpdateSelection();
   }
+
+  public UiSettings() => base.\u002Ector();
 }

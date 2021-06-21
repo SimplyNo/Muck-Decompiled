@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ClientSend
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using Steamworks;
 using System;
@@ -21,7 +21,7 @@ public class ClientSend : MonoBehaviour
     if (NetworkController.Instance.networkType == NetworkController.NetworkType.Classic)
       LocalClient.instance.tcp.SendData(packet);
     else
-      SteamPacketManager.SendPacket((SteamId) LocalClient.instance.serverHost.Value, packet, P2PSend.Reliable, SteamPacketManager.NetworkChannel.ToServer);
+      SteamPacketManager.SendPacket(SteamId.op_Implicit((ulong) LocalClient.instance.serverHost.Value), packet, (P2PSend) 2, SteamPacketManager.NetworkChannel.ToServer);
   }
 
   private static void SendUDPData(Packet packet)
@@ -32,16 +32,22 @@ public class ClientSend : MonoBehaviour
     if (NetworkController.Instance.networkType == NetworkController.NetworkType.Classic)
       LocalClient.instance.udp.SendData(packet);
     else
-      SteamPacketManager.SendPacket((SteamId) LocalClient.instance.serverHost.Value, packet, P2PSend.Unreliable, SteamPacketManager.NetworkChannel.ToServer);
+      SteamPacketManager.SendPacket(SteamId.op_Implicit((ulong) LocalClient.instance.serverHost.Value), packet, (P2PSend) 0, SteamPacketManager.NetworkChannel.ToServer);
   }
 
   public static void JoinLobby()
   {
     using (Packet packet = new Packet(2))
     {
-      packet.Write(SteamClient.Name);
+      packet.Write(SteamClient.get_Name());
       ClientSend.SendTCPData(packet);
     }
+  }
+
+  public static void StartedLoading()
+  {
+    using (Packet packet = new Packet(33))
+      ClientSend.SendTCPData(packet);
   }
 
   public static void PlayerFinishedLoading()
@@ -56,10 +62,10 @@ public class ClientSend : MonoBehaviour
     {
       packet.Write(id);
       packet.Write(username);
-      Color blue = Color.blue;
-      packet.Write(blue.r);
-      packet.Write(blue.g);
-      packet.Write(blue.b);
+      Color blue = Color.get_blue();
+      packet.Write((float) blue.r);
+      packet.Write((float) blue.g);
+      packet.Write((float) blue.b);
       ClientSend.SendTCPData(packet);
     }
   }
@@ -482,6 +488,22 @@ public class ClientSend : MonoBehaviour
     }
   }
 
+  public static void Interact(int objectId)
+  {
+    try
+    {
+      using (Packet packet = new Packet(32))
+      {
+        packet.Write(objectId);
+        ClientSend.SendTCPData(packet);
+      }
+    }
+    catch (Exception ex)
+    {
+      Debug.Log((object) ex);
+    }
+  }
+
   public static void PlayerDamageMob(
     int mobId,
     int damage,
@@ -538,4 +560,6 @@ public class ClientSend : MonoBehaviour
       Debug.Log((object) ex);
     }
   }
+
+  public ClientSend() => base.\u002Ector();
 }

@@ -1,11 +1,12 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: DayUi
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class DayUi : MonoBehaviour
 {
@@ -13,29 +14,29 @@ public class DayUi : MonoBehaviour
   private Vector3 desiredScale;
   private Vector3 defaultScale;
   private bool done;
-  private float fadeTime = 2f;
-  private float scaleSpeed = -0.2f;
+  private float fadeTime;
+  private float scaleSpeed;
   public AudioSource sfx;
 
-  private void Awake() => this.defaultScale = this.dayText.transform.localScale;
+  private void Awake() => this.defaultScale = ((TMP_Text) this.dayText).get_transform().get_localScale();
 
   public void SetDay(int day)
   {
     this.Invoke("StartFade", 2f);
-    this.dayText.text = string.Format("-DAY {0}-", (object) day);
+    ((TMP_Text) this.dayText).set_text(string.Format("-DAY {0}-", (object) day));
   }
 
   private void StartFade()
   {
     if (GameManager.state != GameManager.GameState.Playing)
       return;
-    this.gameObject.SetActive(true);
-    if (this.defaultScale == Vector3.zero)
-      this.defaultScale = this.dayText.transform.localScale;
-    this.dayText.GetComponent<CanvasRenderer>().SetAlpha(0.0f);
-    this.dayText.transform.localScale = this.defaultScale * 3f;
-    this.desiredScale = this.defaultScale * 1.2f;
-    this.dayText.CrossFadeAlpha(1f, this.fadeTime, true);
+    ((Component) this).get_gameObject().SetActive(true);
+    if (Vector3.op_Equality(this.defaultScale, Vector3.get_zero()))
+      this.defaultScale = ((TMP_Text) this.dayText).get_transform().get_localScale();
+    ((CanvasRenderer) ((Component) this.dayText).GetComponent<CanvasRenderer>()).SetAlpha(0.0f);
+    ((TMP_Text) this.dayText).get_transform().set_localScale(Vector3.op_Multiply(this.defaultScale, 3f));
+    this.desiredScale = Vector3.op_Multiply(this.defaultScale, 1.2f);
+    ((Graphic) this.dayText).CrossFadeAlpha(1f, this.fadeTime, true);
     this.Invoke("FadeAway", 4f);
     this.Invoke("Hide", 4f + this.fadeTime);
     this.done = false;
@@ -44,11 +45,13 @@ public class DayUi : MonoBehaviour
 
   private void Update()
   {
-    this.desiredScale += Vector3.one * this.scaleSpeed * Time.deltaTime;
-    this.dayText.transform.localScale = Vector3.Lerp(this.dayText.transform.localScale, this.desiredScale, Time.deltaTime * 3f);
+    this.desiredScale = Vector3.op_Addition(this.desiredScale, Vector3.op_Multiply(Vector3.op_Multiply(Vector3.get_one(), this.scaleSpeed), Time.get_deltaTime()));
+    ((TMP_Text) this.dayText).get_transform().set_localScale(Vector3.Lerp(((TMP_Text) this.dayText).get_transform().get_localScale(), this.desiredScale, Time.get_deltaTime() * 3f));
   }
 
-  private void Hide() => this.gameObject.SetActive(false);
+  private void Hide() => ((Component) this).get_gameObject().SetActive(false);
 
-  private void FadeAway() => this.dayText.CrossFadeAlpha(0.0f, this.fadeTime, true);
+  private void FadeAway() => ((Graphic) this.dayText).CrossFadeAlpha(0.0f, this.fadeTime, true);
+
+  public DayUi() => base.\u002Ector();
 }

@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: AreaEffect
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,17 +15,19 @@ public class AreaEffect : MonoBehaviour
   public void SetDamage(int d)
   {
     this.damage = d;
-    this.GetComponent<Collider>().enabled = true;
+    ((Collider) ((Component) this).GetComponent<Collider>()).set_enabled(true);
   }
 
   private void OnTriggerEnter(Collider other)
   {
-    if (other.gameObject.CompareTag("Build"))
+    if (((Component) other).get_gameObject().CompareTag("Build"))
       return;
-    Hitable component = other.GetComponent<Hitable>();
-    if ((Object) component == (Object) null || other.transform.root.CompareTag("Local"))
+    Hitable component = (Hitable) ((Component) other).GetComponent<Hitable>();
+    if (Object.op_Equality((Object) component, (Object) null) || ((Component) ((Component) other).get_transform().get_root()).CompareTag("Local"))
       return;
-    component.Hit(this.damage, 0.0f, 3, this.transform.position);
+    component.Hit(this.damage, 0.0f, 3, ((Component) this).get_transform().get_position());
     Object.Destroy((Object) this);
   }
+
+  public AreaEffect() => base.\u002Ector();
 }

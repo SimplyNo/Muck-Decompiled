@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: DrawChunks
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,10 +11,10 @@ public class DrawChunks : MonoBehaviour
 {
   public ResourceGenerator resourceGen;
   [Header("Chunks")]
-  public int nChunks = 256;
+  public int nChunks;
   private int chunkLength;
   private int chunkSize;
-  public float updateRate = 1f;
+  public float updateRate;
   [Header("Render distance")]
   [Range(0.0f, 2000f)]
   public float drawDistance;
@@ -23,7 +23,7 @@ public class DrawChunks : MonoBehaviour
   public int drawnTrees;
   public int totalTrees;
   [Header("LOD")]
-  public int maxLOD = 10;
+  public int maxLOD;
   private bool[] visibleChunks;
   private int[] chunkLOD;
   public List<GameObject>[] chunks;
@@ -61,17 +61,17 @@ public class DrawChunks : MonoBehaviour
 
   private void UpdateChunks()
   {
-    if (!(bool) (Object) this.player)
+    if (!Object.op_Implicit((Object) this.player))
     {
-      if ((bool) (Object) PlayerMovement.Instance)
+      if (Object.op_Implicit((Object) PlayerMovement.Instance))
       {
-        this.player = PlayerMovement.Instance.playerCam.transform;
+        this.player = ((Component) PlayerMovement.Instance.playerCam).get_transform();
       }
       else
       {
-        if (!(bool) (Object) Camera.main)
+        if (!Object.op_Implicit((Object) Camera.get_main()))
           return;
-        this.player = Camera.main.transform;
+        this.player = ((Component) Camera.get_main()).get_transform();
       }
     }
     if (this.chunks == null)
@@ -99,20 +99,20 @@ public class DrawChunks : MonoBehaviour
       return;
     for (int index = 0; index < this.chunks[c].Count; ++index)
     {
-      if (!((Object) this.chunks[c][index] == (Object) null))
+      if (!Object.op_Equality((Object) this.chunks[c][index], (Object) null))
       {
         if (index % lod == 0)
         {
           if (draw)
           {
-            if (!this.chunks[c][index].activeInHierarchy)
+            if (!this.chunks[c][index].get_activeInHierarchy())
               ++this.drawnTrees;
           }
-          else if (this.chunks[c][index].activeInHierarchy)
+          else if (this.chunks[c][index].get_activeInHierarchy())
             --this.drawnTrees;
           this.chunks[c][index].SetActive(draw);
         }
-        else if (this.chunks[c][index].activeInHierarchy)
+        else if (this.chunks[c][index].get_activeInHierarchy())
         {
           --this.drawnTrees;
           this.chunks[c][index].SetActive(false);
@@ -128,11 +128,15 @@ public class DrawChunks : MonoBehaviour
     {
       int num1 = Mathf.FloorToInt((float) index / (float) this.chunkLength) * this.chunkSize;
       int num2 = index % this.chunkLength * this.chunkSize;
-      this.chunkCenters[index] = new Vector3((float) ((double) this.topLeftX + (double) num2 + (double) this.chunkSize / 2.0), 0.0f, (float) ((double) this.topLeftZ - (double) num1 - (double) this.chunkSize / 2.0)) * this.resourceGen.worldScale;
+      this.chunkCenters[index] = Vector3.op_Multiply(new Vector3((float) ((double) this.topLeftX + (double) num2 + (double) this.chunkSize / 2.0), 0.0f, (float) ((double) this.topLeftZ - (double) num1 - (double) this.chunkSize / 2.0)), this.resourceGen.worldScale);
     }
   }
 
-  public float DistanceFromChunk(int chunk) => Vector3.Distance(this.player.position, this.chunkCenters[chunk]);
+  public float DistanceFromChunk(int chunk)
+  {
+    Vector3 chunkCenter = this.chunkCenters[chunk];
+    return Vector3.Distance(this.player.get_position(), chunkCenter);
+  }
 
   public int FindLOD(float distanceFromChunk)
   {
@@ -143,4 +147,6 @@ public class DrawChunks : MonoBehaviour
     }
     return this.maxLOD * this.maxLOD;
   }
+
+  public DrawChunks() => base.\u002Ector();
 }

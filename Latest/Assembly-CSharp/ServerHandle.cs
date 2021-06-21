@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ServerHandle
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,7 +13,8 @@ public class ServerHandle
   {
     int num = packet.ReadInt();
     string playerName = packet.ReadString();
-    Color color = new Color(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
+    Color color;
+    ((Color) ref color).\u002Ector(packet.ReadFloat(), packet.ReadFloat(), packet.ReadFloat());
     if (fromClient != num)
       Debug.Log((object) "Something went very wrong in ServerHandle");
     if (NetworkController.Instance.networkType == NetworkController.NetworkType.Classic)
@@ -38,6 +39,13 @@ public class ServerHandle
       Server.clients[fromClient].player.username = packet.ReadString();
       ServerSend.Welcome(fromClient, "weclome");
     }
+  }
+
+  public static void StartedLoading(int fromClient, Packet packet)
+  {
+    if (Server.clients[fromClient].player.loading)
+      return;
+    Server.clients[fromClient].player.loading = true;
   }
 
   public static void PlayerFinishedLoading(int fromClient, Packet packet)
@@ -133,7 +141,7 @@ public class ServerHandle
     {
       Server.clients[num1].player.dead = false;
       GameManager.players[num1].dead = false;
-      GameManager.instance.RespawnPlayer(num1, Vector3.zero);
+      GameManager.instance.RespawnPlayer(num1, Vector3.get_zero());
       if (fromClient == LocalClient.instance.myId && !shrine)
       {
         InventoryUI.Instance.UseMoney(RespawnTotemUI.Instance.GetRevivePrice());
@@ -141,7 +149,7 @@ public class ServerHandle
       }
       int num2 = packet.ReadInt();
       if (ResourceManager.Instance.list.ContainsKey(num2))
-        ResourceManager.Instance.list[num2].GetComponentInChildren<Interactable>().AllExecute();
+        ((Interactable) ResourceManager.Instance.list[num2].GetComponentInChildren<Interactable>()).AllExecute();
       ServerSend.SendChatMessage(-1, "", "<color=orange>" + Server.clients[fromClient].player.username + " has revived " + Server.clients[num1].player.username + ".");
       ServerSend.RevivePlayer(fromClient, num1, shrine, num2);
     }
@@ -196,16 +204,16 @@ public class ServerHandle
       return;
     int num = packet.ReadInt();
     Debug.Log((object) ("object: " + (object) num + " picked up by player: " + (object) fromClient));
-    Item component = ItemManager.Instance.list[num].GetComponent<Item>();
-    if ((bool) (Object) component.powerup)
+    Item component = (Item) ItemManager.Instance.list[num].GetComponent<Item>();
+    if (Object.op_Implicit((Object) component.powerup))
       ++Server.clients[fromClient].player.powerups[component.powerup.id];
     if (!ItemManager.Instance.list.ContainsKey(num))
       return;
     if (fromClient == LocalClient.instance.myId)
     {
-      if ((bool) (Object) component.item)
+      if (Object.op_Implicit((Object) component.item))
         InventoryUI.Instance.AddItemToInventory(component.item);
-      else if ((bool) (Object) component.powerup)
+      else if (Object.op_Implicit((Object) component.powerup))
       {
         ++Server.clients[fromClient].player.powerups[component.powerup.id];
         PowerupInventory.Instance.AddPowerup(component.powerup.name, component.powerup.id, num);
@@ -222,11 +230,11 @@ public class ServerHandle
     int num = packet.ReadInt();
     if (!ResourceManager.Instance.list.ContainsKey(num))
       return;
-    Interactable componentInChildren = ResourceManager.Instance.list[num].GetComponentInChildren<Interactable>();
+    Interactable componentInChildren = (Interactable) ResourceManager.Instance.list[num].GetComponentInChildren<Interactable>();
     if (fromClient == LocalClient.instance.myId)
       componentInChildren.LocalExecute();
     componentInChildren.AllExecute();
-    componentInChildren.ServerExecute();
+    componentInChildren.ServerExecute(fromClient);
     ServerSend.PickupInteract(fromClient, num);
   }
 
@@ -320,7 +328,7 @@ public class ServerHandle
     Vector3 pos = packet.ReadVector3();
     if (!ResourceManager.Instance.list.ContainsKey(num2))
       return;
-    Hitable component = ResourceManager.Instance.list[num2].GetComponent<Hitable>();
+    Hitable component = (Hitable) ResourceManager.Instance.list[num2].GetComponent<Hitable>();
     if (component.hp <= 0)
       return;
     int num3 = component.hp - num1;
@@ -351,7 +359,7 @@ public class ServerHandle
     float sharpness = packet.ReadFloat();
     int hitEffect = packet.ReadInt();
     Vector3 pos = packet.ReadVector3();
-    if (!(bool) (Object) GameManager.players[num2])
+    if (!Object.op_Implicit((Object) GameManager.players[num2]))
       return;
     if (fromClient == num2)
       num1 = (int) ((double) num1 * (double) GameManager.instance.MobDamageMultiplier());
@@ -400,12 +408,30 @@ public class ServerHandle
     int key = packet.ReadInt();
     if (!ResourceManager.Instance.list.ContainsKey(key))
       return;
-    ShrineInteractable componentInChildren = ResourceManager.Instance.list[key].GetComponentInChildren<ShrineInteractable>();
-    if (componentInChildren.started)
+    Debug.LogError((object) "contains shrine");
+    Interactable componentInChildren = (Interactable) ResourceManager.Instance.list[key].GetComponentInChildren<Interactable>();
+    if (componentInChildren.IsStarted())
       return;
     if (fromClient == LocalClient.instance.myId)
       componentInChildren.LocalExecute();
-    componentInChildren.ServerExecute();
+    componentInChildren.ServerExecute(fromClient);
+  }
+
+  public static void Interact(int fromClient, Packet packet)
+  {
+    if (Server.clients[fromClient].player == null)
+      return;
+    int num = packet.ReadInt();
+    if (!ResourceManager.Instance.list.ContainsKey(num))
+      return;
+    Interactable componentInChildren = (Interactable) ResourceManager.Instance.list[num].GetComponentInChildren<Interactable>();
+    if (componentInChildren.IsStarted())
+      return;
+    if (fromClient == LocalClient.instance.myId)
+      componentInChildren.LocalExecute();
+    componentInChildren.ServerExecute(fromClient);
+    componentInChildren.AllExecute();
+    ServerSend.Interact(num, fromClient);
   }
 
   public static void PlayerDamageMob(int fromClient, Packet packet)
@@ -420,9 +446,9 @@ public class ServerHandle
     if (!MobManager.Instance.mobs.ContainsKey(num1))
       return;
     Mob mob = MobManager.Instance.mobs[num1];
-    if (!(bool) (Object) mob)
+    if (!Object.op_Implicit((Object) mob))
       return;
-    HitableMob component1 = mob.GetComponent<HitableMob>();
+    HitableMob component1 = (HitableMob) ((Component) mob).GetComponent<HitableMob>();
     if (component1.hp <= 0)
       return;
     float sharpDefense = component1.mob.mobType.sharpDefense;
@@ -435,17 +461,22 @@ public class ServerHandle
       num3 = 0;
       LootDrop dropTable = component1.dropTable;
       float buffMultiplier = 1f;
-      Mob component2 = component1.GetComponent<Mob>();
-      if ((bool) (Object) component2 && component2.IsBuff())
-        buffMultiplier = 2f;
-      LootExtra.DropMobLoot(component1.transform, dropTable, fromClient, buffMultiplier);
+      Mob component2 = (Mob) ((Component) component1).GetComponent<Mob>();
+      if (Object.op_Implicit((Object) component2) && component2.IsBuff())
+        buffMultiplier = 1.25f;
+      LootExtra.DropMobLoot(((Component) component1).get_transform(), dropTable, fromClient, buffMultiplier);
+      if (component2.bossType != Mob.BossType.None)
+        LootExtra.BossLoot(((Component) component1).get_transform(), mob.bossType);
     }
     component1.hp = component1.Damage(num3, fromClient, hitEffect, pos);
     float knockbackMultiplier = PowerupInventory.Instance.GetKnockbackMultiplier(Server.clients[fromClient].player.powerups);
     if (((double) damage / (double) mob.hitable.maxHp > (double) mob.mobType.knockbackThreshold || (double) knockbackMultiplier > 0.0) && num3 > 0)
     {
-      Vector3 normalized = VectorExtensions.XZVector(component1.transform.position - GameManager.players[fromClient].transform.position).normalized;
+      Vector3 vector3 = VectorExtensions.XZVector(Vector3.op_Subtraction(((Component) component1).get_transform().get_position(), ((Component) GameManager.players[fromClient]).get_transform().get_position()));
+      Vector3 normalized = ((Vector3) ref vector3).get_normalized();
       ServerSend.KnockbackMob(num1, normalized);
+      if (hitEffect == 0)
+        hitEffect = 4;
     }
     if (num3 <= 0 && LocalClient.instance.myId == fromClient)
       PlayerStatus.Instance.Dracula();

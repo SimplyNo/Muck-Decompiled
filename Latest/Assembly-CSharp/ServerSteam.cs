@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ServerSteam
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using Steamworks;
 using TMPro;
@@ -19,14 +19,16 @@ public class ServerSteam : MonoBehaviour
 
   public void ConnectToServer()
   {
-    if (this.steamIdField.text == "")
+    if (this.steamIdField.get_text() == "")
       return;
-    LocalClient.instance.name = SteamClient.Name;
-    new SteamId().Value = ulong.Parse(this.steamIdField.text);
+    ((Object) LocalClient.instance).set_name(SteamClient.get_Name());
+    ((SteamId) null).Value = (__Null) (long) ulong.Parse(this.steamIdField.get_text());
     MonoBehaviour.print((object) "sending join lobby request to server");
     ClientSend.JoinLobby();
     this.HideCamera();
   }
 
   public void HideCamera() => this.lobbyCamera.SetActive(false);
+
+  public ServerSteam() => base.\u002Ector();
 }

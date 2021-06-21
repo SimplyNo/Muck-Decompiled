@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: SteamLobby
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using Steamworks;
 using Steamworks.Data;
@@ -20,14 +20,14 @@ public class SteamLobby : MonoBehaviour
 
   private void Awake()
   {
-    if ((bool) (Object) SteamLobby.Instance)
+    if (Object.op_Implicit((Object) SteamLobby.Instance))
     {
-      Object.Destroy((Object) this.gameObject);
+      Object.Destroy((Object) ((Component) this).get_gameObject());
     }
     else
     {
       SteamLobby.Instance = this;
-      Object.DontDestroyOnLoad((Object) this.gameObject);
+      Object.DontDestroyOnLoad((Object) ((Component) this).get_gameObject());
     }
   }
 
@@ -55,25 +55,25 @@ public class SteamLobby : MonoBehaviour
 
   public void AddPlayerToLobby(Friend friend)
   {
-    SteamId steamId = (SteamId) friend.Id.Value;
+    SteamId steamId = SteamId.op_Implicit((ulong) ((SteamId) friend.Id).Value);
     int availableLobbyId = this.FindAvailableLobbyId();
     if (availableLobbyId == -1)
       return;
-    Debug.Log((object) ("Found available id in steam as: " + (object) availableLobbyId + ", steam name: " + friend.Name));
-    SteamLobby.steamIdToClientId[(ulong) steamId] = availableLobbyId;
+    Debug.Log((object) ("Found available id in steam as: " + (object) availableLobbyId + ", steam name: " + ((Friend) ref friend).get_Name()));
+    SteamLobby.steamIdToClientId[SteamId.op_Implicit(steamId)] = availableLobbyId;
     Client client = Server.clients[availableLobbyId];
     client.inLobby = true;
-    client.player = new Player(availableLobbyId, friend.Name, UnityEngine.Color.black, steamId);
+    client.player = new Player(availableLobbyId, ((Friend) ref friend).get_Name(), Color.get_black(), steamId);
     MonoBehaviour.print((object) "finished adding player");
   }
 
   public void RemovePlayerFromLobby(Friend friend)
   {
-    SteamId steamId = (SteamId) friend.Id.Value;
-    int num = SteamLobby.steamIdToClientId[steamId.Value];
+    SteamId steamId = SteamId.op_Implicit((ulong) ((SteamId) friend.Id).Value);
+    int num = SteamLobby.steamIdToClientId[(ulong) steamId.Value];
     Server.clients[num] = new Client(num);
-    SteamLobby.steamIdToClientId.Remove(friend.Id.Value);
-    if (!this.started || !(bool) (Object) GameManager.instance)
+    SteamLobby.steamIdToClientId.Remove((ulong) ((SteamId) friend.Id).Value);
+    if (!this.started || !Object.op_Implicit((Object) GameManager.instance))
       return;
     ServerSend.DisconnectPlayer(num);
   }
@@ -98,7 +98,7 @@ public class SteamLobby : MonoBehaviour
 
   public void StartGame()
   {
-    if ((long) SteamClient.SteamId.Value != (long) this.currentLobby.Owner.Id.Value)
+    if (SteamClient.get_SteamId().Value != ((SteamId) ((Lobby) ref this.currentLobby).get_Owner().Id).Value)
     {
       Debug.LogError((object) "not owner, so cant start lobby");
     }
@@ -106,7 +106,7 @@ public class SteamLobby : MonoBehaviour
     {
       MonoBehaviour.print((object) "starting lobby");
       GameSettings settings = this.MakeSettings();
-      if (settings.gameMode == GameSettings.GameMode.Versus && this.currentLobby.MemberCount < 2)
+      if (settings.gameMode == GameSettings.GameMode.Versus && ((Lobby) ref this.currentLobby).get_MemberCount() < 2)
       {
         StatusMessage.Instance.DisplayMessage("Need at least 2 players to play versus.");
       }
@@ -123,7 +123,7 @@ public class SteamLobby : MonoBehaviour
             ServerSend.StartGame(client.player.id, settings);
           }
         }
-        this.currentLobby.SetJoinable(false);
+        ((Lobby) ref this.currentLobby).SetJoinable(false);
         this.started = true;
         MonoBehaviour.print((object) "Starting game done");
         LocalClient.serverOwner = true;
@@ -134,7 +134,7 @@ public class SteamLobby : MonoBehaviour
 
   private int FindSeed()
   {
-    string text = LobbySettings.Instance.seed.text;
+    string text = LobbySettings.Instance.seed.get_text();
     int result;
     return !(text == "") ? (!int.TryParse(text, out result) ? text.GetHashCode() : result) : Random.Range(int.MinValue, int.MaxValue);
   }
@@ -145,8 +145,11 @@ public class SteamLobby : MonoBehaviour
     gameSettings.difficulty = (GameSettings.Difficulty) LobbySettings.Instance.difficultySetting.setting;
     gameSettings.friendlyFire = (GameSettings.FriendlyFire) LobbySettings.Instance.friendlyFireSetting.setting;
     gameSettings.gameMode = (GameSettings.GameMode) LobbySettings.Instance.gamemodeSetting.setting;
+    gameSettings.multiplayer = (GameSettings.Multiplayer) Mathf.Clamp(((Lobby) ref this.currentLobby).get_MemberCount() - 1, 0, 1);
     if (gameSettings.gameMode == GameSettings.GameMode.Versus)
       gameSettings.friendlyFire = GameSettings.FriendlyFire.On;
     return gameSettings;
   }
+
+  public SteamLobby() => base.\u002Ector();
 }

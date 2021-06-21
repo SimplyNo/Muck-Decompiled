@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: SpawnObjectTimed
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -15,7 +15,9 @@ public class SpawnObjectTimed : MonoBehaviour
 
   private void SpawnObject()
   {
-    Object.Instantiate<GameObject>(this.objectToSpawn, this.transform.position, this.objectToSpawn.transform.rotation);
+    Object.Instantiate<GameObject>((M0) this.objectToSpawn, ((Component) this).get_transform().get_position(), this.objectToSpawn.get_transform().get_rotation());
     Object.Destroy((Object) this);
   }
+
+  public SpawnObjectTimed() => base.\u002Ector();
 }

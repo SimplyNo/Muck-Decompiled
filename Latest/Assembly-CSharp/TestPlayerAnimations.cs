@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: TestPlayerAnimations
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 using UnityEngine.AI;
@@ -21,9 +21,9 @@ public class TestPlayerAnimations : MonoBehaviour
   public LayerMask whatIsGround;
   public GameObject jumpSfx;
   public GameObject dashFx;
-  private float moveSpeed = 15f;
-  private float rotationSpeed = 13f;
-  private float animationBlendSpeed = 8f;
+  private float moveSpeed;
+  private float rotationSpeed;
+  private float animationBlendSpeed;
   public GameObject weapon;
   private MeshFilter filter;
   private MeshRenderer renderer;
@@ -32,40 +32,42 @@ public class TestPlayerAnimations : MonoBehaviour
   public NavMeshAgent agent;
   private float fallSpeed;
 
-  public float hpRatio { get; set; } = 1f;
+  public float hpRatio { get; set; }
 
   private void Start()
   {
     this.grounded = true;
     this.InvokeRepeating("FindRandomPosition", 1f, 5f);
-    this.filter = this.weapon.GetComponent<MeshFilter>();
-    this.renderer = this.weapon.GetComponent<MeshRenderer>();
+    this.filter = (MeshFilter) this.weapon.GetComponent<MeshFilter>();
+    this.renderer = (MeshRenderer) this.weapon.GetComponent<MeshRenderer>();
   }
 
   private void FindRandomPosition()
   {
-    RaycastHit hitInfo;
-    if (!Physics.Raycast(this.transform.position + new Vector3(Random.Range(-20f, 20f), 20f, Random.Range(-20f, 20f)), Vector3.down, out hitInfo, 70f, (int) this.whatIsGround))
+    Vector3 vector3;
+    ((Vector3) ref vector3).\u002Ector(Random.Range(-20f, 20f), 20f, Random.Range(-20f, 20f));
+    RaycastHit raycastHit;
+    if (!Physics.Raycast(Vector3.op_Addition(((Component) this).get_transform().get_position(), vector3), Vector3.get_down(), ref raycastHit, 70f, LayerMask.op_Implicit(this.whatIsGround)))
       return;
-    this.agent.destination = hitInfo.point;
-    this.agent.isStopped = false;
+    this.agent.set_destination(((RaycastHit) ref raycastHit).get_point());
+    this.agent.set_isStopped(false);
   }
 
-  private void FixedUpdate() => this.animator.SetFloat("Speed", this.agent.speed);
+  private void FixedUpdate() => this.animator.SetFloat("Speed", this.agent.get_speed());
 
   private void Update()
   {
-    this.grounded = Physics.Raycast(this.transform.position, Vector3.down, 2.4f, (int) this.whatIsGround);
+    this.grounded = Physics.Raycast(((Component) this).get_transform().get_position(), Vector3.get_down(), 2.4f, LayerMask.op_Implicit(this.whatIsGround));
     this.animator.SetFloat("FallSpeed", this.fallSpeed);
     this.Animate();
     this.Sfx();
     this.orientationX = -60f;
-    this.upperBody.localRotation = Quaternion.Lerp(this.upperBody.localRotation, Quaternion.Euler(this.orientationX, this.upperBody.localRotation.y, this.upperBody.localRotation.z), Time.deltaTime * this.rotationSpeed);
+    this.upperBody.set_localRotation(Quaternion.Lerp(this.upperBody.get_localRotation(), Quaternion.Euler(this.orientationX, (float) this.upperBody.get_localRotation().y, (float) this.upperBody.get_localRotation().z), Time.get_deltaTime() * this.rotationSpeed));
   }
 
   private void LateUpdate()
   {
-    this.fallSpeed = this.rb.velocity.y;
+    this.fallSpeed = (float) this.rb.get_velocity().y;
     MonoBehaviour.print((object) ("fallspeed: " + (object) this.fallSpeed));
   }
 
@@ -75,13 +77,13 @@ public class TestPlayerAnimations : MonoBehaviour
   {
     if (objectID == -1)
     {
-      this.filter.mesh = (Mesh) null;
+      this.filter.set_mesh((Mesh) null);
     }
     else
     {
       InventoryItem allItem = ItemManager.Instance.allItems[objectID];
-      this.filter.mesh = allItem.mesh;
-      this.renderer.material = allItem.material;
+      this.filter.set_mesh(allItem.mesh);
+      ((Renderer) this.renderer).set_material(allItem.material);
       this.animator.SetFloat("AnimationSpeed", allItem.attackSpeed);
     }
   }
@@ -94,4 +96,6 @@ public class TestPlayerAnimations : MonoBehaviour
   private void Animate() => this.animator.SetBool("Grounded", this.grounded);
 
   private float DistToPlayer() => 1f;
+
+  public TestPlayerAnimations() => base.\u002Ector();
 }

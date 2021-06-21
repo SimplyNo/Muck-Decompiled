@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: MapGenerator
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using UnityEngine;
@@ -35,7 +35,7 @@ public class MapGenerator : MonoBehaviour
 
   private void OnValuesUpdated()
   {
-    if (Application.isPlaying)
+    if (Application.get_isPlaying())
       return;
     this.GenerateMap();
     this.DrawMapInEditor();
@@ -48,7 +48,7 @@ public class MapGenerator : MonoBehaviour
     this.heightMap = this.GeneratePerlinNoiseMap(seed);
     this.GeneratePerlinNoiseMap(seed);
     this.textureData.UpdateMeshHeights(this.terrainMaterial, this.terrainData.minHeight, this.terrainData.maxHeight);
-    this.display = UnityEngine.Object.FindObjectOfType<MapDisplay>();
+    this.display = (MapDisplay) Object.FindObjectOfType<MapDisplay>();
     if (this.drawMode == MapGenerator.DrawMode.NoiseMap)
       this.display.DrawTexture(TextureGenerator.TextureFromHeightMap(this.heightMap));
     else if (this.drawMode == MapGenerator.DrawMode.Mesh)
@@ -102,7 +102,7 @@ public class MapGenerator : MonoBehaviour
   public void DrawMapInEditor()
   {
     float[,] perlinNoiseMap = this.GeneratePerlinNoiseMap(0);
-    MapDisplay objectOfType = UnityEngine.Object.FindObjectOfType<MapDisplay>();
+    MapDisplay objectOfType = (MapDisplay) Object.FindObjectOfType<MapDisplay>();
     if (this.drawMode == MapGenerator.DrawMode.NoiseMap)
       objectOfType.DrawTexture(TextureGenerator.TextureFromHeightMap(perlinNoiseMap));
     else if (this.drawMode == MapGenerator.DrawMode.Mesh)
@@ -119,21 +119,23 @@ public class MapGenerator : MonoBehaviour
 
   private void OnValidate()
   {
-    if ((UnityEngine.Object) this.terrainData != (UnityEngine.Object) null)
+    if (Object.op_Inequality((Object) this.terrainData, (Object) null))
     {
       this.terrainData.OnValuesUpdate -= new Action(this.OnValuesUpdated);
       this.terrainData.OnValuesUpdate += new Action(this.OnValuesUpdated);
     }
-    if ((UnityEngine.Object) this.noiseData != (UnityEngine.Object) null)
+    if (Object.op_Inequality((Object) this.noiseData, (Object) null))
     {
       this.noiseData.OnValuesUpdate -= new Action(this.OnValuesUpdated);
       this.noiseData.OnValuesUpdate += new Action(this.OnValuesUpdated);
     }
-    if (!((UnityEngine.Object) this.textureData != (UnityEngine.Object) null))
+    if (!Object.op_Inequality((Object) this.textureData, (Object) null))
       return;
     this.textureData.OnValuesUpdated -= new Action(this.OnTextureValuesUpdated);
     this.textureData.OnValuesUpdated += new Action(this.OnTextureValuesUpdated);
   }
+
+  public MapGenerator() => base.\u002Ector();
 
   public enum DrawMode
   {

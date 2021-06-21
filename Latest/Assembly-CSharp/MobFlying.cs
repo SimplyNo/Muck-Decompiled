@@ -1,21 +1,22 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: MobFlying
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
 public class MobFlying : Mob
 {
-  private float defaultHeight = 8f;
+  private float defaultHeight = 5.6f;
   public LayerMask whatIsGround;
 
   public override void ExtraUpdate()
   {
-    RaycastHit hitInfo;
-    if (!(bool) (Object) this.target || !Physics.Raycast(this.target.transform.position, Vector3.down, out hitInfo, 5000f, (int) this.whatIsGround))
+    RaycastHit raycastHit;
+    if (!Object.op_Implicit((Object) this.target) || !Physics.Raycast(((Component) this.target).get_transform().get_position(), Vector3.get_down(), ref raycastHit, 5000f, LayerMask.op_Implicit(this.whatIsGround)))
       return;
-    this.agent.baseOffset = Mathf.Lerp(this.agent.baseOffset, this.defaultHeight + hitInfo.distance, Time.deltaTime * 0.3f);
+    float num = this.defaultHeight + ((RaycastHit) ref raycastHit).get_distance();
+    this.agent.set_baseOffset(Mathf.Lerp(this.agent.get_baseOffset(), num, Time.get_deltaTime() * 0.3f));
   }
 }

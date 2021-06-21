@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: CauldronUI
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -27,12 +27,12 @@ public class CauldronUI : InventoryExtensions
   private void Awake()
   {
     CauldronUI.Instance = this;
-    this.gameObject.SetActive(false);
+    ((Component) this).get_gameObject().SetActive(false);
   }
 
   public void CopyChest(Chest c)
   {
-    if (!this.gameObject.activeInHierarchy)
+    if (!((Component) this).get_gameObject().get_activeInHierarchy())
       return;
     InventoryItem[] cells = OtherInput.Instance.currentChest.cells;
     for (int index = 0; index < cells.Length; ++index)
@@ -40,14 +40,14 @@ public class CauldronUI : InventoryExtensions
       if (index < this.synchedCells.Length)
       {
         if (c.locked[index])
-          this.synchedCells[index].enabled = false;
+          ((Behaviour) this.synchedCells[index]).set_enabled(false);
         else
-          this.synchedCells[index].enabled = true;
-        this.synchedCells[index].currentItem = !((Object) cells[index] != (Object) null) ? (InventoryItem) null : Object.Instantiate<InventoryItem>(cells[index]);
+          ((Behaviour) this.synchedCells[index]).set_enabled(true);
+        this.synchedCells[index].currentItem = !Object.op_Inequality((Object) cells[index], (Object) null) ? (InventoryItem) null : (InventoryItem) Object.Instantiate<InventoryItem>((M0) cells[index]);
         this.synchedCells[index].UpdateCell();
       }
     }
-    this.processBar.transform.localScale = new Vector3(((CauldronSync) OtherInput.Instance.currentChest).ProgressRatio(), 1f, 1f);
+    ((Component) this.processBar).get_transform().set_localScale(new Vector3(((CauldronSync) OtherInput.Instance.currentChest).ProgressRatio(), 1f, 1f));
   }
 
   public override void UpdateCraftables()

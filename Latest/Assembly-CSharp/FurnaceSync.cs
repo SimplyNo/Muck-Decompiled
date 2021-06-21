@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: FurnaceSync
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -24,10 +24,10 @@ public class FurnaceSync : Chest
       this.StartProcessing();
     if (!this.processing && this.CanProcess())
       this.StartProcessing();
-    if (!((Object) FurnaceUI.Instance != (Object) null) || !((Object) OtherInput.Instance.currentChest == (Object) this))
+    if (!Object.op_Inequality((Object) FurnaceUI.Instance, (Object) null) || !Object.op_Equality((Object) OtherInput.Instance.currentChest, (Object) this))
       return;
     FurnaceUI.Instance.CopyChest(OtherInput.Instance.currentChest);
-    FurnaceUI.Instance.processBar.transform.localScale = new Vector3(this.currentProcessTime / this.timeToProcess, 1f, 1f);
+    ((Component) FurnaceUI.Instance.processBar).get_transform().set_localScale(new Vector3(this.currentProcessTime / this.timeToProcess, 1f, 1f));
   }
 
   private void StartProcessing()
@@ -52,10 +52,10 @@ public class FurnaceSync : Chest
     }
     else
     {
-      this.currentProcessTime += Time.deltaTime;
-      this.totalProcessTime += Time.deltaTime;
-      if ((bool) (Object) FurnaceUI.Instance && (Object) OtherInput.Instance.currentChest == (Object) this)
-        FurnaceUI.Instance.processBar.transform.localScale = new Vector3(this.currentProcessTime / this.timeToProcess, 1f, 1f);
+      this.currentProcessTime += Time.get_deltaTime();
+      this.totalProcessTime += Time.get_deltaTime();
+      if (Object.op_Implicit((Object) FurnaceUI.Instance) && Object.op_Equality((Object) OtherInput.Instance.currentChest, (Object) this))
+        ((Component) FurnaceUI.Instance.processBar).get_transform().set_localScale(new Vector3(this.currentProcessTime / this.timeToProcess, 1f, 1f));
       if ((double) this.currentProcessTime < (double) this.timeToProcess)
         return;
       this.ProcessItem();
@@ -66,9 +66,9 @@ public class FurnaceSync : Chest
   private void StopProcessing()
   {
     this.processing = false;
-    if (!(bool) (Object) FurnaceUI.Instance)
+    if (!Object.op_Implicit((Object) FurnaceUI.Instance))
       return;
-    FurnaceUI.Instance.processBar.transform.localScale = Vector3.zero;
+    ((Component) FurnaceUI.Instance.processBar).get_transform().set_localScale(Vector3.get_zero());
   }
 
   public void ProcessItem()
@@ -112,9 +112,9 @@ public class FurnaceSync : Chest
 
   private void AddMaterial(InventoryItem item, int processedItemId)
   {
-    if ((Object) this.cells[2] == (Object) null)
+    if (Object.op_Equality((Object) this.cells[2], (Object) null))
     {
-      this.cells[2] = Object.Instantiate<InventoryItem>(ItemManager.Instance.allItems[processedItemId]);
+      this.cells[2] = (InventoryItem) Object.Instantiate<InventoryItem>((M0) ItemManager.Instance.allItems[processedItemId]);
       this.cells[2].amount = 1;
     }
     else
@@ -122,5 +122,5 @@ public class FurnaceSync : Chest
     ClientSend.ChestUpdate(this.id, 2, processedItemId, this.cells[2].amount);
   }
 
-  public bool CanProcess() => (bool) (Object) this.cells[1] && (bool) (Object) this.cells[0] && (!((Object) this.cells[2] != (Object) null) || !((Object) this.cells[1].processedItem == (Object) null) && this.cells[1].processedItem.id == this.cells[2].id && this.cells[2].amount < this.cells[2].max) && (this.cells[1].processable && this.cells[1].processType == this.processType && this.cells[0].tag == InventoryItem.ItemTag.Fuel);
+  public bool CanProcess() => Object.op_Implicit((Object) this.cells[1]) && Object.op_Implicit((Object) this.cells[0]) && (!Object.op_Inequality((Object) this.cells[2], (Object) null) || !Object.op_Equality((Object) this.cells[1].processedItem, (Object) null) && this.cells[1].processedItem.id == this.cells[2].id && this.cells[2].amount < this.cells[2].max) && (this.cells[1].processable && this.cells[1].processType == this.processType && this.cells[0].tag == InventoryItem.ItemTag.Fuel);
 }

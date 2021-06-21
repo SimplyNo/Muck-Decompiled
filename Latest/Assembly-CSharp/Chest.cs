@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: Chest
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,7 +10,7 @@ using UnityEngine;
 public class Chest : MonoBehaviour
 {
   public InventoryItem[] cells;
-  public int chestSize = 21;
+  public int chestSize;
   public bool inUse;
   public bool[] locked;
   private Animator animator;
@@ -20,7 +20,7 @@ public class Chest : MonoBehaviour
   private void Start()
   {
     this.locked = new bool[this.chestSize];
-    this.animator = this.GetComponent<Animator>();
+    this.animator = (Animator) ((Component) this).GetComponent<Animator>();
     if (this.cells != null && this.cells.Length != 0)
       return;
     this.cells = new InventoryItem[this.chestSize];
@@ -28,7 +28,7 @@ public class Chest : MonoBehaviour
 
   public void Use(bool b)
   {
-    if ((bool) (Object) this.animator)
+    if (Object.op_Implicit((Object) this.animator))
       this.animator.SetBool(nameof (Use), b);
     this.inUse = b;
   }
@@ -52,4 +52,6 @@ public class Chest : MonoBehaviour
       this.cells[index] = inventoryItem;
     }
   }
+
+  public Chest() => base.\u002Ector();
 }

@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: DebugNet
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using Steamworks;
 using System.Collections.Generic;
@@ -15,10 +15,10 @@ public class DebugNet : MonoBehaviour
 {
   public TextMeshProUGUI fps;
   public GameObject console;
-  private bool fpsOn = true;
-  private bool speedOn = true;
-  private bool pingOn = true;
-  private bool bandwidthOn = true;
+  private bool fpsOn;
+  private bool speedOn;
+  private bool pingOn;
+  private bool bandwidthOn;
   private float deltaTime;
   public static List<string> r = new List<string>();
   public static DebugNet Instance;
@@ -30,11 +30,11 @@ public class DebugNet : MonoBehaviour
   private void Start()
   {
     DebugNet.Instance = this;
-    this.gameObject.SetActive(false);
+    ((Component) this).get_gameObject().SetActive(false);
     this.InvokeRepeating("BandWidth", 1f, 1f);
   }
 
-  public void ToggleConsole() => this.gameObject.SetActive(!this.gameObject.activeInHierarchy);
+  public void ToggleConsole() => ((Component) this).get_gameObject().SetActive(!((Component) this).get_gameObject().get_activeInHierarchy());
 
   private void Update() => this.Fps();
 
@@ -42,24 +42,27 @@ public class DebugNet : MonoBehaviour
   {
     if (!this.fpsOn && !this.speedOn && (!this.pingOn && !this.bandwidthOn))
     {
-      if (this.fps.enabled)
+      if (((Behaviour) this.fps).get_enabled())
         return;
-      this.fps.gameObject.SetActive(false);
+      ((Component) this.fps).get_gameObject().SetActive(false);
     }
     else
     {
-      if (!this.fps.gameObject.activeInHierarchy)
-        this.fps.gameObject.SetActive(true);
+      if (!((Component) this.fps).get_gameObject().get_activeInHierarchy())
+        ((Component) this.fps).get_gameObject().SetActive(true);
       string str1 = "";
-      this.deltaTime += (float) (((double) Time.unscaledDeltaTime - (double) this.deltaTime) * 0.100000001490116);
+      this.deltaTime += (float) (((double) Time.get_unscaledDeltaTime() - (double) this.deltaTime) * 0.100000001490116);
       float num1 = this.deltaTime * 1000f;
       float num2 = 1f / this.deltaTime;
       if (this.fpsOn)
         str1 += string.Format("{0:0.0} ms ({1:0.} fps)", (object) num1, (object) num2);
       if (this.speedOn)
       {
-        Vector3 zero = Vector3.zero;
-        str1 = str1 + "\nm/s: " + string.Format("{0:F1}", (object) new Vector2(zero.x, zero.z).magnitude);
+        Vector3 velocity = PlayerMovement.Instance.GetVelocity();
+        string str2 = str1;
+        Vector2 vector2 = new Vector2((float) velocity.x, (float) velocity.z);
+        string str3 = string.Format("{0:F1}", (object) ((Vector2) ref vector2).get_magnitude());
+        str1 = str2 + "\nm/s: " + str3;
       }
       if (this.pingOn)
       {
@@ -75,22 +78,28 @@ public class DebugNet : MonoBehaviour
       }
       if (this.bandwidthOn)
         str1 = str1 + string.Format("\nbyte up/s:    {0}", (object) this.byteUp) + string.Format("\nbyte down/s : {0}", (object) this.byteDown) + string.Format("\npacket up/s : {0}", (object) this.pSent) + string.Format("\npacket down/s : {0}", (object) this.pReceived);
-      string str3 = str1 + "<size=70%>";
+      string str4 = str1 + "<size=70%>";
       foreach (string str2 in DebugNet.r)
         ;
       int num3 = 0;
       int num4 = 0;
-      foreach (GameObject rootGameObject in SceneManager.GetActiveScene().GetRootGameObjects())
+      Scene activeScene = SceneManager.GetActiveScene();
+      foreach (GameObject rootGameObject in ((Scene) ref activeScene).GetRootGameObjects())
       {
         ++num3;
-        if (rootGameObject.activeInHierarchy)
+        if (rootGameObject.get_activeInHierarchy())
           ++num4;
       }
-      string str4 = str3 + string.Format("\ngos active: {0} | gos total {1}", (object) num4, (object) num3) + string.Format("\nserver ip:    {0}", (object) Server.ipAddress) + string.Format("\nresources hashmap size: {0}", (object) ResourceManager.Instance.list.Count) + string.Format("\nactive mobs: {0} / {1}", (object) MobManager.Instance.mobs.Count, (object) GameLoop.currentMobCap) + string.Format("\nhp multiplier: {0}", (object) GameManager.instance.MobHpMultiplier()) + string.Format("\ndamage multiplier: {0}", (object) GameManager.instance.MobDamageMultiplier());
+      string str5 = str4 + string.Format("\ngos active: {0} | gos total {1}", (object) num4, (object) num3) + string.Format("\nserver ip:    {0}", (object) Server.ipAddress) + string.Format("\nresources hashmap size: {0}", (object) ResourceManager.Instance.list.Count) + string.Format("\nactive mobs: {0}", (object) MobManager.Instance.mobs.Count) + string.Format("\nactive mobs: {0} /  / {1}", (object) MobManager.Instance.GetActiveEnemies(), (object) GameLoop.currentMobCap) + string.Format("\nhp multiplier: {0}", (object) GameManager.instance.MobHpMultiplier()) + string.Format("\ndamage multiplier: {0}", (object) GameManager.instance.MobDamageMultiplier());
       uint num5 = Profiler.GetTotalAllocatedMemory() / 1048576U;
       uint num6 = Profiler.GetTotalReservedMemory() / 1048576U;
       int num7 = (int) (Profiler.GetTotalUnusedReservedMemory() / 1048576U);
-      this.fps.text = str4 + string.Format("\nramTotal: {0}mb | {1}mb / {2}mb", (object) num5, (object) num6, (object) SystemInfo.systemMemorySize) + string.Format("\nServer host: {0} ({1})", (object) LocalClient.instance.serverHost, (object) new Friend((SteamId) LocalClient.instance.serverHost.Value).Name) + string.Format("\nMy server id: {0}", (object) LocalClient.instance.myId) + string.Format("\nAm server owner: {0}", (object) LocalClient.serverOwner) + string.Format("Amount of mob zones: {0}", (object) MobZoneManager.Instance.zones.Count);
+      string str6 = str5 + string.Format("\nramTotal: {0}mb | {1}mb / {2}mb", (object) num5, (object) num6, (object) SystemInfo.get_systemMemorySize());
+      SteamId serverHost = (object) LocalClient.instance.serverHost;
+      Friend friend = new Friend(SteamId.op_Implicit((ulong) LocalClient.instance.serverHost.Value));
+      string name = ((Friend) ref friend).get_Name();
+      string str7 = string.Format("\nServer host: {0} ({1})", (object) serverHost, (object) name);
+      ((TMP_Text) this.fps).set_text(str6 + str7 + string.Format("\nMy server id: {0}", (object) LocalClient.instance.myId) + string.Format("\nAm server owner: {0}", (object) LocalClient.serverOwner) + string.Format("Amount of mob zones: {0}", (object) MobZoneManager.Instance.zones.Count));
     }
   }
 
@@ -106,7 +115,9 @@ public class DebugNet : MonoBehaviour
     LocalClient.packetsReceived = 0;
   }
 
-  private void OpenConsole() => this.console.gameObject.SetActive(true);
+  private void OpenConsole() => this.console.get_gameObject().SetActive(true);
 
-  private void CloseConsole() => this.console.gameObject.SetActive(false);
+  private void CloseConsole() => this.console.get_gameObject().SetActive(false);
+
+  public DebugNet() => base.\u002Ector();
 }

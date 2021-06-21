@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: BuildDestruction
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,22 +13,23 @@ public class BuildDestruction : MonoBehaviour
   public bool directlyGrounded;
   public bool started;
   public bool destroyed;
-  private List<BuildDestruction> otherBuilds = new List<BuildDestruction>();
+  private List<BuildDestruction> otherBuilds;
   private BoxCollider trigger;
 
   private void Awake() => this.Invoke("CheckDirectlyGrounded", 2f);
 
   private void Start()
   {
-    foreach (BoxCollider component in this.GetComponents<BoxCollider>())
+    foreach (BoxCollider component in (BoxCollider[]) ((Component) this).GetComponents<BoxCollider>())
     {
-      if (component.isTrigger)
+      if (((Collider) component).get_isTrigger())
       {
         this.trigger = component;
         break;
       }
     }
-    this.trigger.size *= 1.1f;
+    BoxCollider trigger = this.trigger;
+    trigger.set_size(Vector3.op_Multiply(trigger.get_size(), 1.1f));
   }
 
   private void Update()
@@ -42,15 +43,15 @@ public class BuildDestruction : MonoBehaviour
     alreadyChecked.Add(this);
     for (int index = this.otherBuilds.Count - 1; index >= 0; --index)
     {
-      if (!((Object) this.otherBuilds[index] == (Object) null) && !this.otherBuilds[index].IsDirectlyGrounded(alreadyChecked))
+      if (!Object.op_Equality((Object) this.otherBuilds[index], (Object) null) && !this.otherBuilds[index].IsDirectlyGrounded(alreadyChecked))
         this.otherBuilds[index].DestroyBuild();
     }
   }
 
   private void DestroyBuild()
   {
-    Hitable component = this.GetComponent<Hitable>();
-    component.Hit(component.hp, 1f, 1, this.transform.position);
+    M0 component = ((Component) this).GetComponent<Hitable>();
+    ((Hitable) component).Hit(((Hitable) component).hp, 1f, 1, ((Component) this).get_transform().get_position());
   }
 
   public bool IsDirectlyGrounded(List<BuildDestruction> alreadyChecked)
@@ -59,7 +60,7 @@ public class BuildDestruction : MonoBehaviour
       return true;
     foreach (BuildDestruction otherBuild in this.otherBuilds)
     {
-      if (!((Object) otherBuild == (Object) null) && !alreadyChecked.Contains(otherBuild))
+      if (!Object.op_Equality((Object) otherBuild, (Object) null) && !alreadyChecked.Contains(otherBuild))
       {
         alreadyChecked.Add(otherBuild);
         if (otherBuild.IsDirectlyGrounded(alreadyChecked))
@@ -71,28 +72,30 @@ public class BuildDestruction : MonoBehaviour
 
   private void CheckDirectlyGrounded()
   {
-    Rigidbody component = this.GetComponent<Rigidbody>();
+    M0 component = ((Component) this).GetComponent<Rigidbody>();
     Object.Destroy((Object) this.trigger);
     Object.Destroy((Object) component);
   }
 
   private void OnTriggerEnter(Collider collision)
   {
-    if (collision.gameObject.layer == LayerMask.NameToLayer("Ground"))
+    if (((Component) collision).get_gameObject().get_layer() == LayerMask.NameToLayer("Ground"))
     {
       this.directlyGrounded = true;
       this.connectedToGround = true;
     }
-    if (!collision.CompareTag("Build"))
+    if (!((Component) collision).CompareTag("Build"))
       return;
-    BuildDestruction component = collision.GetComponent<BuildDestruction>();
+    BuildDestruction component = (BuildDestruction) ((Component) collision).GetComponent<BuildDestruction>();
     if (this.otherBuilds.Contains(component))
       return;
-    MonoBehaviour.print((object) ("added a build: " + collision.gameObject.name));
+    MonoBehaviour.print((object) ("added a build: " + ((Object) ((Component) collision).get_gameObject()).get_name()));
     this.otherBuilds.Add(component);
   }
 
   private void OnDrawGizmos()
   {
   }
+
+  public BuildDestruction() => base.\u002Ector();
 }

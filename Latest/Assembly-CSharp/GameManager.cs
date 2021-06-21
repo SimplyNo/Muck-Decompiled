@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: GameManager
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using Steamworks;
 using System;
@@ -34,38 +34,40 @@ public class GameManager : MonoBehaviour
   private bool winnerSent;
   public GameObject gravePrefab;
   public int winnerId;
-  private float mapRadius = 1100f;
+  private float mapRadius;
   public LayerMask whatIsGround;
+  public LayerMask whatIsGroundAndObject;
   private List<Vector3> spawnPositions;
 
   public static GameSettings gameSettings { get; set; }
 
   private void Awake()
   {
-    if ((UnityEngine.Object) GameManager.instance == (UnityEngine.Object) null)
+    if (Object.op_Equality((Object) GameManager.instance, (Object) null))
       GameManager.instance = this;
-    else if ((UnityEngine.Object) GameManager.instance != (UnityEngine.Object) this)
-      UnityEngine.Object.Destroy((UnityEngine.Object) this);
+    else if (Object.op_Inequality((Object) GameManager.instance, (Object) this))
+      Object.Destroy((Object) this);
     GameManager.players = new Dictionary<int, PlayerManager>();
     this.currentDay = 0;
   }
 
   private void Start()
   {
-    if (GameManager.gameSettings == null && (UnityEngine.Object) NetworkController.Instance == (UnityEngine.Object) null)
+    if (GameManager.gameSettings == null && Object.op_Equality((Object) NetworkController.Instance, (Object) null))
     {
       Debug.LogError((object) "testing spawn");
       GameManager.gameSettings = new GameSettings(44430);
       GameManager.gameSettings.gameMode = GameSettings.GameMode.Survival;
+      GameManager.gameSettings.difficulty = GameSettings.Difficulty.Normal;
       if (GameManager.gameSettings.gameMode == GameSettings.GameMode.Versus)
-        UnityEngine.Object.Instantiate<GameObject>(this.zone, Vector3.zero, Quaternion.identity);
+        Object.Instantiate<GameObject>((M0) this.zone, Vector3.get_zero(), Quaternion.get_identity());
       Server.InitializeServerPackets();
       LocalClient.InitializeClientData();
-      UnityEngine.Object.Instantiate<GameObject>(this.testGame);
-      LocalClient.instance.serverHost = (SteamId) SteamManager.Instance.PlayerSteamId.Value;
-      SteamLobby.steamIdToClientId.Add(SteamManager.Instance.PlayerSteamId.Value, 0);
+      Object.Instantiate<GameObject>((M0) this.testGame);
+      LocalClient.instance.serverHost = SteamId.op_Implicit((ulong) SteamManager.Instance.PlayerSteamId.Value);
+      SteamLobby.steamIdToClientId.Add((ulong) SteamManager.Instance.PlayerSteamId.Value, 0);
       Server.clients.Add(0, new Client(0));
-      Server.clients[0].player = new Player(0, "Dani", Color.black, (SteamId) SteamManager.Instance.PlayerSteamId.Value);
+      Server.clients[0].player = new Player(0, "Dani", Color.get_black(), SteamId.op_Implicit((ulong) SteamManager.Instance.PlayerSteamId.Value));
       LocalClient.serverOwner = true;
       ClientSend.PlayerFinishedLoading();
       DayCycle.dayDuration = 10f;
@@ -87,7 +89,7 @@ public class GameManager : MonoBehaviour
     GameManager gameManager = this;
     if (GameManager.gameSettings.gameMode == GameSettings.GameMode.Versus)
     {
-      UnityEngine.Object.Instantiate<GameObject>(gameManager.zone, Vector3.zero, Quaternion.identity);
+      Object.Instantiate<GameObject>((M0) gameManager.zone, Vector3.get_zero(), Quaternion.get_identity());
       if (LocalClient.serverOwner)
         gameManager.InvokeRepeating("SlowUpdate", 0.5f, 0.5f);
     }
@@ -142,12 +144,12 @@ public class GameManager : MonoBehaviour
     PlayerManager component;
     if (id == LocalClient.instance.myId)
     {
-      UnityEngine.Object.Instantiate<GameObject>(this.localPlayerPrefab, position, Quaternion.Euler(0.0f, 0.0f, 0.0f));
-      component = PlayerMovement.Instance.gameObject.GetComponent<PlayerManager>();
+      Object.Instantiate<GameObject>((M0) this.localPlayerPrefab, position, Quaternion.Euler(0.0f, 0.0f, 0.0f));
+      component = (PlayerManager) ((Component) PlayerMovement.Instance).get_gameObject().GetComponent<PlayerManager>();
     }
     else
     {
-      component = UnityEngine.Object.Instantiate<GameObject>(this.playerPrefab, position, Quaternion.Euler(0.0f, orientationY, 0.0f)).GetComponent<PlayerManager>();
+      component = (PlayerManager) ((GameObject) Object.Instantiate<GameObject>((M0) this.playerPrefab, position, Quaternion.Euler(0.0f, orientationY, 0.0f))).GetComponent<PlayerManager>();
       component.SetDesiredPosition(position);
     }
     component.SetDesiredPosition(position);
@@ -170,12 +172,22 @@ public class GameManager : MonoBehaviour
 
   public float MobDamageMultiplier()
   {
-    float num = 0.8f;
-    if (GameManager.gameSettings.difficulty == GameSettings.Difficulty.Gamer)
-      num = 1.7f;
-    else if (GameManager.gameSettings.difficulty == GameSettings.Difficulty.Easy)
-      num = 0.3f;
-    return num + (float) this.currentDay / (5f - (float) GameManager.gameSettings.difficulty);
+    float num1 = 0.9f;
+    float num2 = 0.26f;
+    float num3 = 1.6f;
+    if (GameManager.gameSettings.difficulty == GameSettings.Difficulty.Easy)
+    {
+      num1 = 0.35f;
+      num2 = 0.2f;
+      num3 = 1.4f;
+    }
+    else if (GameManager.gameSettings.difficulty == GameSettings.Difficulty.Gamer)
+    {
+      num1 = 1.75f;
+      num2 = 0.25f;
+      num3 = 2.3f;
+    }
+    return num1 + Mathf.Pow(num2 * (float) this.currentDay, num3);
   }
 
   public float ChestPriceMultiplier()
@@ -188,7 +200,25 @@ public class GameManager : MonoBehaviour
     return Mathf.Clamp((float) (num * (1.0 + (double) (this.currentDay - 3) / (double) GameManager.gameSettings.GetChestPriceMultiplier())), (float) num, 100f);
   }
 
-  public float MobHpMultiplier() => (float) (1.0 + (double) (GameManager.gameSettings.difficulty - 1) * 0.300000011920929 + (double) this.currentDay / (6.0 - (double) GameManager.gameSettings.difficulty));
+  public float MobHpMultiplier()
+  {
+    float num1 = 1.05f;
+    float num2 = 0.23f;
+    float num3 = 1.54f;
+    if (GameManager.gameSettings.difficulty == GameSettings.Difficulty.Easy)
+    {
+      num1 = 0.9f;
+      num2 = 0.2f;
+      num3 = 1.3f;
+    }
+    else if (GameManager.gameSettings.difficulty == GameSettings.Difficulty.Gamer)
+    {
+      num1 = 1.3f;
+      num2 = 0.28f;
+      num3 = 1.65f;
+    }
+    return num1 + Mathf.Pow(num2 * (float) this.currentDay, num3);
+  }
 
   private void SlowUpdate()
   {
@@ -196,7 +226,7 @@ public class GameManager : MonoBehaviour
       return;
     foreach (PlayerManager playerManager in GameManager.players.Values)
     {
-      if ((UnityEngine.Object) playerManager != (UnityEngine.Object) null && !playerManager.dead)
+      if (Object.op_Inequality((Object) playerManager, (Object) null) && !playerManager.dead)
       {
         int id = playerManager.id;
         string str = "Nobody";
@@ -215,36 +245,42 @@ public class GameManager : MonoBehaviour
   {
     PlayerManager player = GameManager.players[id];
     player.dead = true;
-    player.gameObject.SetActive(false);
-    pos = player.transform.position;
-    UnityEngine.Object.Instantiate<GameObject>(this.playerRagdoll, pos, player.transform.rotation).GetComponent<PlayerRagdoll>().SetRagdoll(id, -player.transform.forward);
+    ((Component) player).get_gameObject().SetActive(false);
+    pos = ((Component) player).get_transform().get_position();
+    ((PlayerRagdoll) ((GameObject) Object.Instantiate<GameObject>((M0) this.playerRagdoll, pos, ((Component) player).get_transform().get_rotation())).GetComponent<PlayerRagdoll>()).SetRagdoll(id, Vector3.op_UnaryNegation(((Component) player).get_transform().get_forward()));
   }
 
   public Vector3 GetGravePosition(int playerId)
   {
     try
     {
-      RaycastHit hitInfo;
-      if (Physics.Raycast(GameManager.players[playerId].transform.position + Vector3.up * 3000f, Vector3.down, out hitInfo, 8000f, (int) this.whatIsGround))
-        return hitInfo.point;
+      Vector3 vector3 = ((Component) GameManager.players[playerId]).get_transform().get_position();
+      if (vector3.y < -100.0)
+        vector3 = Vector3.get_zero();
+      RaycastHit raycastHit;
+      if (Physics.Raycast(Vector3.op_Addition(vector3, Vector3.op_Multiply(Vector3.get_up(), 3000f)), Vector3.get_down(), ref raycastHit, 8000f, LayerMask.op_Implicit(this.whatIsGround)))
+        return ((RaycastHit) ref raycastHit).get_point();
     }
     catch (Exception ex)
     {
-      return Vector3.zero;
+      return Vector3.get_zero();
     }
-    return Vector3.zero;
+    return Vector3.get_zero();
   }
 
   public void SpawnGrave(Vector3 gravePos, int playerId, int graveObjectId)
   {
     PlayerManager player = GameManager.players[playerId];
-    GraveInteract componentInChildren = UnityEngine.Object.Instantiate<GameObject>(this.gravePrefab, gravePos, Quaternion.identity).GetComponentInChildren<GraveInteract>();
-    componentInChildren.username = player.username;
+    ++player.deaths;
+    GraveInteract componentInChildren = (GraveInteract) ((GameObject) Object.Instantiate<GameObject>((M0) this.gravePrefab, gravePos, Quaternion.get_identity())).GetComponentInChildren<GraveInteract>();
+    componentInChildren.username = player.username.Substring(0, Mathf.Clamp(15, 0, player.username.Length));
     componentInChildren.playerId = player.id;
     componentInChildren.SetId(graveObjectId);
-    ResourceManager.Instance.AddObject(graveObjectId, componentInChildren.transform.parent.gameObject);
+    ResourceManager.Instance.AddObject(graveObjectId, ((Component) ((Component) componentInChildren).get_transform().get_parent()).get_gameObject());
     player.graveId = graveObjectId;
-    componentInChildren.transform.root.GetComponentInChildren<GravePing>().SetPing(player.username);
+    float time = Mathf.Clamp((float) ((double) componentInChildren.timeLeft * (double) (GameManager.players[playerId].deaths - 1) * 2.0), 30f, 300f);
+    componentInChildren.SetTime(time);
+    ((GravePing) ((Component) ((Component) componentInChildren).get_transform().get_root()).GetComponentInChildren<GravePing>()).SetPing(player.username);
   }
 
   public void RespawnPlayer(int id, Vector3 zero)
@@ -252,17 +288,17 @@ public class GameManager : MonoBehaviour
     if (!GameManager.players.ContainsKey(id))
       return;
     GameManager.players[id].dead = false;
-    Vector3 position = ResourceManager.Instance.list[GameManager.players[id].graveId].transform.position;
+    Vector3 position = ResourceManager.Instance.list[GameManager.players[id].graveId].get_transform().get_position();
     if (GameManager.players[id].graveId != -1)
       GameManager.players[id].RemoveGrave();
     if (LocalClient.instance.myId == id)
     {
-      PlayerMovement.Instance.transform.position = position + Vector3.up * 3f;
-      PlayerMovement.Instance.gameObject.SetActive(true);
+      ((Component) PlayerMovement.Instance).get_transform().set_position(Vector3.op_Addition(position, Vector3.op_Multiply(Vector3.get_up(), 3f)));
+      ((Component) PlayerMovement.Instance).get_gameObject().SetActive(true);
       PlayerStatus.Instance.Respawn();
     }
     else
-      GameManager.players[id].gameObject.SetActive(true);
+      ((Component) GameManager.players[id]).get_gameObject().SetActive(true);
   }
 
   public void StartGame()
@@ -277,9 +313,9 @@ public class GameManager : MonoBehaviour
 
   public void DisconnectPlayer(int id)
   {
-    if ((UnityEngine.Object) GameManager.players[id] != (UnityEngine.Object) null && (UnityEngine.Object) GameManager.players[id].gameObject != (UnityEngine.Object) null)
+    if (Object.op_Inequality((Object) GameManager.players[id], (Object) null) && Object.op_Inequality((Object) ((Component) GameManager.players[id]).get_gameObject(), (Object) null))
     {
-      UnityEngine.Object.Destroy((UnityEngine.Object) GameManager.players[id].gameObject);
+      Object.Destroy((Object) ((Component) GameManager.players[id]).get_gameObject());
       GameManager.players[id].dead = true;
       GameManager.players[id].disconnected = true;
     }
@@ -291,7 +327,7 @@ public class GameManager : MonoBehaviour
     int num = 0;
     foreach (PlayerManager playerManager in GameManager.players.Values)
     {
-      if ((bool) (UnityEngine.Object) playerManager && !playerManager.dead)
+      if (Object.op_Implicit((Object) playerManager) && !playerManager.dead)
         ++num;
     }
     MonoBehaviour.print((object) ("players alive:  " + (object) num));
@@ -301,9 +337,9 @@ public class GameManager : MonoBehaviour
   public int GetPlayersInLobby()
   {
     int num = 0;
-    foreach (UnityEngine.Object @object in GameManager.players.Values)
+    foreach (Object @object in GameManager.players.Values)
     {
-      if ((bool) @object)
+      if (Object.op_Implicit(@object))
         ++num;
     }
     return num;
@@ -341,7 +377,7 @@ public class GameManager : MonoBehaviour
       ClientSend.PlayerDisconnect();
     SteamManager.Instance.leaveLobby();
     SceneManager.LoadScene("Menu");
-    LocalClient.instance.serverHost = new SteamId();
+    LocalClient.instance.serverHost = (SteamId) null;
     LocalClient.serverOwner = false;
   }
 
@@ -361,33 +397,33 @@ public class GameManager : MonoBehaviour
   {
     GameManager.state = GameManager.GameState.GameOver;
     this.gameoverUi.SetActive(true);
-    Cursor.visible = true;
-    Cursor.lockState = CursorLockMode.None;
+    Cursor.set_visible(true);
+    Cursor.set_lockState((CursorLockMode) 0);
   }
 
   public void ReturnToMenu() => SceneManager.LoadScene("TestSteamLobby");
 
   public List<Vector3> FindSurvivalSpawnPositions(int nPlayers)
   {
-    Vector3 vector3 = Vector3.zero;
+    Vector3 vector3 = Vector3.get_zero();
     List<Vector3> vector3List = new List<Vector3>();
     for (int index = 0; index < 100; ++index)
     {
-      UnityEngine.Random.InitState(GameManager.GetSeed());
-      Vector2 vector2 = UnityEngine.Random.insideUnitCircle * this.mapRadius;
-      RaycastHit hitInfo;
-      if (Physics.Raycast(new Vector3(vector2.x, 200f, vector2.y), Vector3.down, out hitInfo, 500f, (int) this.whatIsGround) && WorldUtility.WorldHeightToBiome(hitInfo.point.y) != TextureData.TerrainType.Water)
+      Random.InitState(GameManager.GetSeed());
+      Vector2 vector2 = Vector2.op_Multiply(Random.get_insideUnitCircle(), this.mapRadius);
+      RaycastHit raycastHit;
+      if (Physics.Raycast(new Vector3((float) vector2.x, 200f, (float) vector2.y), Vector3.get_down(), ref raycastHit, 500f, LayerMask.op_Implicit(this.whatIsGround)) && WorldUtility.WorldHeightToBiome((float) ((RaycastHit) ref raycastHit).get_point().y) != TextureData.TerrainType.Water)
       {
-        vector3 = hitInfo.point;
+        vector3 = ((RaycastHit) ref raycastHit).get_point();
         break;
       }
     }
     for (int index = 0; index < 100; ++index)
     {
-      Vector2 vector2 = UnityEngine.Random.insideUnitCircle * 50f;
-      RaycastHit hitInfo;
-      if (Physics.Raycast(vector3 + new Vector3(vector2.x, 200f, vector2.y), Vector3.down, out hitInfo, 500f, (int) this.whatIsGround) && WorldUtility.WorldHeightToBiome(hitInfo.point.y) != TextureData.TerrainType.Water)
-        vector3List.Add(hitInfo.point + Vector3.up);
+      Vector2 vector2 = Vector2.op_Multiply(Random.get_insideUnitCircle(), 50f);
+      RaycastHit raycastHit;
+      if (Physics.Raycast(Vector3.op_Addition(vector3, new Vector3((float) vector2.x, 200f, (float) vector2.y)), Vector3.get_down(), ref raycastHit, 500f, LayerMask.op_Implicit(this.whatIsGround)) && WorldUtility.WorldHeightToBiome((float) ((RaycastHit) ref raycastHit).get_point().y) != TextureData.TerrainType.Water)
+        vector3List.Add(Vector3.op_Addition(((RaycastHit) ref raycastHit).get_point(), Vector3.get_up()));
     }
     while (vector3List.Count < nPlayers)
       vector3List.Add(new Vector3(0.0f, 50f, 0.0f));
@@ -399,10 +435,10 @@ public class GameManager : MonoBehaviour
     List<Vector3> vector3List = new List<Vector3>();
     for (int index = 0; index < 100; ++index)
     {
-      Vector2 vector2 = UnityEngine.Random.insideUnitCircle * this.mapRadius;
-      RaycastHit hitInfo;
-      if (Physics.Raycast(new Vector3(vector2.x, 200f, vector2.y), Vector3.down, out hitInfo, 500f, (int) this.whatIsGround) && WorldUtility.WorldHeightToBiome(hitInfo.point.y) != TextureData.TerrainType.Water)
-        vector3List.Add(hitInfo.point + Vector3.up);
+      Vector2 vector2 = Vector2.op_Multiply(Random.get_insideUnitCircle(), this.mapRadius);
+      RaycastHit raycastHit;
+      if (Physics.Raycast(new Vector3((float) vector2.x, 200f, (float) vector2.y), Vector3.get_down(), ref raycastHit, 500f, LayerMask.op_Implicit(this.whatIsGround)) && WorldUtility.WorldHeightToBiome((float) ((RaycastHit) ref raycastHit).get_point().y) != TextureData.TerrainType.Water)
+        vector3List.Add(Vector3.op_Addition(((RaycastHit) ref raycastHit).get_point(), Vector3.get_up()));
     }
     while (vector3List.Count <= nPlayers)
     {
@@ -431,13 +467,15 @@ public class GameManager : MonoBehaviour
         {
           if (client2?.player != null)
           {
-            ServerSend.SpawnPlayer(client1.id, client2.player, this.spawnPositions[index] + Vector3.up);
+            ServerSend.SpawnPlayer(client1.id, client2.player, Vector3.op_Addition(this.spawnPositions[index], Vector3.get_up()));
             ++index;
           }
         }
       }
     }
   }
+
+  public GameManager() => base.\u002Ector();
 
   public enum GameState
   {

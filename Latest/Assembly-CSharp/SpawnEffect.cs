@@ -1,20 +1,22 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: SpawnEffect
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
 public class SpawnEffect : MonoBehaviour
 {
   public GameObject spawnEffect;
-  public float maxPlayerDistance = 40f;
+  public float maxPlayerDistance;
 
   private void Awake()
   {
-    if ((double) Vector3.Distance(PlayerMovement.Instance.playerCam.position, this.transform.position) < (double) this.maxPlayerDistance)
-      Object.Instantiate<GameObject>(this.spawnEffect, this.transform.position, Quaternion.identity).GetComponent<AudioSource>().maxDistance = this.maxPlayerDistance;
+    if ((double) Vector3.Distance(PlayerMovement.Instance.playerCam.get_position(), ((Component) this).get_transform().get_position()) < (double) this.maxPlayerDistance)
+      ((AudioSource) ((GameObject) Object.Instantiate<GameObject>((M0) this.spawnEffect, ((Component) this).get_transform().get_position(), Quaternion.get_identity())).GetComponent<AudioSource>()).set_maxDistance(this.maxPlayerDistance);
     Object.Destroy((Object) this);
   }
+
+  public SpawnEffect() => base.\u002Ector();
 }

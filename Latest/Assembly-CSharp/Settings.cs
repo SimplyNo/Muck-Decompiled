@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: Settings
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using UnityEngine;
@@ -14,8 +14,10 @@ public class Settings : MonoBehaviour
   public Button backBtn;
   [Header("Game")]
   public MyBoolSetting camShake;
+  public SliderSetting fov;
   public SliderSetting sens;
-  public MyBoolSetting inverted;
+  public MyBoolSetting invertedHor;
+  public MyBoolSetting invertedVer;
   public MyBoolSetting grass;
   public MyBoolSetting tutorial;
   [Header("Controls")]
@@ -44,6 +46,7 @@ public class Settings : MonoBehaviour
   [Header("Video")]
   public ResolutionSetting resolution;
   public MyBoolSetting fullscreen;
+  public ScrollSettings fullscreenMode;
   public ScrollSettings vSync;
   public SliderSetting fpsLimit;
   [Header("Audio")]
@@ -56,79 +59,121 @@ public class Settings : MonoBehaviour
   private void UpdateSave()
   {
     this.camShake.SetSetting(SaveManager.Instance.state.cameraShake);
-    this.camShake.onClick.AddListener(new UnityAction(this.UpdateCamShake));
+    // ISSUE: method pointer
+    this.camShake.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateCamShake)));
+    this.fov.SetSettings(SaveManager.Instance.state.fov);
+    // ISSUE: method pointer
+    this.fov.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateFov)));
     this.sens.SetSettings(this.FloatToInt(SaveManager.Instance.state.sensMultiplier));
-    this.sens.onClick.AddListener(new UnityAction(this.UpdateSens));
-    this.inverted.SetSetting(SaveManager.Instance.state.invertedMouse);
-    this.inverted.onClick.AddListener(new UnityAction(this.UpdateInverted));
+    // ISSUE: method pointer
+    this.sens.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateSens)));
+    this.invertedHor.SetSetting(SaveManager.Instance.state.invertedMouseHor);
+    // ISSUE: method pointer
+    this.invertedHor.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateInverted)));
+    this.invertedVer.SetSetting(SaveManager.Instance.state.invertedMouseVert);
+    // ISSUE: method pointer
+    this.invertedVer.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateInverted)));
     this.grass.SetSetting(SaveManager.Instance.state.grass);
-    this.grass.onClick.AddListener(new UnityAction(this.UpdateGrass));
+    // ISSUE: method pointer
+    this.grass.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateGrass)));
     this.tutorial.SetSetting(SaveManager.Instance.state.tutorial);
-    this.tutorial.onClick.AddListener(new UnityAction(this.UpdateTutorial));
+    // ISSUE: method pointer
+    this.tutorial.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateTutorial)));
     this.forward.SetSetting(SaveManager.Instance.state.forward, "Forward");
-    this.forward.onClick.AddListener(new UnityAction(this.UpdateForwardKey));
+    // ISSUE: method pointer
+    this.forward.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateForwardKey)));
     this.backward.SetSetting(SaveManager.Instance.state.backwards, "Backward");
-    this.backward.onClick.AddListener(new UnityAction(this.UpdateBackwardKey));
+    // ISSUE: method pointer
+    this.backward.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateBackwardKey)));
     this.left.SetSetting(SaveManager.Instance.state.left, "Left");
-    this.left.onClick.AddListener(new UnityAction(this.UpdateLeftKey));
+    // ISSUE: method pointer
+    this.left.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateLeftKey)));
     this.right.SetSetting(SaveManager.Instance.state.right, "Right");
-    this.right.onClick.AddListener(new UnityAction(this.UpdateRightKey));
+    // ISSUE: method pointer
+    this.right.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateRightKey)));
     this.jump.SetSetting(SaveManager.Instance.state.jump, "Jump");
-    this.jump.onClick.AddListener(new UnityAction(this.UpdateJumpKey));
+    // ISSUE: method pointer
+    this.jump.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateJumpKey)));
     this.sprint.SetSetting(SaveManager.Instance.state.sprint, "Sprint");
-    this.sprint.onClick.AddListener(new UnityAction(this.UpdateSprintKey));
+    // ISSUE: method pointer
+    this.sprint.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateSprintKey)));
     this.interact.SetSetting(SaveManager.Instance.state.interact, "Interact");
-    this.interact.onClick.AddListener(new UnityAction(this.UpdateInteractKey));
+    // ISSUE: method pointer
+    this.interact.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateInteractKey)));
     this.inventory.SetSetting(SaveManager.Instance.state.inventory, "Inventory");
-    this.inventory.onClick.AddListener(new UnityAction(this.UpdateInventoryKey));
+    // ISSUE: method pointer
+    this.inventory.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateInventoryKey)));
     this.map.SetSetting(SaveManager.Instance.state.map, "Map");
-    this.map.onClick.AddListener(new UnityAction(this.UpdateMapKey));
+    // ISSUE: method pointer
+    this.map.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateMapKey)));
     this.leftClick.SetSetting(SaveManager.Instance.state.leftClick, "Left Click / Attack");
-    this.leftClick.onClick.AddListener(new UnityAction(this.UpdateLeftClickKey));
+    // ISSUE: method pointer
+    this.leftClick.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateLeftClickKey)));
     this.rightClick.SetSetting(SaveManager.Instance.state.rightClick, "Right Click / Build");
-    this.rightClick.onClick.AddListener(new UnityAction(this.UpdateRightClickKey));
+    // ISSUE: method pointer
+    this.rightClick.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateRightClickKey)));
     this.shadowQuality.SetSettings(Enum.GetNames(typeof (Settings.ShadowQuality)), SaveManager.Instance.state.shadowQuality);
-    this.shadowQuality.onClick.AddListener(new UnityAction(this.UpdateShadowQuality));
+    // ISSUE: method pointer
+    this.shadowQuality.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateShadowQuality)));
     this.shadowResolution.SetSettings(Enum.GetNames(typeof (Settings.ShadowResolution)), SaveManager.Instance.state.shadowResolution);
-    this.shadowResolution.onClick.AddListener(new UnityAction(this.UpdateShadowResolution));
+    // ISSUE: method pointer
+    this.shadowResolution.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateShadowResolution)));
     this.shadowDistance.SetSettings(Enum.GetNames(typeof (Settings.ShadowDistance)), SaveManager.Instance.state.shadowDistance);
-    this.shadowDistance.onClick.AddListener(new UnityAction(this.UpdateShadowDistance));
+    // ISSUE: method pointer
+    this.shadowDistance.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateShadowDistance)));
     this.shadowCascades.SetSettings(Enum.GetNames(typeof (Settings.ShadowCascades)), SaveManager.Instance.state.shadowCascade);
-    this.shadowCascades.onClick.AddListener(new UnityAction(this.UpdateShadowCascades));
+    // ISSUE: method pointer
+    this.shadowCascades.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateShadowCascades)));
     this.textureQuality.SetSettings(Enum.GetNames(typeof (Settings.TextureResolution)), SaveManager.Instance.state.textureQuality);
-    this.textureQuality.onClick.AddListener(new UnityAction(this.UpdateTextureRes));
+    // ISSUE: method pointer
+    this.textureQuality.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateTextureRes)));
     this.antiAliasing.SetSettings(Enum.GetNames(typeof (Settings.AntiAliasing)), SaveManager.Instance.state.antiAliasing);
-    this.antiAliasing.onClick.AddListener(new UnityAction(this.UpdateAntiAliasing));
+    // ISSUE: method pointer
+    this.antiAliasing.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateAntiAliasing)));
     this.softParticles.SetSetting(SaveManager.Instance.state.softParticles);
-    this.softParticles.onClick.AddListener(new UnityAction(this.UpdateSoftParticles));
+    // ISSUE: method pointer
+    this.softParticles.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateSoftParticles)));
     this.bloom.SetSettings(Enum.GetNames(typeof (Settings.Bloom)), SaveManager.Instance.state.bloom);
-    this.bloom.onClick.AddListener(new UnityAction(this.UpdateBloom));
+    // ISSUE: method pointer
+    this.bloom.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateBloom)));
     this.motionBlur.SetSetting(SaveManager.Instance.state.motionBlur);
-    this.motionBlur.onClick.AddListener(new UnityAction(this.UpdateMotionBlur));
+    // ISSUE: method pointer
+    this.motionBlur.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateMotionBlur)));
     this.ao.SetSetting(SaveManager.Instance.state.ambientOcclusion);
-    this.ao.onClick.AddListener(new UnityAction(this.UpdateAO));
-    this.resolution.SetSettings(Screen.resolutions, Screen.currentResolution);
-    this.fullscreen.SetSetting(Screen.fullScreen);
-    this.fullscreen.onClick.AddListener(new UnityAction(this.UpdateFullscreen));
+    // ISSUE: method pointer
+    this.ao.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateAO)));
+    this.resolution.SetSettings(Screen.get_resolutions(), Screen.get_currentResolution());
+    this.fullscreen.SetSetting(Screen.get_fullScreen());
+    // ISSUE: method pointer
+    this.fullscreen.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateFullscreen)));
     this.vSync.SetSettings(Enum.GetNames(typeof (Settings.VSync)), SaveManager.Instance.state.vSync);
-    this.vSync.onClick.AddListener(new UnityAction(this.UpdateVSync));
+    // ISSUE: method pointer
+    this.vSync.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateVSync)));
+    this.fullscreenMode.SetSettings(Enum.GetNames(typeof (FullScreenMode)), SaveManager.Instance.state.fullscreenMode);
+    // ISSUE: method pointer
+    this.fullscreenMode.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateFullscreenMode)));
     this.fpsLimit.SetSettings(SaveManager.Instance.state.fpsLimit);
-    this.fpsLimit.onClick.AddListener(new UnityAction(this.UpdateMaxFps));
+    // ISSUE: method pointer
+    this.fpsLimit.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateMaxFps)));
     this.volume.SetSettings(SaveManager.Instance.state.volume);
-    this.volume.onClick.AddListener(new UnityAction(this.UpdateVolume));
+    // ISSUE: method pointer
+    this.volume.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateVolume)));
     this.music.SetSettings(SaveManager.Instance.state.music);
-    this.music.onClick.AddListener(new UnityAction(this.UpdateMusic));
+    // ISSUE: method pointer
+    this.music.onClick.AddListener(new UnityAction((object) this, __methodptr(UpdateMusic)));
   }
 
   private void UpdateCamShake() => CurrentSettings.Instance.UpdateCamShake(this.IntToBool(this.camShake.currentSetting));
 
-  private void UpdateInverted() => CurrentSettings.Instance.UpdateInverted(this.IntToBool(this.inverted.currentSetting));
+  private void UpdateInverted() => CurrentSettings.Instance.UpdateInverted(this.IntToBool(this.invertedHor.currentSetting), this.IntToBool(this.invertedVer.currentSetting));
 
   private void UpdateGrass() => CurrentSettings.Instance.UpdateGrass(this.IntToBool(this.grass.currentSetting));
 
   private void UpdateTutorial() => CurrentSettings.Instance.UpdateTutorial(this.IntToBool(this.grass.currentSetting));
 
   private void UpdateSens() => CurrentSettings.Instance.UpdateSens(this.IntToFloat(this.sens.currentSetting));
+
+  private void UpdateFov() => CurrentSettings.Instance.UpdateFov((float) this.fov.currentSetting);
 
   private void UpdateForwardKey()
   {
@@ -229,6 +274,8 @@ public class Settings : MonoBehaviour
 
   private void UpdateFullscreen() => CurrentSettings.Instance.UpdateFullscreen(this.IntToBool(this.fullscreen.currentSetting));
 
+  private void UpdateFullscreenMode() => CurrentSettings.Instance.UpdateFullscreenMode(this.fullscreenMode.currentSetting);
+
   private void UpdateVSync() => CurrentSettings.Instance.UpdateVSync(this.vSync.currentSetting);
 
   private void UpdateMaxFps() => CurrentSettings.Instance.UpdateMaxFps(this.fpsLimit.currentSetting);
@@ -239,7 +286,7 @@ public class Settings : MonoBehaviour
 
   private float IntToFloat(int i) => (float) i / 100f;
 
-  private int FloatToInt(float f) => (int) f * 100;
+  private int FloatToInt(float f) => (int) ((double) f * 100.0);
 
   private int BoolToInt(bool b) => b ? 1 : 0;
 
@@ -252,6 +299,8 @@ public class Settings : MonoBehaviour
     this.UpdateSave();
     CurrentSettings.Instance.UpdateSave();
   }
+
+  public Settings() => base.\u002Ector();
 
   public enum BoolSetting
   {

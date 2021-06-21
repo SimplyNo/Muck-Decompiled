@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: TestMoveText
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -23,17 +23,18 @@ public class TestMoveText : MonoBehaviour
   {
     this.toSurface = new List<int>();
     this.notSurfacing = new List<int>();
-    this.children = this.GetComponentsInChildren<Transform>();
-    this.startHeight = new Vector3(1f, this.transform.GetChild(0).position.y, 1f);
+    this.children = (Transform[]) ((Component) this).GetComponentsInChildren<Transform>();
+    this.startHeight = new Vector3(1f, (float) ((Component) this).get_transform().GetChild(0).get_position().y, 1f);
     foreach (Transform child in this.children)
     {
-      child.transform.position += Vector3.down * 50f;
+      Transform transform = ((Component) child).get_transform();
+      transform.set_position(Vector3.op_Addition(transform.get_position(), Vector3.op_Multiply(Vector3.get_down(), 50f)));
       this.notSurfacing.Add(child.GetSiblingIndex());
     }
-    float repeatRate = 0.08f;
-    float time = 2f;
-    this.InvokeRepeating("SlowUpdate", time, repeatRate);
-    this.InvokeRepeating("AddMaterial", (float) ((double) repeatRate * (double) this.transform.childCount + (double) time + 2.0), 0.05f);
+    float num1 = 0.08f;
+    float num2 = 2f;
+    this.InvokeRepeating("SlowUpdate", num2, num1);
+    this.InvokeRepeating("AddMaterial", (float) ((double) num1 * (double) ((Component) this).get_transform().get_childCount() + (double) num2 + 2.0), 0.05f);
   }
 
   private void AddMaterial()
@@ -44,20 +45,22 @@ public class TestMoveText : MonoBehaviour
     for (int index = 0; index < 100; ++index)
     {
       GameObject tree = this.trees[Random.Range(0, this.trees.Length)];
-      Vector3 vector3 = this.transform.position + new Vector3(Random.Range((float) (-(double) this.drawArea.x / 2.0), this.drawArea.x / 2f), 80f, Random.Range((float) (-(double) this.drawArea.z / 2.0), this.drawArea.z / 2f));
-      Debug.DrawLine(vector3, vector3 + Vector3.down * 120f, Color.red, 10f);
-      Debug.DrawLine(Vector3.zero, vector3 * 50f, Color.black, 10f);
-      RaycastHit hitInfo;
-      if (Physics.Raycast(vector3, Vector3.down, out hitInfo, 120f, (int) this.whatIsGround) && (double) Vector3.Angle(hitInfo.normal, Vector3.up) <= 5.0)
+      Vector3 vector3_1;
+      ((Vector3) ref vector3_1).\u002Ector(Random.Range((float) (-this.drawArea.x / 2.0), (float) (this.drawArea.x / 2.0)), 80f, Random.Range((float) (-this.drawArea.z / 2.0), (float) (this.drawArea.z / 2.0)));
+      Vector3 vector3_2 = Vector3.op_Addition(((Component) this).get_transform().get_position(), vector3_1);
+      Debug.DrawLine(vector3_2, Vector3.op_Addition(vector3_2, Vector3.op_Multiply(Vector3.get_down(), 120f)), Color.get_red(), 10f);
+      Debug.DrawLine(Vector3.get_zero(), Vector3.op_Multiply(vector3_2, 50f), Color.get_black(), 10f);
+      RaycastHit raycastHit;
+      if (Physics.Raycast(vector3_2, Vector3.get_down(), ref raycastHit, 120f, LayerMask.op_Implicit(this.whatIsGround)) && (double) Vector3.Angle(((RaycastHit) ref raycastHit).get_normal(), Vector3.get_up()) <= 5.0)
       {
-        Transform transform = Object.Instantiate<GameObject>(tree, hitInfo.point, tree.transform.rotation).transform;
-        HitableResource component = transform.GetComponent<HitableResource>();
-        if ((bool) (Object) component)
+        Transform transform = ((GameObject) Object.Instantiate<GameObject>((M0) tree, ((RaycastHit) ref raycastHit).get_point(), tree.get_transform().get_rotation())).get_transform();
+        HitableResource component = (HitableResource) ((Component) transform).GetComponent<HitableResource>();
+        if (Object.op_Implicit((Object) component))
         {
           float num = 1f;
-          if (transform.CompareTag("Count"))
+          if (((Component) transform).CompareTag("Count"))
             num = 3f;
-          component.SetDefaultScale(Vector3.one * 0.2f * num);
+          component.SetDefaultScale(Vector3.op_Multiply(Vector3.op_Multiply(Vector3.get_one(), 0.2f), num));
           component.PopIn();
         }
       }
@@ -76,12 +79,14 @@ public class TestMoveText : MonoBehaviour
 
   private void Update()
   {
-    int num = 0;
-    foreach (int index in this.toSurface)
+    int num1 = 0;
+    foreach (int num2 in this.toSurface)
     {
-      ++num;
-      Transform child = this.transform.GetChild(index);
-      child.position = Vector3.Lerp(child.position, new Vector3(child.position.x, this.startHeight.y, child.position.z), Time.deltaTime * 5f);
+      ++num1;
+      Transform child = ((Component) this).get_transform().GetChild(num2);
+      child.set_position(Vector3.Lerp(child.get_position(), new Vector3((float) child.get_position().x, (float) this.startHeight.y, (float) child.get_position().z), Time.get_deltaTime() * 5f));
     }
   }
+
+  public TestMoveText() => base.\u002Ector();
 }

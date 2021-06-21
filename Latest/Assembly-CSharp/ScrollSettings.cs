@@ -1,10 +1,11 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ScrollSettings
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class ScrollSettings : Setting
@@ -29,15 +30,15 @@ public class ScrollSettings : Setting
 
   private void UpdateSetting()
   {
-    this.settingText.text = this.settingNames[this.currentSetting];
+    ((TMP_Text) this.settingText).set_text(this.settingNames[this.currentSetting]);
     if (this.currentSetting == 0)
-      this.scrollLeft.enabled = false;
+      ((Behaviour) this.scrollLeft).set_enabled(false);
     else if (this.currentSetting > 0)
-      this.scrollLeft.enabled = true;
+      ((Behaviour) this.scrollLeft).set_enabled(true);
     if (this.currentSetting == this.settingNames.Length - 1)
-      this.scrollRight.enabled = false;
+      ((Behaviour) this.scrollRight).set_enabled(false);
     else if (this.currentSetting < this.settingNames.Length - 1)
-      this.scrollRight.enabled = true;
+      ((Behaviour) this.scrollRight).set_enabled(true);
     this.m_OnClick.Invoke();
   }
 }

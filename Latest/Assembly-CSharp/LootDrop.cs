@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: LootDrop
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using System.Collections.Generic;
@@ -22,10 +22,10 @@ public class LootDrop : ScriptableObject
     List<InventoryItem> inventoryItemList = new List<InventoryItem>();
     foreach (LootDrop.LootItems lootItems in this.loot)
     {
-      if ((double) UnityEngine.Random.Range(0.0f, 1f) < (double) lootItems.dropChance)
+      if ((double) Random.Range(0.0f, 1f) < (double) lootItems.dropChance)
       {
-        int amount = UnityEngine.Random.Range(lootItems.amountMin, lootItems.amountMax + 1);
-        InventoryItem instance = ScriptableObject.CreateInstance<InventoryItem>();
+        int amount = Random.Range(lootItems.amountMin, lootItems.amountMax + 1);
+        InventoryItem instance = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
         instance.Copy(lootItems.item, amount);
         inventoryItemList.Add(instance);
       }
@@ -40,14 +40,16 @@ public class LootDrop : ScriptableObject
     {
       if (rand.NextDouble() < (double) lootItems.dropChance)
       {
-        int amount = UnityEngine.Random.Range(lootItems.amountMin, lootItems.amountMax + 1);
-        InventoryItem instance = ScriptableObject.CreateInstance<InventoryItem>();
+        int amount = Random.Range(lootItems.amountMin, lootItems.amountMax + 1);
+        InventoryItem instance = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
         instance.Copy(lootItems.item, amount);
         inventoryItemList.Add(instance);
       }
     }
     return inventoryItemList;
   }
+
+  public LootDrop() => base.\u002Ector();
 
   [Serializable]
   public class LootItems

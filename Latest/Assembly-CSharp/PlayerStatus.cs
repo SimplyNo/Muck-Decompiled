@@ -1,39 +1,44 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: PlayerStatus
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerStatus : MonoBehaviour
 {
-  public float hp = 100f;
+  public float hp;
   public int maxHp;
   public float shield;
   public int maxShield;
   private bool dead;
-  private float staminaRegenRate = 15f;
-  private float staminaDrainRate = 12f;
-  private float staminaBoost = 1f;
+  private float staminaRegenRate;
+  private float staminaDrainRate;
+  private float staminaBoost;
   private bool running;
-  private float jumpDrain = 10f;
-  private float hungerDrainRate = 0.15f;
-  private float healingDrainMultiplier = 2f;
-  private float staminaDrainMultiplier = 5f;
+  private float jumpDrain;
+  private float hungerDrainRate;
+  private float healingDrainMultiplier;
+  private float staminaDrainMultiplier;
   private bool healing;
-  private float healingRate = 5f;
-  private bool readyToRegenShield = true;
-  private float shieldRegenRate = 20f;
-  private float regenShieldDelay = 5f;
+  private float healingRate;
+  private bool readyToRegenShield;
+  private float shieldRegenRate;
+  private float regenShieldDelay;
   private PlayerMovement player;
   public static PlayerStatus Instance;
   private bool invincible;
-  private bool readyToAdrenalineBoost = true;
+  private float oneShotThreshold;
+  private float oneShotProtectionCooldown;
+  private bool protectionActive;
+  private bool readyToAdrenalineBoost;
   public GameObject playerRagdoll;
   public InventoryItem[] armor;
   private float armorTotal;
+  public float currentSpeedArmorMultiplier;
+  public float currentChunkArmorMultiplier;
 
   public int draculaStacks { get; set; }
 
@@ -45,14 +50,14 @@ public class PlayerStatus : MonoBehaviour
 
   public float maxHunger { get; set; }
 
-  public int strength { get; set; } = 1;
+  public int strength { get; set; }
 
-  public int speed { get; set; } = 1;
+  public int speed { get; set; }
 
   private void Awake()
   {
     PlayerStatus.Instance = this;
-    this.player = this.GetComponent<PlayerMovement>();
+    this.player = (PlayerMovement) ((Component) this).GetComponent<PlayerMovement>();
     this.maxShield = (int) this.shield;
     this.maxHp = (int) this.hp;
     this.stamina = 100f;
@@ -72,7 +77,7 @@ public class PlayerStatus : MonoBehaviour
     this.hunger = this.maxHunger;
     this.dead = false;
     GameManager.players[LocalClient.instance.myId].dead = false;
-    MoveCamera.Instance.PlayerRespawn(PlayerMovement.Instance.transform.position);
+    MoveCamera.Instance.PlayerRespawn(((Component) PlayerMovement.Instance).get_transform().get_position());
     this.invincible = true;
     this.CancelInvoke("StopInvincible");
     this.Invoke("StopInvincible", 3f);
@@ -86,22 +91,24 @@ public class PlayerStatus : MonoBehaviour
     this.maxShield = PowerupInventory.Instance.GetShield((int[]) null);
   }
 
-  public void Damage(int newHp)
+  public void Damage(int newHp, bool ignoreProtection = false)
   {
     if (this.invincible || (double) this.hp + (double) this.shield <= 0.0)
       return;
-    this.HandleDamage((int) ((double) this.hp + (double) this.shield) - newHp);
+    this.HandleDamage((int) ((double) this.hp + (double) this.shield) - newHp, ignoreProtection);
   }
 
-  public void DealDamage(int damage)
+  public void DealDamage(int damage, bool ignoreProtection = false)
   {
     if ((double) this.hp + (double) this.shield <= 0.0)
       return;
-    this.HandleDamage(damage);
+    this.HandleDamage(damage, ignoreProtection);
   }
 
-  private void HandleDamage(int damageTaken)
+  private void HandleDamage(int damageTaken, bool ignoreProtection = false)
   {
+    if (!ignoreProtection)
+      damageTaken = this.OneShotProtection(damageTaken);
     if ((double) this.shield >= (double) damageTaken)
     {
       this.shield -= (float) damageTaken;
@@ -132,6 +139,19 @@ public class PlayerStatus : MonoBehaviour
     DamageVignette.Instance.VignetteHit();
   }
 
+  private int OneShotProtection(int damageDone)
+  {
+    if (GameManager.gameSettings.difficulty == GameSettings.Difficulty.Gamer || !this.protectionActive)
+      return damageDone;
+    if ((double) damageDone / (double) this.MaxHpAndShield() > 0.899999976158142)
+      damageDone = (int) ((double) this.MaxHpAndShield() * (double) this.oneShotThreshold);
+    this.protectionActive = false;
+    this.Invoke("ActivateProtection", this.oneShotProtectionCooldown);
+    return damageDone;
+  }
+
+  private void ActivateProtection() => this.protectionActive = true;
+
   private void StopAdrenaline()
   {
     this.adrenalineBoost = false;
@@ -146,12 +166,12 @@ public class PlayerStatus : MonoBehaviour
   {
     this.hp = 0.0f;
     this.shield = 0.0f;
-    PlayerMovement.Instance.gameObject.SetActive(false);
+    ((Component) PlayerMovement.Instance).get_gameObject().SetActive(false);
     this.dead = true;
     GameManager.players[LocalClient.instance.myId].dead = true;
     foreach (InventoryCell allCell in InventoryUI.Instance.allCells)
     {
-      if (!((Object) allCell.currentItem == (Object) null))
+      if (!Object.op_Equality((Object) allCell.currentItem, (Object) null))
       {
         InventoryUI.Instance.DropItemIntoWorld(allCell.currentItem);
         allCell.currentItem = (InventoryItem) null;
@@ -160,13 +180,14 @@ public class PlayerStatus : MonoBehaviour
     }
     Hotbar.Instance.UpdateHotbar();
     ClientSend.PlayerDied();
-    PlayerRagdoll component = Object.Instantiate<GameObject>(this.playerRagdoll, PlayerMovement.Instance.transform.position, PlayerMovement.Instance.orientation.rotation).GetComponent<PlayerRagdoll>();
-    MoveCamera.Instance.PlayerDied(component.transform.GetChild(0).GetChild(0).GetChild(0));
-    component.SetRagdoll(LocalClient.instance.myId, -component.transform.forward);
+    PlayerRagdoll component = (PlayerRagdoll) ((GameObject) Object.Instantiate<GameObject>((M0) this.playerRagdoll, ((Component) PlayerMovement.Instance).get_transform().get_position(), PlayerMovement.Instance.orientation.get_rotation())).GetComponent<PlayerRagdoll>();
+    MoveCamera.Instance.PlayerDied(((Component) component).get_transform().GetChild(0).GetChild(0).GetChild(0));
+    component.SetRagdoll(LocalClient.instance.myId, Vector3.op_UnaryNegation(((Component) component).get_transform().get_forward()));
     GameManager.players[LocalClient.instance.myId].dead = true;
-    if (!InventoryUI.Instance.gameObject.activeInHierarchy)
-      return;
-    OtherInput.Instance.ToggleInventory(OtherInput.CraftingState.Inventory);
+    if (((Component) InventoryUI.Instance).get_gameObject().get_activeInHierarchy())
+      OtherInput.Instance.ToggleInventory(OtherInput.CraftingState.Inventory);
+    for (int armorSlot = 0; armorSlot < this.armor.Length; ++armorSlot)
+      this.UpdateArmor(armorSlot, -1);
   }
 
   public bool IsPlayerDead() => this.dead;
@@ -194,17 +215,21 @@ public class PlayerStatus : MonoBehaviour
 
   private void OutOfMap()
   {
-    if (this.dead || !(bool) (Object) PlayerMovement.Instance || (double) PlayerMovement.Instance.transform.position.y >= -200.0)
+    if (this.dead || !Object.op_Implicit((Object) PlayerMovement.Instance) || ((Component) PlayerMovement.Instance).get_transform().get_position().y >= -200.0)
       return;
-    this.Damage(0);
-    this.PlayerDied();
+    this.Damage(1);
+    RaycastHit raycastHit;
+    if (!Physics.Raycast(Vector3.op_Multiply(Vector3.get_up(), 500f), Vector3.get_down(), ref raycastHit, 1000f, LayerMask.op_Implicit(GameManager.instance.whatIsGround)))
+      return;
+    ((Component) PlayerMovement.Instance).get_transform().set_position(Vector3.op_Addition(((RaycastHit) ref raycastHit).get_point(), Vector3.op_Multiply(Vector3.get_up(), 2f)));
+    PlayerMovement.Instance.GetRb().set_velocity(Vector3.get_zero());
   }
 
   private void Shield()
   {
     if (!this.readyToRegenShield || (double) this.shield >= (double) this.maxShield || (double) this.hp + (double) this.shield <= 0.0)
       return;
-    this.shield += this.shieldRegenRate * Time.deltaTime;
+    this.shield += this.shieldRegenRate * Time.get_deltaTime();
     if ((double) this.shield <= (double) this.maxShield)
       return;
     this.shield = (float) this.maxShield;
@@ -219,7 +244,7 @@ public class PlayerStatus : MonoBehaviour
       num *= this.healingDrainMultiplier;
     if (this.running)
       num *= this.staminaDrainMultiplier;
-    this.hunger -= this.hungerDrainRate * Time.deltaTime * num;
+    this.hunger -= this.hungerDrainRate * Time.get_deltaTime() * num;
     if ((double) this.hunger >= 0.0)
       return;
     this.hunger = 0.0f;
@@ -229,17 +254,18 @@ public class PlayerStatus : MonoBehaviour
   {
     if ((double) this.hp <= 0.0 || (double) this.hp >= (double) this.maxHp || (double) this.hunger <= 0.0)
       return;
-    this.hp += this.healingRate * Time.deltaTime * PowerupInventory.Instance.GetHealingMultiplier((int[]) null);
+    this.hp += this.healingRate * Time.get_deltaTime() * PowerupInventory.Instance.GetHealingMultiplier((int[]) null);
   }
 
   private void Stamina()
   {
-    this.running = (double) this.player.GetVelocity().magnitude > 5.0 && this.player.sprinting;
+    Vector3 velocity = this.player.GetVelocity();
+    this.running = (double) ((Vector3) ref velocity).get_magnitude() > 5.0 && this.player.sprinting;
     if (this.running)
     {
       if ((double) this.stamina <= 0.0)
         return;
-      this.stamina -= this.staminaDrainRate * Time.deltaTime / PowerupInventory.Instance.GetStaminaMultiplier((int[]) null);
+      this.stamina -= this.staminaDrainRate * Time.get_deltaTime() / PowerupInventory.Instance.GetStaminaMultiplier((int[]) null);
     }
     else
     {
@@ -248,7 +274,7 @@ public class PlayerStatus : MonoBehaviour
       float num = 1f;
       if ((double) this.hunger <= 0.0)
         num *= 0.3f;
-      this.stamina += this.staminaRegenRate * Time.deltaTime * num;
+      this.stamina += this.staminaRegenRate * Time.get_deltaTime() * num;
     }
   }
 
@@ -290,6 +316,9 @@ public class PlayerStatus : MonoBehaviour
   {
     int hpIncreasePerKill = PowerupInventory.Instance.GetHpIncreasePerKill((int[]) null);
     this.draculaStacks += hpIncreasePerKill;
+    int num = PowerupInventory.Instance.GetAmount(nameof (Dracula)) * PowerupInventory.Instance.GetMaxDraculaStacks();
+    if (this.draculaStacks >= num)
+      this.draculaStacks = num;
     this.UpdateStats();
     this.hp += (float) hpIncreasePerKill;
   }
@@ -303,14 +332,40 @@ public class PlayerStatus : MonoBehaviour
     this.armorTotal = 0.0f;
     foreach (InventoryItem inventoryItem2 in this.armor)
     {
-      if (!((Object) inventoryItem2 == (Object) null))
+      if (!Object.op_Equality((Object) inventoryItem2, (Object) null))
         this.armorTotal += (float) inventoryItem2.armor;
     }
-    PreviewPlayer.Instance.SetArmor(armorSlot, itemId);
     ClientSend.SendArmor(armorSlot, itemId);
+    this.CheckArmorSetBonus();
+    PreviewPlayer.Instance.SetArmor(armorSlot, itemId);
+  }
+
+  private void CheckArmorSetBonus()
+  {
+    this.currentSpeedArmorMultiplier = 1f;
+    this.currentChunkArmorMultiplier = 1f;
+    if (Object.op_Equality((Object) this.armor[0], (Object) null))
+      return;
+    int id = this.armor[0].requirements[0].item.id;
+    foreach (InventoryItem inventoryItem in this.armor)
+    {
+      if (Object.op_Equality((Object) inventoryItem, (Object) null) || inventoryItem.requirements[0].item.id != id)
+        return;
+    }
+    string name = this.armor[0].requirements[0].item.name;
+    if (!(name == "Wolfskin"))
+    {
+      if (!(name == "Chunkium bar"))
+        return;
+      this.currentChunkArmorMultiplier = 1.6f;
+    }
+    else
+      this.currentSpeedArmorMultiplier = 1.5f;
   }
 
   public bool CanRun() => (double) this.stamina > 0.0;
 
   public bool CanJump() => (double) this.stamina >= (double) this.jumpDrain;
+
+  public PlayerStatus() => base.\u002Ector();
 }

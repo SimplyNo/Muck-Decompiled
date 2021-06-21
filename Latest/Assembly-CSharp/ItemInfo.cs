@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ItemInfo
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
 using UnityEngine;
@@ -20,12 +20,12 @@ public class ItemInfo : MonoBehaviour
   private void Awake()
   {
     ItemInfo.Instance = this;
-    this.defaultTextPos = this.text.transform.localPosition;
+    this.defaultTextPos = ((TMP_Text) this.text).get_transform().get_localPosition();
   }
 
   private void Update()
   {
-    this.transform.position = Input.mousePosition;
+    ((Component) this).get_transform().set_position(Input.get_mousePosition());
     this.FitToText();
   }
 
@@ -34,26 +34,40 @@ public class ItemInfo : MonoBehaviour
   public void FitToText()
   {
     Vector2 vector2;
-    ref Vector2 local = ref vector2;
-    Bounds bounds = this.text.mesh.bounds;
-    double x = (double) bounds.size.x;
-    bounds = this.text.mesh.bounds;
-    double y = (double) bounds.size.y;
-    local = new Vector2((float) x, (float) y);
-    vector2.x += this.padding;
-    vector2.y += this.padding;
+    ref Vector2 local1 = ref vector2;
+    Bounds bounds = ((TMP_Text) this.text).get_mesh().get_bounds();
+    // ISSUE: variable of the null type
+    __Null x = ((Bounds) ref bounds).get_size().x;
+    bounds = ((TMP_Text) this.text).get_mesh().get_bounds();
+    // ISSUE: variable of the null type
+    __Null y = ((Bounds) ref bounds).get_size().y;
+    ((Vector2) ref local1).\u002Ector((float) x, (float) y);
+    ref __Null local2 = ref vector2.x;
+    // ISSUE: cast to a reference type
+    // ISSUE: explicit reference operation
+    // ISSUE: cast to a reference type
+    // ISSUE: explicit reference operation
+    ^(float&) ref local2 = ^(float&) ref local2 + this.padding;
+    ref __Null local3 = ref vector2.y;
+    // ISSUE: cast to a reference type
+    // ISSUE: explicit reference operation
+    // ISSUE: cast to a reference type
+    // ISSUE: explicit reference operation
+    ^(float&) ref local3 = ^(float&) ref local3 + this.padding;
     if (this.leftCorner)
-      this.text.transform.localPosition = -this.defaultTextPos - new Vector3(vector2.x, vector2.y, 0.0f);
+      ((TMP_Text) this.text).get_transform().set_localPosition(Vector3.op_Subtraction(Vector3.op_UnaryNegation(this.defaultTextPos), new Vector3((float) vector2.x, (float) vector2.y, 0.0f)));
     else
-      this.text.transform.localPosition = this.defaultTextPos;
-    this.image.rectTransform.sizeDelta = vector2;
-    this.image.rectTransform.position = this.text.rectTransform.position;
-    this.image.rectTransform.localPosition = this.text.rectTransform.localPosition - new Vector3(this.padding / 2f, 0.0f, 0.0f);
+      ((TMP_Text) this.text).get_transform().set_localPosition(this.defaultTextPos);
+    ((Graphic) this.image).get_rectTransform().set_sizeDelta(vector2);
+    ((Transform) ((Graphic) this.image).get_rectTransform()).set_position(((Transform) ((TMP_Text) this.text).get_rectTransform()).get_position());
+    Vector3 vector3;
+    ((Vector3) ref vector3).\u002Ector(this.padding / 2f, 0.0f, 0.0f);
+    ((Transform) ((Graphic) this.image).get_rectTransform()).set_localPosition(Vector3.op_Subtraction(((Transform) ((TMP_Text) this.text).get_rectTransform()).get_localPosition(), vector3));
   }
 
   public void SetText(string t, bool leftCorner = false)
   {
-    this.text.text = t;
+    ((TMP_Text) this.text).set_text(t);
     if (t == "")
       this.Fade(0.0f);
     else
@@ -67,7 +81,9 @@ public class ItemInfo : MonoBehaviour
 
   public void Fade(float opacity, float time = 0.2f)
   {
-    this.text.CrossFadeAlpha(opacity, time, true);
-    this.image.CrossFadeAlpha(opacity, time, true);
+    ((Graphic) this.text).CrossFadeAlpha(opacity, time, true);
+    ((Graphic) this.image).CrossFadeAlpha(opacity, time, true);
   }
+
+  public ItemInfo() => base.\u002Ector();
 }

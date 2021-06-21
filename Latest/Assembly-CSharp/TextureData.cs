@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: TextureData
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ using UnityEngine;
 public class TextureData : UpdatableData
 {
   private const int textureSize = 512;
-  private const TextureFormat textureFormat = TextureFormat.RGB565;
+  private const TextureFormat textureFormat = (TextureFormat) 7;
   public TextureData.Layer[] layers;
   private float savedMinHeight;
   private float savedMaxHeight;
@@ -41,11 +41,11 @@ public class TextureData : UpdatableData
 
   private Texture2DArray GenerateTextureArray(Texture2D[] textures)
   {
-    Texture2DArray texture2Darray = new Texture2DArray(512, 512, textures.Length, TextureFormat.RGB565, true);
-    for (int arrayElement = 0; arrayElement < textures.Length; ++arrayElement)
+    Texture2DArray texture2Darray = new Texture2DArray(512, 512, textures.Length, (TextureFormat) 7, true);
+    for (int index = 0; index < textures.Length; ++index)
     {
-      if ((bool) (UnityEngine.Object) textures[arrayElement])
-        texture2Darray.SetPixels(textures[arrayElement].GetPixels(), arrayElement);
+      if (Object.op_Implicit((Object) textures[index]))
+        texture2Darray.SetPixels(textures[index].GetPixels(), index);
     }
     texture2Darray.Apply();
     return texture2Darray;

@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: HitableActor
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -23,10 +23,10 @@ public class HitableActor : Hitable
 
   public new virtual int Damage(int damage, int fromClient, int hitEffect, Vector3 pos)
   {
-    Vector3 dir = GameManager.players[fromClient].transform.position - pos;
+    Vector3 dir = Vector3.op_Subtraction(((Component) GameManager.players[fromClient]).get_transform().get_position(), pos);
     this.SpawnParticles(pos, dir, hitEffect);
     HitEffect hitEffect1 = (HitEffect) hitEffect;
-    Object.Instantiate<GameObject>(this.numberFx, pos, Quaternion.identity).GetComponent<HitNumber>().SetTextAndDir((float) damage, dir, hitEffect1);
+    ((HitNumber) ((GameObject) Object.Instantiate<GameObject>((M0) this.numberFx, pos, Quaternion.get_identity())).GetComponent<HitNumber>()).SetTextAndDir((float) damage, dir, hitEffect1);
     return this.hp;
   }
 

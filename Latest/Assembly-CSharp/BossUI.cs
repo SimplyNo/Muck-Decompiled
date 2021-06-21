@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: BossUI
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
 using UnityEngine;
@@ -24,43 +24,50 @@ public class BossUI : MonoBehaviour
   private void Awake()
   {
     BossUI.Instance = this;
-    this.layout.transform.localScale = Vector3.zero;
-    this.desiredScale = Vector3.zero;
+    ((Component) this.layout).get_transform().set_localScale(Vector3.get_zero());
+    this.desiredScale = Vector3.get_zero();
   }
 
   public void SetBoss(Mob b)
   {
-    if ((Object) this.currentBoss != (Object) null)
+    if (Object.op_Inequality((Object) this.currentBoss, (Object) null))
       return;
     this.currentBoss = b;
-    this.bossName.text = "";
+    ((TMP_Text) this.bossName).set_text("");
     if (b.IsBuff())
-      this.bossName.text += "Buff ";
-    this.bossName.text += this.currentBoss.mobType.name;
+    {
+      TextMeshProUGUI bossName = this.bossName;
+      ((TMP_Text) bossName).set_text(((TMP_Text) bossName).get_text() + "Buff ");
+    }
+    TextMeshProUGUI bossName1 = this.bossName;
+    ((TMP_Text) bossName1).set_text(((TMP_Text) bossName1).get_text() + this.currentBoss.mobType.name);
     this.currentHp = 0.0f;
-    this.desiredScale = Vector3.one;
-    this.hitableMob = b.GetComponent<HitableMob>();
-    this.layout.gameObject.SetActive(true);
-    this.layout.localScale = Vector3.zero;
+    this.desiredScale = Vector3.get_one();
+    this.hitableMob = (HitableMob) ((Component) b).GetComponent<HitableMob>();
+    ((Component) this.layout).get_gameObject().SetActive(true);
+    this.layout.set_localScale(Vector3.get_zero());
   }
 
   private void Update()
   {
-    if ((Object) this.currentBoss == (Object) null)
+    if (Object.op_Equality((Object) this.currentBoss, (Object) null))
     {
-      if (!this.layout.gameObject.activeInHierarchy)
+      if (!((Component) this.layout).get_gameObject().get_activeInHierarchy())
         return;
-      this.layout.gameObject.SetActive(false);
+      ((Component) this.layout).get_gameObject().SetActive(false);
       if ((double) DayCycle.time >= 0.5)
         return;
       MusicController.Instance.StopSong();
     }
     else
     {
-      this.currentHp = Mathf.Lerp(this.currentHp, (float) this.hitableMob.hp, Time.deltaTime * 10f);
-      this.hpText.text = Mathf.RoundToInt(this.currentHp).ToString() + " / " + (object) this.hitableMob.maxHp;
-      this.hpBar.transform.localScale = new Vector3((float) this.hitableMob.hp / (float) this.hitableMob.maxHp, 1f, 1f);
-      this.layout.transform.localScale = Vector3.Lerp(this.layout.transform.localScale, this.desiredScale, Time.deltaTime * 10f);
+      this.currentHp = Mathf.Lerp(this.currentHp, (float) this.hitableMob.hp, Time.get_deltaTime() * 10f);
+      ((TMP_Text) this.hpText).set_text(Mathf.RoundToInt(this.currentHp).ToString() + " / " + (object) this.hitableMob.maxHp);
+      float num = (float) this.hitableMob.hp / (float) this.hitableMob.maxHp;
+      ((Component) this.hpBar).get_transform().set_localScale(new Vector3(num, 1f, 1f));
+      ((Component) this.layout).get_transform().set_localScale(Vector3.Lerp(((Component) this.layout).get_transform().get_localScale(), this.desiredScale, Time.get_deltaTime() * 10f));
     }
   }
+
+  public BossUI() => base.\u002Ector();
 }

@@ -1,10 +1,11 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: Outline
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -16,20 +17,20 @@ public class Outline : MonoBehaviour
   [SerializeField]
   private Outline.Mode outlineMode;
   [SerializeField]
-  private Color outlineColor = Color.white;
+  private Color outlineColor;
   [SerializeField]
   [Range(0.0f, 10f)]
-  private float outlineWidth = 2f;
+  private float outlineWidth;
   [Header("Optional")]
   [SerializeField]
   [Tooltip("Precompute enabled: Per-vertex calculations are performed in the editor and serialized with the object. Precompute disabled: Per-vertex calculations are performed at runtime in Awake(). This may cause a pause for large meshes.")]
   private bool precomputeOutline;
   [SerializeField]
   [HideInInspector]
-  private List<Mesh> bakeKeys = new List<Mesh>();
+  private List<Mesh> bakeKeys;
   [SerializeField]
   [HideInInspector]
-  private List<Outline.ListVector3> bakeValues = new List<Outline.ListVector3>();
+  private List<Outline.ListVector3> bakeValues;
   private Renderer[] renderers;
   private Material outlineMaskMaterial;
   private Material outlineFillMaterial;
@@ -67,11 +68,11 @@ public class Outline : MonoBehaviour
 
   private void Awake()
   {
-    this.renderers = this.GetComponentsInChildren<Renderer>();
-    this.outlineMaskMaterial = UnityEngine.Object.Instantiate<Material>(Resources.Load<Material>("Materials/OutlineMask"));
-    this.outlineFillMaterial = UnityEngine.Object.Instantiate<Material>(Resources.Load<Material>("Materials/OutlineFill"));
-    this.outlineMaskMaterial.name = "OutlineMask (Instance)";
-    this.outlineFillMaterial.name = "OutlineFill (Instance)";
+    this.renderers = (Renderer[]) ((Component) this).GetComponentsInChildren<Renderer>();
+    this.outlineMaskMaterial = (Material) Object.Instantiate<Material>(Resources.Load<Material>("Materials/OutlineMask"));
+    this.outlineFillMaterial = (Material) Object.Instantiate<Material>(Resources.Load<Material>("Materials/OutlineFill"));
+    ((Object) this.outlineMaskMaterial).set_name("OutlineMask (Instance)");
+    ((Object) this.outlineFillMaterial).set_name("OutlineFill (Instance)");
     this.LoadSmoothNormals();
     this.needsUpdate = true;
   }
@@ -80,10 +81,10 @@ public class Outline : MonoBehaviour
   {
     foreach (Renderer renderer in this.renderers)
     {
-      List<Material> list = ((IEnumerable<Material>) renderer.sharedMaterials).ToList<Material>();
+      List<Material> list = ((IEnumerable<Material>) renderer.get_sharedMaterials()).ToList<Material>();
       list.Add(this.outlineMaskMaterial);
       list.Add(this.outlineFillMaterial);
-      renderer.materials = list.ToArray();
+      renderer.set_materials(list.ToArray());
     }
   }
 
@@ -112,28 +113,28 @@ public class Outline : MonoBehaviour
   {
     foreach (Renderer renderer in this.renderers)
     {
-      List<Material> list = ((IEnumerable<Material>) renderer.sharedMaterials).ToList<Material>();
+      List<Material> list = ((IEnumerable<Material>) renderer.get_sharedMaterials()).ToList<Material>();
       list.Remove(this.outlineMaskMaterial);
       list.Remove(this.outlineFillMaterial);
-      renderer.materials = list.ToArray();
+      renderer.set_materials(list.ToArray());
     }
   }
 
   private void OnDestroy()
   {
-    UnityEngine.Object.Destroy((UnityEngine.Object) this.outlineMaskMaterial);
-    UnityEngine.Object.Destroy((UnityEngine.Object) this.outlineFillMaterial);
+    Object.Destroy((Object) this.outlineMaskMaterial);
+    Object.Destroy((Object) this.outlineFillMaterial);
   }
 
   private void Bake()
   {
     HashSet<Mesh> meshSet = new HashSet<Mesh>();
-    foreach (MeshFilter componentsInChild in this.GetComponentsInChildren<MeshFilter>())
+    foreach (MeshFilter componentsInChild in (MeshFilter[]) ((Component) this).GetComponentsInChildren<MeshFilter>())
     {
-      if (meshSet.Add(componentsInChild.sharedMesh))
+      if (meshSet.Add(componentsInChild.get_sharedMesh()))
       {
-        List<Vector3> vector3List = this.SmoothNormals(componentsInChild.sharedMesh);
-        this.bakeKeys.Add(componentsInChild.sharedMesh);
+        List<Vector3> vector3List = this.SmoothNormals(componentsInChild.get_sharedMesh());
+        this.bakeKeys.Add(componentsInChild.get_sharedMesh());
         this.bakeValues.Add(new Outline.ListVector3()
         {
           data = vector3List
@@ -144,36 +145,52 @@ public class Outline : MonoBehaviour
 
   private void LoadSmoothNormals()
   {
-    foreach (MeshFilter componentsInChild in this.GetComponentsInChildren<MeshFilter>())
+    foreach (MeshFilter componentsInChild in (MeshFilter[]) ((Component) this).GetComponentsInChildren<MeshFilter>())
     {
-      if (Outline.registeredMeshes.Add(componentsInChild.sharedMesh))
+      if (Outline.registeredMeshes.Add(componentsInChild.get_sharedMesh()))
       {
-        int index = this.bakeKeys.IndexOf(componentsInChild.sharedMesh);
-        List<Vector3> uvs = index >= 0 ? this.bakeValues[index].data : this.SmoothNormals(componentsInChild.sharedMesh);
-        componentsInChild.sharedMesh.SetUVs(3, uvs);
+        int index = this.bakeKeys.IndexOf(componentsInChild.get_sharedMesh());
+        List<Vector3> vector3List = index >= 0 ? this.bakeValues[index].data : this.SmoothNormals(componentsInChild.get_sharedMesh());
+        componentsInChild.get_sharedMesh().SetUVs(3, vector3List);
       }
     }
-    foreach (SkinnedMeshRenderer componentsInChild in this.GetComponentsInChildren<SkinnedMeshRenderer>())
+    foreach (SkinnedMeshRenderer componentsInChild in (SkinnedMeshRenderer[]) ((Component) this).GetComponentsInChildren<SkinnedMeshRenderer>())
     {
-      if (Outline.registeredMeshes.Add(componentsInChild.sharedMesh))
-        componentsInChild.sharedMesh.uv4 = new Vector2[componentsInChild.sharedMesh.vertexCount];
+      if (Outline.registeredMeshes.Add(componentsInChild.get_sharedMesh()))
+        componentsInChild.get_sharedMesh().set_uv4(new Vector2[componentsInChild.get_sharedMesh().get_vertexCount()]);
     }
   }
 
   private List<Vector3> SmoothNormals(Mesh mesh)
   {
-    IEnumerable<IGrouping<Vector3, KeyValuePair<Vector3, int>>> groupings = ((IEnumerable<Vector3>) mesh.vertices).Select<Vector3, KeyValuePair<Vector3, int>>((Func<Vector3, int, KeyValuePair<Vector3, int>>) ((vertex, index) => new KeyValuePair<Vector3, int>(vertex, index))).GroupBy<KeyValuePair<Vector3, int>, Vector3>((Func<KeyValuePair<Vector3, int>, Vector3>) (pair => pair.Key));
-    List<Vector3> vector3List = new List<Vector3>((IEnumerable<Vector3>) mesh.normals);
-    foreach (IGrouping<Vector3, KeyValuePair<Vector3, int>> source in groupings)
+    IEnumerable<IGrouping<Vector3, KeyValuePair<Vector3, int>>> groupings = ((IEnumerable<Vector3>) mesh.get_vertices()).Select<Vector3, KeyValuePair<Vector3, int>>((Func<Vector3, int, KeyValuePair<Vector3, int>>) ((vertex, index) => new KeyValuePair<Vector3, int>(vertex, index))).GroupBy<KeyValuePair<Vector3, int>, Vector3>((Func<KeyValuePair<Vector3, int>, Vector3>) (pair => pair.Key));
+    List<Vector3> vector3List = new List<Vector3>((IEnumerable<Vector3>) mesh.get_normals());
+    using (IEnumerator<IGrouping<Vector3, KeyValuePair<Vector3, int>>> enumerator1 = groupings.GetEnumerator())
     {
-      if (source.Count<KeyValuePair<Vector3, int>>() != 1)
+      while (((IEnumerator) enumerator1).MoveNext())
       {
-        Vector3 zero = Vector3.zero;
-        foreach (KeyValuePair<Vector3, int> keyValuePair in (IEnumerable<KeyValuePair<Vector3, int>>) source)
-          zero += mesh.normals[keyValuePair.Value];
-        zero.Normalize();
-        foreach (KeyValuePair<Vector3, int> keyValuePair in (IEnumerable<KeyValuePair<Vector3, int>>) source)
-          vector3List[keyValuePair.Value] = zero;
+        IGrouping<Vector3, KeyValuePair<Vector3, int>> current1 = enumerator1.Current;
+        if (((IEnumerable<KeyValuePair<Vector3, int>>) current1).Count<KeyValuePair<Vector3, int>>() != 1)
+        {
+          Vector3 vector3 = Vector3.get_zero();
+          using (IEnumerator<KeyValuePair<Vector3, int>> enumerator2 = ((IEnumerable<KeyValuePair<Vector3, int>>) current1).GetEnumerator())
+          {
+            while (((IEnumerator) enumerator2).MoveNext())
+            {
+              KeyValuePair<Vector3, int> current2 = enumerator2.Current;
+              vector3 = Vector3.op_Addition(vector3, mesh.get_normals()[current2.Value]);
+            }
+          }
+          ((Vector3) ref vector3).Normalize();
+          using (IEnumerator<KeyValuePair<Vector3, int>> enumerator2 = ((IEnumerable<KeyValuePair<Vector3, int>>) current1).GetEnumerator())
+          {
+            while (((IEnumerator) enumerator2).MoveNext())
+            {
+              KeyValuePair<Vector3, int> current2 = enumerator2.Current;
+              vector3List[current2.Value] = vector3;
+            }
+          }
+        }
       }
     }
     return vector3List;
@@ -211,6 +228,8 @@ public class Outline : MonoBehaviour
         break;
     }
   }
+
+  public Outline() => base.\u002Ector();
 
   public enum Mode
   {

@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: Map
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,7 +21,7 @@ public class Map : MonoBehaviour
   private Vector2 startHoldPos;
   private Vector2 startMapPos;
 
-  public bool active { get; set; } = true;
+  public bool active { get; set; }
 
   private void Awake()
   {
@@ -31,12 +31,12 @@ public class Map : MonoBehaviour
 
   public void GenerateMap()
   {
-    this.mapSize = this.map.sizeDelta.x;
+    this.mapSize = (float) this.map.get_sizeDelta().x;
     this.mapRatio = this.mapSize / ((float) MapGenerator.mapChunkSize * (float) MapGenerator.worldScale);
     Texture2D texture2D = TextureGenerator.ColorTextureFromHeightMap(MapGenerator.Instance.heightMap, MapGenerator.Instance.textureData);
-    texture2D.minimumMipmapLevel = 0;
-    this.mapTextureMaterial.mainTexture = (Texture) texture2D;
-    this.mapRender.material = this.mapTextureMaterial;
+    texture2D.set_minimumMipmapLevel(0);
+    this.mapTextureMaterial.set_mainTexture((Texture) texture2D);
+    ((Graphic) this.mapRender).set_material(this.mapTextureMaterial);
     this.maxPos = new Vector3(this.mapSize / 2f, this.mapSize / 2f);
   }
 
@@ -50,45 +50,49 @@ public class Map : MonoBehaviour
 
   private void PlayerInput()
   {
-    float y = Input.mouseScrollDelta.y;
-    Vector2 mousePosition = (Vector2) Input.mousePosition;
+    float y = (float) Input.get_mouseScrollDelta().y;
+    Vector2 vector2_1 = Vector2.op_Implicit(Input.get_mousePosition());
     if (Input.GetMouseButtonDown(0))
     {
-      this.startHoldPos = mousePosition;
-      this.startMapPos = (Vector2) this.map.transform.position;
+      this.startHoldPos = vector2_1;
+      this.startMapPos = Vector2.op_Implicit(((Component) this.map).get_transform().get_position());
     }
     if (Input.GetMouseButton(0))
     {
-      this.map.transform.position = (Vector3) (this.startMapPos - (this.startHoldPos - mousePosition));
-      this.map.transform.localPosition = (Vector3) this.ClampVector((Vector2) this.map.transform.localPosition, (Vector2) (this.maxPos * this.map.transform.localScale.x));
+      Vector2 vector2_2 = Vector2.op_Subtraction(this.startMapPos, Vector2.op_Subtraction(this.startHoldPos, vector2_1));
+      ((Component) this.map).get_transform().set_position(Vector2.op_Implicit(vector2_2));
+      Vector3 localPosition = ((Component) this.map).get_transform().get_localPosition();
+      Vector3 vector3_1 = Vector3.op_Multiply(this.maxPos, (float) ((Component) this.map).get_transform().get_localScale().x);
+      Vector3 vector3_2 = Vector2.op_Implicit(this.ClampVector(Vector2.op_Implicit(localPosition), Vector2.op_Implicit(vector3_1)));
+      ((Component) this.map).get_transform().set_localPosition(vector3_2);
     }
     if ((double) y > 0.0)
     {
-      float num = this.map.transform.localScale.x + 0.3f;
+      float num = (float) (((Component) this.map).get_transform().get_localScale().x + 0.300000011920929);
       if ((double) num > 6.0)
         num = 6f;
-      this.map.transform.localScale = new Vector3(num, num, num);
+      ((Component) this.map).get_transform().set_localScale(new Vector3(num, num, num));
     }
     else
     {
       if ((double) y >= 0.0)
         return;
-      float num = this.map.transform.localScale.x - 0.3f;
+      float num = (float) (((Component) this.map).get_transform().get_localScale().x - 0.300000011920929);
       if ((double) num < 0.2)
         num = 0.2f;
-      this.map.transform.localScale = new Vector3(num, num, num);
+      ((Component) this.map).get_transform().set_localScale(new Vector3(num, num, num));
     }
   }
 
   private Vector2 ClampVector(Vector2 v, Vector2 max)
   {
-    if ((double) v.x > (double) max.x)
+    if (v.x > max.x)
       v.x = max.x;
-    else if ((double) v.x < -(double) max.x)
+    else if (v.x < -max.x)
       v.x = -max.x;
-    if ((double) v.y > (double) max.y)
+    if (v.y > max.y)
       v.y = max.y;
-    else if ((double) v.y < -(double) max.y)
+    else if (v.y < -max.y)
       v.y = -max.y;
     return v;
   }
@@ -96,25 +100,30 @@ public class Map : MonoBehaviour
   public void ToggleMap()
   {
     this.active = !this.active;
-    this.mapParent.gameObject.SetActive(this.active);
+    ((Component) this.mapParent).get_gameObject().SetActive(this.active);
     if (this.active)
     {
-      Cursor.visible = true;
-      Cursor.lockState = CursorLockMode.None;
+      Cursor.set_visible(true);
+      Cursor.set_lockState((CursorLockMode) 0);
     }
     else
     {
-      Cursor.visible = false;
-      Cursor.lockState = CursorLockMode.Locked;
+      Cursor.set_visible(false);
+      Cursor.set_lockState((CursorLockMode) 1);
     }
   }
 
   private void ShowPlayers()
   {
-    if (!(bool) (Object) PlayerMovement.Instance)
+    if (!Object.op_Implicit((Object) PlayerMovement.Instance))
       return;
-    Vector3 position = PlayerMovement.Instance.transform.position;
-    this.playerIcon.transform.localPosition = new Vector3(position.x, position.z, 0.0f) * this.mapRatio;
-    this.playerIcon.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, -PlayerMovement.Instance.orientation.eulerAngles.y);
+    Vector3 position = ((Component) PlayerMovement.Instance).get_transform().get_position();
+    Vector3 vector3;
+    ((Vector3) ref vector3).\u002Ector((float) position.x, (float) position.z, 0.0f);
+    ((Component) this.playerIcon).get_transform().set_localPosition(Vector3.op_Multiply(vector3, this.mapRatio));
+    float y = (float) PlayerMovement.Instance.orientation.get_eulerAngles().y;
+    ((Component) this.playerIcon).get_transform().set_localRotation(Quaternion.Euler(0.0f, 0.0f, -y));
   }
+
+  public Map() => base.\u002Ector();
 }

@@ -1,16 +1,16 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ZoneController
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
 public class ZoneController : MonoBehaviour
 {
-  private int baseDamage = 1;
-  private float threshold = 1.5f;
-  private float updateRate = 0.5f;
+  private int baseDamage;
+  private float threshold;
+  private float updateRate;
   private bool inZone;
   public Transform audio;
   public AudioSource transition;
@@ -20,12 +20,12 @@ public class ZoneController : MonoBehaviour
   public LayerMask whatIsGround;
   private int currentDay;
   private float desiredZoneScale;
-  private float zoneSpeed = 5f;
+  private float zoneSpeed;
 
   private void Awake()
   {
     ZoneController.Instance = this;
-    this.maxScale = this.transform.localScale.x;
+    this.maxScale = (float) ((Component) this).get_transform().get_localScale().x;
     this.desiredZoneScale = this.maxScale;
     this.InvokeRepeating("SlowUpdate", this.updateRate, this.updateRate);
   }
@@ -34,12 +34,12 @@ public class ZoneController : MonoBehaviour
 
   private void AdjustZoneHeight()
   {
-    RaycastHit hitInfo;
-    if (!Physics.Raycast(this.transform.position + Vector3.up * 500f, Vector3.down, out hitInfo, 1000f, (int) this.whatIsGround))
+    RaycastHit raycastHit;
+    if (!Physics.Raycast(Vector3.op_Addition(((Component) this).get_transform().get_position(), Vector3.op_Multiply(Vector3.get_up(), 500f)), Vector3.get_down(), ref raycastHit, 1000f, LayerMask.op_Implicit(this.whatIsGround)))
       return;
-    Vector3 position = this.transform.position;
-    position.y = hitInfo.point.y;
-    this.transform.position = position;
+    Vector3 position = ((Component) this).get_transform().get_position();
+    position.y = ((RaycastHit) ref raycastHit).get_point().y;
+    ((Component) this).get_transform().set_position(position);
   }
 
   public void NextDay(int day)
@@ -53,13 +53,13 @@ public class ZoneController : MonoBehaviour
 
   private void SlowUpdate()
   {
-    if (!(bool) (Object) PlayerMovement.Instance || PlayerStatus.Instance.IsPlayerDead())
+    if (!Object.op_Implicit((Object) PlayerMovement.Instance) || PlayerStatus.Instance.IsPlayerDead())
       return;
-    Vector3 position = PlayerMovement.Instance.transform.position;
-    if ((double) Vector3.Distance(Vector3.zero, position) > (double) this.transform.localScale.x)
+    Vector3 position = ((Component) PlayerMovement.Instance).get_transform().get_position();
+    if ((double) Vector3.Distance(Vector3.get_zero(), position) > ((Component) this).get_transform().get_localScale().x)
     {
       PlayerStatus.Instance.DealDamage(this.baseDamage * GameManager.instance.currentDay + 1);
-      this.audio.transform.position = position;
+      ((Component) this.audio).get_transform().set_position(position);
       this.damageAudio.Play();
       if (this.inZone)
         return;
@@ -81,17 +81,24 @@ public class ZoneController : MonoBehaviour
 
   private void Update()
   {
-    if (!(bool) (Object) PlayerMovement.Instance)
+    if (!Object.op_Implicit((Object) PlayerMovement.Instance))
       return;
-    Vector3 position = PlayerMovement.Instance.transform.position;
+    Vector3 position = ((Component) PlayerMovement.Instance).get_transform().get_position();
     if (!this.inZone)
-      this.audio.transform.position = Vector3.zero + (position - Vector3.zero).normalized * this.transform.localScale.x;
+    {
+      Vector3 vector3 = Vector3.op_Subtraction(position, Vector3.get_zero());
+      Vector3 normalized = ((Vector3) ref vector3).get_normalized();
+      ((Component) this.audio).get_transform().set_position(Vector3.op_Addition(Vector3.get_zero(), Vector3.op_Multiply(normalized, (float) ((Component) this).get_transform().get_localScale().x)));
+    }
     else
-      this.audio.transform.position = position;
-    if ((double) this.transform.localScale.x <= (double) this.desiredZoneScale || (double) this.transform.localScale.x <= 0.0)
+      ((Component) this.audio).get_transform().set_position(position);
+    if (((Component) this).get_transform().get_localScale().x <= (double) this.desiredZoneScale || ((Component) this).get_transform().get_localScale().x <= 0.0)
       return;
-    if ((double) this.transform.localScale.x < 40.0)
+    if (((Component) this).get_transform().get_localScale().x < 40.0)
       this.zoneSpeed = 1f;
-    this.transform.localScale -= Vector3.one * this.zoneSpeed * Time.deltaTime;
+    Transform transform = ((Component) this).get_transform();
+    transform.set_localScale(Vector3.op_Subtraction(transform.get_localScale(), Vector3.op_Multiply(Vector3.op_Multiply(Vector3.get_one(), this.zoneSpeed), Time.get_deltaTime())));
   }
+
+  public ZoneController() => base.\u002Ector();
 }

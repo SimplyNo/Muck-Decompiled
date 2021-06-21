@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: UiManager
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using System.Net;
@@ -22,16 +22,16 @@ public class UiManager : MonoBehaviour
 
   private void Awake()
   {
-    if ((UnityEngine.Object) UiManager.instance == (UnityEngine.Object) null)
+    if (Object.op_Equality((Object) UiManager.instance, (Object) null))
     {
       UiManager.instance = this;
     }
     else
     {
-      if (!((UnityEngine.Object) UiManager.instance != (UnityEngine.Object) this))
+      if (!Object.op_Inequality((Object) UiManager.instance, (Object) this))
         return;
       Debug.Log((object) "Instance already exists, destroying object");
-      UnityEngine.Object.Destroy((UnityEngine.Object) this);
+      Object.Destroy((Object) this);
     }
   }
 
@@ -41,11 +41,11 @@ public class UiManager : MonoBehaviour
 
   public void Host()
   {
-    int port = int.Parse(this.portField.text);
+    int port = int.Parse(this.portField.get_text());
     LocalClient.instance.port = port;
     NetworkManager.instance.StartServer(port);
     Server.ipAddress = IPAddress.Any;
-    MonoBehaviour.print((object) ("hosting server on: " + (object) Server.ipAddress + " on port: " + this.portField.text));
+    MonoBehaviour.print((object) ("hosting server on: " + (object) Server.ipAddress + " on port: " + this.portField.get_text()));
     this.ConnectTest();
   }
 
@@ -67,13 +67,13 @@ public class UiManager : MonoBehaviour
   public void ConnectToServer()
   {
     LocalClient.serverOwner = false;
-    LocalClient.instance.port = int.Parse(this.portField.text);
-    LocalClient.instance.ConnectToServer(this.ipField.text, "bread");
-    MonoBehaviour.print((object) ("connecting to ip:" + this.ipField.text));
+    LocalClient.instance.port = int.Parse(this.portField.get_text());
+    LocalClient.instance.ConnectToServer(this.ipField.get_text(), "bread");
+    MonoBehaviour.print((object) ("connecting to ip:" + this.ipField.get_text()));
     this.lobbyCam.SetActive(false);
     try
     {
-      Color black = Color.black;
+      Color.get_black();
     }
     catch (Exception ex)
     {
@@ -82,4 +82,6 @@ public class UiManager : MonoBehaviour
   }
 
   public void ConnectionSuccessful() => this.startMenu.SetActive(false);
+
+  public UiManager() => base.\u002Ector();
 }

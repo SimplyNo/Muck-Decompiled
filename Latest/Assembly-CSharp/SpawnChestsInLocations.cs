@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: SpawnChestsInLocations
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using System.Collections.Generic;
@@ -29,10 +29,10 @@ public class SpawnChestsInLocations : MonoBehaviour
       rand.Next(0, this.lootTables.Length);
       int index3 = intList[index2];
       intList.Remove(index3);
-      Vector3 position = this.positions[index3].position;
-      Quaternion rotation = this.positions[index3].rotation;
+      Vector3 position = this.positions[index3].get_position();
+      Quaternion rotation = this.positions[index3].get_rotation();
       List<InventoryItem> loot = this.FindLootTable(this.lootTables, this.totalWeight, rand).GetLoot(rand);
-      Chest componentInChildren = UnityEngine.Object.Instantiate<GameObject>(this.chest, position, rotation).GetComponentInChildren<Chest>();
+      Chest componentInChildren = (Chest) ((GameObject) Object.Instantiate<GameObject>((M0) this.chest, position, rotation)).GetComponentInChildren<Chest>();
       int nextId = ChestManager.Instance.GetNextId();
       ChestManager.Instance.AddChest(componentInChildren, nextId);
       componentInChildren.InitChest(loot, rand);
@@ -55,6 +55,8 @@ public class SpawnChestsInLocations : MonoBehaviour
     MonoBehaviour.print((object) "couldnt find, just returning 0");
     return structurePrefabs[0].table;
   }
+
+  public SpawnChestsInLocations() => base.\u002Ector();
 
   [Serializable]
   public class WeightedTables

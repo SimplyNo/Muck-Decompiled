@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: SpawnZoneGenerator`1
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,8 +11,8 @@ public abstract class SpawnZoneGenerator<T> : MonoBehaviour
 {
   public GameObject spawnZone;
   private int mapChunkSize;
-  private float worldEdgeBuffer = 0.6f;
-  public int nZones = 50;
+  private float worldEdgeBuffer;
+  public int nZones;
   protected ConsistentRandom randomGen;
   public LayerMask whatIsTerrain;
   protected List<SpawnZone> zones;
@@ -22,7 +22,7 @@ public abstract class SpawnZoneGenerator<T> : MonoBehaviour
   public T[] entities;
   public float[] weights;
 
-  public float worldScale { get; set; } = 12f;
+  public float worldScale { get; set; }
 
   private void Start()
   {
@@ -36,16 +36,16 @@ public abstract class SpawnZoneGenerator<T> : MonoBehaviour
     int num = 0;
     for (int index = 0; index < this.nZones; ++index)
     {
-      Vector3 origin = new Vector3((float) ((this.randomGen.NextDouble() * 2.0 - 1.0) * (double) this.mapChunkSize / 2.0), 0.0f, (float) ((this.randomGen.NextDouble() * 2.0 - 1.0) * (double) this.mapChunkSize / 2.0)) * this.worldScale;
-      origin.y = 200f;
-      RaycastHit hitInfo;
-      if (Physics.Raycast(origin, Vector3.down, out hitInfo, 500f, (int) this.whatIsTerrain) && WorldUtility.WorldHeightToBiome(hitInfo.point.y) == TextureData.TerrainType.Grass)
+      Vector3 vector3 = Vector3.op_Multiply(new Vector3((float) ((this.randomGen.NextDouble() * 2.0 - 1.0) * (double) this.mapChunkSize / 2.0), 0.0f, (float) ((this.randomGen.NextDouble() * 2.0 - 1.0) * (double) this.mapChunkSize / 2.0)), this.worldScale);
+      vector3.y = (__Null) 200.0;
+      RaycastHit raycastHit;
+      if (Physics.Raycast(vector3, Vector3.get_down(), ref raycastHit, 500f, LayerMask.op_Implicit(this.whatIsTerrain)) && WorldUtility.WorldHeightToBiome((float) ((RaycastHit) ref raycastHit).get_point().y) == TextureData.TerrainType.Grass)
       {
-        this.shrines[index] = hitInfo.point;
+        this.shrines[index] = ((RaycastHit) ref raycastHit).get_point();
         ++num;
         GameObject spawnZone = this.spawnZone;
-        SpawnZone component = Object.Instantiate<GameObject>(spawnZone, hitInfo.point, spawnZone.transform.rotation).GetComponent<SpawnZone>();
-        component.GetComponentInChildren<SharedObject>().SetId(ResourceManager.Instance.GetNextId());
+        SpawnZone component = (SpawnZone) ((GameObject) Object.Instantiate<GameObject>((M0) spawnZone, ((RaycastHit) ref raycastHit).get_point(), spawnZone.get_transform().get_rotation())).GetComponent<SpawnZone>();
+        ((SharedObject) ((Component) component).GetComponentInChildren<SharedObject>()).SetId(ResourceManager.Instance.GetNextId());
         component.id = MobZoneManager.Instance.GetNextId();
         this.zones.Add(this.ProcessZone(component));
       }
@@ -74,4 +74,6 @@ public abstract class SpawnZoneGenerator<T> : MonoBehaviour
     }
     return entityTypes[0];
   }
+
+  protected SpawnZoneGenerator() => base.\u002Ector();
 }

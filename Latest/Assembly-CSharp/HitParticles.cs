@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: HitParticles
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -18,13 +18,15 @@ public class HitParticles : MonoBehaviour
   {
     foreach (ParticleSystem particle in this.particles)
     {
-      particle.main.startColor = (ParticleSystem.MinMaxGradient) HitEffectExtension.GetColor(effect);
-      ParticleSystem.EmissionModule emission = particle.emission;
-      ParticleSystem.Burst burst = emission.GetBurst(0);
-      ParticleSystem.MinMaxCurve count = burst.count;
-      count.constant *= 2f;
-      burst.count = count;
-      emission.SetBurst(0, burst);
+      ParticleSystem.MainModule main = particle.get_main();
+      ((ParticleSystem.MainModule) ref main).set_startColor(ParticleSystem.MinMaxGradient.op_Implicit(HitEffectExtension.GetColor(effect)));
+      ParticleSystem.EmissionModule emission = particle.get_emission();
+      ParticleSystem.Burst burst = ((ParticleSystem.EmissionModule) ref emission).GetBurst(0);
+      ParticleSystem.MinMaxCurve count = ((ParticleSystem.Burst) ref burst).get_count();
+      ref ParticleSystem.MinMaxCurve local = ref count;
+      ((ParticleSystem.MinMaxCurve) ref local).set_constant(((ParticleSystem.MinMaxCurve) ref local).get_constant() * 2f);
+      ((ParticleSystem.Burst) ref burst).set_count(count);
+      ((ParticleSystem.EmissionModule) ref emission).SetBurst(0, burst);
     }
     this.audioDone = true;
     this.audio.sounds = this.critHit;
@@ -37,4 +39,6 @@ public class HitParticles : MonoBehaviour
       return;
     this.audio.Randomize(0.0f);
   }
+
+  public HitParticles() => base.\u002Ector();
 }

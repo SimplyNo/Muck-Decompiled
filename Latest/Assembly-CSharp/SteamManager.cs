@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: SteamManager
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using Steamworks;
 using Steamworks.Data;
@@ -46,22 +46,22 @@ public class SteamManager : MonoBehaviour
 
   public void Awake()
   {
-    if ((UnityEngine.Object) SteamManager.Instance == (UnityEngine.Object) null)
+    if (Object.op_Equality((Object) SteamManager.Instance, (Object) null))
     {
       this.daRealOne = true;
-      UnityEngine.Object.DontDestroyOnLoad((UnityEngine.Object) this.gameObject);
+      Object.DontDestroyOnLoad((Object) ((Component) this).get_gameObject());
       SteamManager.Instance = this;
       this.PlayerName = "";
       try
       {
-        SteamClient.Init(SteamManager.gameAppId);
-        if (!SteamClient.IsValid)
+        SteamClient.Init(SteamManager.gameAppId, true);
+        if (!SteamClient.get_IsValid())
         {
           Debug.Log((object) "Steam client not valid");
           throw new Exception();
         }
-        this.PlayerName = SteamClient.Name;
-        this.PlayerSteamId = SteamClient.SteamId;
+        this.PlayerName = SteamClient.get_Name();
+        this.PlayerSteamId = SteamClient.get_SteamId();
         this.playerSteamIdString = this.PlayerSteamId.ToString();
         this.activeUnrankedLobbies = new List<Lobby>();
         this.activeRankedLobbies = new List<Lobby>();
@@ -78,9 +78,9 @@ public class SteamManager : MonoBehaviour
     }
     else
     {
-      if (!((UnityEngine.Object) SteamManager.Instance != (UnityEngine.Object) this))
+      if (!Object.op_Inequality((Object) SteamManager.Instance, (Object) this))
         return;
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.gameObject);
+      Object.Destroy((Object) ((Component) this).get_gameObject());
     }
   }
 
@@ -89,14 +89,14 @@ public class SteamManager : MonoBehaviour
     Debug.Log((object) "Attempting to reconnect to Steam");
     try
     {
-      SteamClient.Init(SteamManager.gameAppId);
-      if (!SteamClient.IsValid)
+      SteamClient.Init(SteamManager.gameAppId, true);
+      if (!SteamClient.get_IsValid())
       {
         Debug.Log((object) "Steam client not valid");
         throw new Exception();
       }
-      this.PlayerName = SteamClient.Name;
-      this.PlayerSteamId = SteamClient.SteamId;
+      this.PlayerName = SteamClient.get_Name();
+      this.PlayerSteamId = SteamClient.get_SteamId();
       this.activeUnrankedLobbies = new List<Lobby>();
       this.activeRankedLobbies = new List<Lobby>();
       Debug.Log((object) ("Steam initialized: " + this.PlayerName));
@@ -120,16 +120,18 @@ public class SteamManager : MonoBehaviour
 
   private void Start()
   {
-    SteamMatchmaking.OnLobbyGameCreated += new Action<Lobby, uint, ushort, SteamId>(this.OnLobbyGameCreatedCallback);
-    SteamMatchmaking.OnLobbyCreated += new Action<Result, Lobby>(this.OnLobbyCreatedCallback);
-    SteamMatchmaking.OnLobbyEntered += new Action<Lobby>(this.OnLobbyEnteredCallback);
-    SteamMatchmaking.OnLobbyMemberJoined += new Action<Lobby, Friend>(this.OnLobbyMemberJoinedCallback);
-    SteamMatchmaking.OnChatMessage += new Action<Lobby, Friend, string>(this.OnChatMessageCallback);
-    SteamMatchmaking.OnLobbyMemberDisconnected += new Action<Lobby, Friend>(this.OnLobbyMemberDisconnectedCallback);
-    SteamMatchmaking.OnLobbyMemberLeave += new Action<Lobby, Friend>(this.OnLobbyMemberLeaveCallback);
-    SteamFriends.OnGameLobbyJoinRequested += new Action<Lobby, SteamId>(this.OnGameLobbyJoinRequestedCallback);
-    SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(this.OnSceneLoaded);
-    this.UpdateRichPresenceStatus(SceneManager.GetActiveScene().name);
+    SteamMatchmaking.add_OnLobbyGameCreated(new Action<Lobby, uint, ushort, SteamId>(this.OnLobbyGameCreatedCallback));
+    SteamMatchmaking.add_OnLobbyCreated(new Action<Result, Lobby>(this.OnLobbyCreatedCallback));
+    SteamMatchmaking.add_OnLobbyEntered(new Action<Lobby>(this.OnLobbyEnteredCallback));
+    SteamMatchmaking.add_OnLobbyMemberJoined(new Action<Lobby, Friend>(this.OnLobbyMemberJoinedCallback));
+    SteamMatchmaking.add_OnChatMessage(new Action<Lobby, Friend, string>(this.OnChatMessageCallback));
+    SteamMatchmaking.add_OnLobbyMemberDisconnected(new Action<Lobby, Friend>(this.OnLobbyMemberDisconnectedCallback));
+    SteamMatchmaking.add_OnLobbyMemberLeave(new Action<Lobby, Friend>(this.OnLobbyMemberLeaveCallback));
+    SteamFriends.add_OnGameLobbyJoinRequested(new Action<Lobby, SteamId>(this.OnGameLobbyJoinRequestedCallback));
+    // ISSUE: method pointer
+    SceneManager.add_sceneLoaded(new UnityAction<Scene, LoadSceneMode>((object) this, __methodptr(OnSceneLoaded)));
+    Scene activeScene = SceneManager.GetActiveScene();
+    this.UpdateRichPresenceStatus(((Scene) ref activeScene).get_name());
   }
 
   private void Update() => SteamClient.RunCallbacks();
@@ -170,30 +172,32 @@ public class SteamManager : MonoBehaviour
 
   private void OtherLobbyMemberLeft(Friend friend)
   {
+    if (((SteamId) friend.Id).Value == this.PlayerSteamId.Value)
+      return;
     Debug.LogError((object) "someone is leaving lobby");
-    if ((long) (ulong) friend.Id != (long) (ulong) this.PlayerSteamId)
+    if ((long) SteamId.op_Implicit((SteamId) friend.Id) != (long) SteamId.op_Implicit(this.PlayerSteamId))
     {
       this.LobbyPartnerDisconnected = true;
       LobbyVisuals.Instance.DespawnLobbyPlayer(friend);
       try
       {
-        SteamNetworking.CloseP2PSessionWithUser(friend.Id);
+        SteamNetworking.CloseP2PSessionWithUser((SteamId) friend.Id);
       }
       catch
       {
         Debug.Log((object) "Unable to update disconnected player nameplate / process disconnect cleanly");
       }
     }
-    if ((long) this.originalLobbyOwnerId.Value == (long) this.PlayerSteamId.Value)
+    if (this.originalLobbyOwnerId.Value == this.PlayerSteamId.Value)
     {
       Debug.LogError((object) "player left sucess");
       SteamLobby.Instance.RemovePlayerFromLobby(friend);
     }
-    if ((long) this.originalLobbyOwnerId.Value != (long) friend.Id.Value)
+    if (this.originalLobbyOwnerId.Value != ((SteamId) friend.Id).Value)
       return;
     this.leaveLobby();
     StatusMessage.Instance.DisplayMessage("Server host left the lobby...");
-    if (!(bool) (UnityEngine.Object) GameManager.instance)
+    if (!Object.op_Implicit((Object) GameManager.instance))
       return;
     GameManager.instance.LeaveGame();
   }
@@ -204,7 +208,7 @@ public class SteamManager : MonoBehaviour
 
   public async void JoinLobby(Lobby lobby)
   {
-    if ((long) lobby.Id.Value == (long) this.currentLobby.Id.Value)
+    if (((Lobby) ref lobby).get_Id().Value == ((Lobby) ref this.currentLobby).get_Id().Value)
     {
       Debug.LogError((object) "Attempted to join the same lobby twice...");
     }
@@ -212,7 +216,7 @@ public class SteamManager : MonoBehaviour
     {
       LocalClient.serverOwner = false;
       this.leaveLobby();
-      if (await lobby.Join() != RoomEnter.Success)
+      if (await ((Lobby) ref lobby).Join() != 1)
       {
         Debug.Log((object) "failed to join lobby");
         StatusMessage.Instance.DisplayMessage("Couldn't find lobby. Make sure it's a valid lobbyID from someone");
@@ -220,7 +224,7 @@ public class SteamManager : MonoBehaviour
       else
       {
         this.currentLobby = lobby;
-        this.lobbyOwnerSteamId = (SteamId) lobby.Owner.Id.Value;
+        this.lobbyOwnerSteamId = SteamId.op_Implicit((ulong) ((SteamId) ((Lobby) ref lobby).get_Owner().Id).Value);
         this.LobbyPartnerDisconnected = false;
         this.AcceptP2P(this.lobbyOwnerSteamId);
       }
@@ -241,23 +245,23 @@ public class SteamManager : MonoBehaviour
 
   private void OnChatMessageCallback(Lobby lobby, Friend friend, string message)
   {
-    if ((long) (ulong) friend.Id == (long) (ulong) this.PlayerSteamId)
+    if ((long) SteamId.op_Implicit((SteamId) friend.Id) == (long) SteamId.op_Implicit(this.PlayerSteamId))
       return;
     Debug.Log((object) "incoming chat message");
     Debug.Log((object) message);
-    lobby.SetGameServer(this.PlayerSteamId);
+    ((Lobby) ref lobby).SetGameServer(this.PlayerSteamId);
   }
 
   private void OnLobbyEnteredCallback(Lobby lobby)
   {
-    if (lobby.MemberCount < 1)
+    if (((Lobby) ref lobby).get_MemberCount() < 1)
     {
-      lobby.Leave();
+      ((Lobby) ref lobby).Leave();
     }
     else
     {
-      string version = Application.version;
-      string data = lobby.GetData("Version");
+      string version = Application.get_version();
+      string data = ((Lobby) ref lobby).GetData("Version");
       if (version != data)
       {
         StatusMessage.Instance.DisplayMessage("You're on version " + version + ", but server is on " + data + ". Update your game on Steam to play.\n<size=60%>If there is no update button, right click on the game > manage > uninstall, then install again");
@@ -267,11 +271,11 @@ public class SteamManager : MonoBehaviour
       {
         LobbyVisuals.Instance.OpenLobby(lobby);
         LocalClient.serverOwner = false;
-        this.originalLobbyOwnerId = (SteamId) lobby.Owner.Id.Value;
-        if (lobby.MemberCount == 1)
+        this.originalLobbyOwnerId = SteamId.op_Implicit((ulong) ((SteamId) ((Lobby) ref lobby).get_Owner().Id).Value);
+        if (((Lobby) ref lobby).get_MemberCount() == 1)
           return;
         this.AcceptP2P(this.originalLobbyOwnerId);
-        lobby.SendChatString("incoming player info");
+        ((Lobby) ref lobby).SendChatString("incoming player info");
       }
     }
   }
@@ -279,7 +283,7 @@ public class SteamManager : MonoBehaviour
   private async void OnGameLobbyJoinRequestedCallback(Lobby joinedLobby, SteamId id)
   {
     Debug.LogError((object) "trying to join lobby");
-    if ((long) joinedLobby.Id.Value == (long) this.currentLobby.Id.Value)
+    if (((Lobby) ref joinedLobby).get_Id().Value == ((Lobby) ref this.currentLobby).get_Id().Value)
     {
       Debug.LogError((object) "Attempted to join the same lobby twice...");
     }
@@ -287,14 +291,14 @@ public class SteamManager : MonoBehaviour
     {
       LocalClient.serverOwner = false;
       this.leaveLobby();
-      if (await joinedLobby.Join() != RoomEnter.Success)
+      if (await ((Lobby) ref joinedLobby).Join() != 1)
       {
         Debug.Log((object) "failed to join lobby");
       }
       else
       {
         this.currentLobby = joinedLobby;
-        this.lobbyOwnerSteamId = (SteamId) joinedLobby.Owner.Id.Value;
+        this.lobbyOwnerSteamId = SteamId.op_Implicit((ulong) ((SteamId) ((Lobby) ref joinedLobby).get_Owner().Id).Value);
         this.LobbyPartnerDisconnected = false;
         this.AcceptP2P(this.lobbyOwnerSteamId);
         Debug.LogError((object) "Join success");
@@ -306,29 +310,29 @@ public class SteamManager : MonoBehaviour
   {
     Debug.LogError((object) "lobbyu created opkay");
     this.LobbyPartnerDisconnected = false;
-    if (result != Result.OK)
+    if (result != 1)
     {
       Debug.Log((object) "lobby creation result not ok");
       Debug.Log((object) result.ToString());
     }
     this.lobbyOwnerSteamId = this.PlayerSteamId;
-    lobby.SetData("Version", Application.version);
-    Debug.Log((object) ("on version: " + lobby.GetData("Version")));
+    ((Lobby) ref lobby).SetData("Version", Application.get_version());
+    Debug.Log((object) ("on version: " + ((Lobby) ref lobby).GetData("Version")));
     SteamLobby.Instance.StartLobby(this.PlayerSteamId, lobby);
   }
 
   private void OnLobbyMemberJoinedCallback(Lobby lobby, Friend friend)
   {
     Debug.Log((object) "someone else joined lobby");
-    if ((long) (ulong) friend.Id != (long) (ulong) this.PlayerSteamId)
+    if ((long) SteamId.op_Implicit((SteamId) friend.Id) != (long) SteamId.op_Implicit(this.PlayerSteamId))
     {
       this.LobbyPartner = friend;
-      this.lobbyOwnerSteamId = (SteamId) lobby.Owner.Id.Value;
+      this.lobbyOwnerSteamId = SteamId.op_Implicit((ulong) ((SteamId) ((Lobby) ref lobby).get_Owner().Id).Value);
       this.AcceptP2P(this.lobbyOwnerSteamId);
       this.LobbyPartnerDisconnected = false;
       LobbyVisuals.Instance.SpawnLobbyPlayer(friend);
     }
-    if ((long) this.currentLobby.Owner.Id.Value != (long) (ulong) this.PlayerSteamId)
+    if (((SteamId) ((Lobby) ref this.currentLobby).get_Owner().Id).Value != (long) SteamId.op_Implicit(this.PlayerSteamId))
       return;
     SteamLobby.Instance.AddPlayerToLobby(friend);
   }
@@ -337,18 +341,18 @@ public class SteamManager : MonoBehaviour
   {
     try
     {
-      if ((long) this.currentLobby.Owner.Id.Value == (long) this.PlayerSteamId.Value)
+      if (((SteamId) ((Lobby) ref this.currentLobby).get_Owner().Id).Value == this.PlayerSteamId.Value)
         SteamLobby.Instance.CloseLobby();
     }
     catch
     {
       Debug.Log((object) "Steam lobby doesn't exist...");
     }
-    if (!(bool) (UnityEngine.Object) GameManager.instance)
+    if (!Object.op_Implicit((Object) GameManager.instance))
       LobbyVisuals.Instance.CloseLobby();
     try
     {
-      this.currentLobby.Leave();
+      ((Lobby) ref this.currentLobby).Leave();
       Debug.Log((object) "Lobby left successfully");
     }
     catch
@@ -363,7 +367,7 @@ public class SteamManager : MonoBehaviour
     {
       Debug.Log((object) "Error closing P2P session with opponent");
     }
-    this.currentLobby = new Lobby();
+    this.currentLobby = (Lobby) null;
   }
 
   public async Task<bool> CreateFriendLobby()
@@ -378,9 +382,9 @@ public class SteamManager : MonoBehaviour
       }
       this.LobbyPartnerDisconnected = false;
       this.hostedMultiplayerLobby = lobbyAsync.Value;
-      this.hostedMultiplayerLobby.SetFriendsOnly();
+      ((Lobby) ref this.hostedMultiplayerLobby).SetFriendsOnly();
       this.currentLobby = this.hostedMultiplayerLobby;
-      this.hostedMultiplayerLobby.SetData("Version", Application.version ?? "");
+      ((Lobby) ref this.hostedMultiplayerLobby).SetData("Version", Application.get_version() ?? "");
       return true;
     }
     catch (Exception ex)
@@ -403,9 +407,9 @@ public class SteamManager : MonoBehaviour
       }
       this.LobbyPartnerDisconnected = false;
       this.hostedMultiplayerLobby = lobbyAsync.Value;
-      this.hostedMultiplayerLobby.SetPublic();
-      this.hostedMultiplayerLobby.SetJoinable(true);
-      this.hostedMultiplayerLobby.SetData("Version", Application.version ?? "");
+      ((Lobby) ref this.hostedMultiplayerLobby).SetPublic();
+      ((Lobby) ref this.hostedMultiplayerLobby).SetJoinable(true);
+      ((Lobby) ref this.hostedMultiplayerLobby).SetData("Version", Application.get_version() ?? "");
       this.currentLobby = this.hostedMultiplayerLobby;
       return true;
     }
@@ -419,24 +423,26 @@ public class SteamManager : MonoBehaviour
     }
   }
 
-  public void OpenFriendOverlayForGameInvite() => SteamFriends.OpenGameInviteOverlay(this.currentLobby.Id);
+  public void OpenFriendOverlayForGameInvite() => SteamFriends.OpenGameInviteOverlay(((Lobby) ref this.currentLobby).get_Id());
 
-  private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode) => this.UpdateRichPresenceStatus(scene.name);
+  private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode) => this.UpdateRichPresenceStatus(((Scene) ref scene).get_name());
 
   public void UpdateRichPresenceStatus(string SceneName)
   {
     if (!this.connectedToSteam)
       return;
-    string key = "steam_display";
+    string str = "steam_display";
     if (SceneName.Equals("SillyScene"))
     {
-      SteamFriends.SetRichPresence(key, "#SillyScene");
+      SteamFriends.SetRichPresence(str, "#SillyScene");
     }
     else
     {
       if (!SceneName.Contains("SillyScene2"))
         return;
-      SteamFriends.SetRichPresence(key, "#SillyScene2");
+      SteamFriends.SetRichPresence(str, "#SillyScene2");
     }
   }
+
+  public SteamManager() => base.\u002Ector();
 }

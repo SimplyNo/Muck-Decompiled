@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: MobSpawner
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -33,9 +33,10 @@ public class MobSpawner : MonoBehaviour
     int mobType,
     Vector3 pos,
     float multiplier,
-    float bossMultiplier)
+    float bossMultiplier,
+    Mob.BossType bossType = Mob.BossType.None)
   {
-    this.SpawnMob(pos, mobType, mobId, multiplier, bossMultiplier);
+    this.SpawnMob(pos, mobType, mobId, multiplier, bossMultiplier, bossType);
     ServerSend.MobSpawn(pos, mobType, mobId, multiplier, bossMultiplier);
   }
 
@@ -44,12 +45,17 @@ public class MobSpawner : MonoBehaviour
     int mobType,
     int mobId,
     float multiplier,
-    float bossMultiplier)
+    float bossMultiplier,
+    Mob.BossType bossType = Mob.BossType.None)
   {
-    Mob component = Object.Instantiate<GameObject>(this.allMobs[mobType].mobPrefab, pos, Quaternion.identity).GetComponent<Mob>();
+    Mob component = (Mob) ((GameObject) Object.Instantiate<GameObject>((M0) this.allMobs[mobType].mobPrefab, pos, Quaternion.get_identity())).GetComponent<Mob>();
     MobManager.Instance.AddMob(component, mobId);
     component.multiplier = multiplier;
     component.bossMultiplier = bossMultiplier;
+    if (component.bossType != Mob.BossType.BossShrine || bossType != Mob.BossType.None)
+      component.bossType = bossType;
     MonoBehaviour.print((object) ("spawned new mob with id: " + (object) mobId));
   }
+
+  public MobSpawner() => base.\u002Ector();
 }

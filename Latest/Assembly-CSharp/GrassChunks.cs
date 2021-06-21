@@ -1,16 +1,16 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: GrassChunks
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GrassChunks : MonoBehaviour
 {
-  public int nChunks = 25;
-  public int chunkSize = 5;
+  public int nChunks;
+  public int chunkSize;
   private int chunkLength;
   private float topLeftX;
   private float topLeftZ;
@@ -19,12 +19,12 @@ public class GrassChunks : MonoBehaviour
   public int grassDensity;
   private Vector2 previousChunk;
   public Transform target;
-  private int maxLOD = 20;
+  private int maxLOD;
 
   private void Awake()
   {
     this.InitChunks();
-    this.UpdateChunkCenters(Vector2.zero);
+    this.UpdateChunkCenters(Vector2.get_zero());
   }
 
   private void InitChunks()
@@ -38,8 +38,8 @@ public class GrassChunks : MonoBehaviour
   private void UpdateChunkCenters(Vector2 dir)
   {
     Dictionary<Vector3, GrassChunks.Chunk> dictionary = new Dictionary<Vector3, GrassChunks.Chunk>();
-    float num1 = this.transform.position.x - this.transform.position.x % (float) this.chunkSize;
-    float num2 = this.transform.position.z - this.transform.position.z % (float) this.chunkSize;
+    float num1 = (float) (((Component) this).get_transform().get_position().x - ((Component) this).get_transform().get_position().x % (double) this.chunkSize);
+    float num2 = (float) (((Component) this).get_transform().get_position().z - ((Component) this).get_transform().get_position().z % (double) this.chunkSize);
     if ((double) num1 < 0.0)
       num1 -= (float) this.chunkSize / 2f;
     if ((double) num1 > 0.0)
@@ -55,7 +55,8 @@ public class GrassChunks : MonoBehaviour
     {
       int num5 = Mathf.FloorToInt((float) index / (float) this.chunkLength) * this.chunkSize;
       int num6 = index % this.chunkLength * this.chunkSize;
-      Vector3 vector3 = new Vector3((float) ((double) num3 + (double) num6 + (double) this.chunkSize / 2.0), 0.0f, (float) ((double) num4 - (double) num5 - (double) this.chunkSize / 2.0));
+      Vector3 vector3;
+      ((Vector3) ref vector3).\u002Ector((float) ((double) num3 + (double) num6 + (double) this.chunkSize / 2.0), 0.0f, (float) ((double) num4 - (double) num5 - (double) this.chunkSize / 2.0));
       if (this.chunks.ContainsKey(vector3))
       {
         dictionary.Add(vector3, this.chunks[vector3]);
@@ -72,17 +73,27 @@ public class GrassChunks : MonoBehaviour
   private void Update()
   {
     Vector2 playerChunk = this.FindPLayerChunk();
-    if (!(playerChunk != Vector2.zero))
+    if (!Vector2.op_Inequality(playerChunk, Vector2.get_zero()))
       return;
-    playerChunk.x /= (float) this.chunkSize;
-    playerChunk.y /= (float) this.chunkSize;
+    ref __Null local1 = ref playerChunk.x;
+    // ISSUE: cast to a reference type
+    // ISSUE: explicit reference operation
+    // ISSUE: cast to a reference type
+    // ISSUE: explicit reference operation
+    ^(float&) ref local1 = ^(float&) ref local1 / (float) this.chunkSize;
+    ref __Null local2 = ref playerChunk.y;
+    // ISSUE: cast to a reference type
+    // ISSUE: explicit reference operation
+    // ISSUE: cast to a reference type
+    // ISSUE: explicit reference operation
+    ^(float&) ref local2 = ^(float&) ref local2 / (float) this.chunkSize;
     MonoBehaviour.print((object) playerChunk);
     this.UpdateChunkCenters(playerChunk);
   }
 
   private void UpdateChunkLOD()
   {
-    this.target = this.transform;
+    this.target = ((Component) this).get_transform();
     int num = 0;
     while (num < this.nChunks)
       ++num;
@@ -100,20 +111,21 @@ public class GrassChunks : MonoBehaviour
 
   private Vector2 FindPLayerChunk()
   {
-    float x = this.transform.position.x - this.transform.position.x % (float) this.chunkSize;
-    float y = this.transform.position.z - this.transform.position.z % (float) this.chunkSize;
-    if ((double) x < 0.0)
-      x -= (float) this.chunkSize / 2f;
-    if ((double) x > 0.0)
-      x += (float) this.chunkSize / 2f;
-    if ((double) y < 0.0)
-      y -= (float) this.chunkSize / 2f;
-    if ((double) y > 0.0)
-      y += (float) this.chunkSize / 2f;
-    Vector2 vector2_1 = new Vector2(x, y);
-    if (!(this.previousChunk != vector2_1))
-      return Vector2.zero;
-    Vector2 vector2_2 = vector2_1 - this.previousChunk;
+    float num1 = (float) (((Component) this).get_transform().get_position().x - ((Component) this).get_transform().get_position().x % (double) this.chunkSize);
+    float num2 = (float) (((Component) this).get_transform().get_position().z - ((Component) this).get_transform().get_position().z % (double) this.chunkSize);
+    if ((double) num1 < 0.0)
+      num1 -= (float) this.chunkSize / 2f;
+    if ((double) num1 > 0.0)
+      num1 += (float) this.chunkSize / 2f;
+    if ((double) num2 < 0.0)
+      num2 -= (float) this.chunkSize / 2f;
+    if ((double) num2 > 0.0)
+      num2 += (float) this.chunkSize / 2f;
+    Vector2 vector2_1;
+    ((Vector2) ref vector2_1).\u002Ector(num1, num2);
+    if (!Vector2.op_Inequality(this.previousChunk, vector2_1))
+      return Vector2.get_zero();
+    Vector2 vector2_2 = Vector2.op_Subtraction(vector2_1, this.previousChunk);
     this.previousChunk = vector2_1;
     return vector2_2;
   }
@@ -122,9 +134,14 @@ public class GrassChunks : MonoBehaviour
   {
     if (this.chunks == null)
       return;
-    foreach (GrassChunks.Chunk chunk in this.chunks.Values)
-      Gizmos.DrawWireCube(chunk.chunkCenter, Vector3.one * (float) this.chunkSize);
+    using (Dictionary<Vector3, GrassChunks.Chunk>.ValueCollection.Enumerator enumerator = this.chunks.Values.GetEnumerator())
+    {
+      while (enumerator.MoveNext())
+        Gizmos.DrawWireCube(enumerator.Current.chunkCenter, Vector3.op_Multiply(Vector3.get_one(), (float) this.chunkSize));
+    }
   }
+
+  public GrassChunks() => base.\u002Ector();
 
   public class Chunk
   {

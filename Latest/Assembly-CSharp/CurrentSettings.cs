@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: CurrentSettings
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -10,14 +10,27 @@ public class CurrentSettings : MonoBehaviour
 {
   public static bool cameraShake;
   public static bool grass = true;
-  public static bool inverted = false;
+  public static bool invertedHor = false;
+  public static bool invertedVer = false;
   public float sensMultiplier;
+  public int fov;
   public bool tutorial;
   public float volume;
   public float music;
   public static CurrentSettings Instance;
 
-  private void Awake() => CurrentSettings.Instance = this;
+  private void Awake()
+  {
+    if (Object.op_Implicit((Object) CurrentSettings.Instance))
+    {
+      Object.Destroy((Object) ((Component) this).get_gameObject());
+    }
+    else
+    {
+      CurrentSettings.Instance = this;
+      Debug.LogError((object) "new settings instance");
+    }
+  }
 
   private void Start() => this.InitSettings();
 
@@ -26,6 +39,7 @@ public class CurrentSettings : MonoBehaviour
   public void UpdateSave()
   {
     this.UpdateCamShake(SaveManager.Instance.state.cameraShake);
+    this.UpdateFov((float) SaveManager.Instance.state.fov);
     this.UpdateSens(SaveManager.Instance.state.sensMultiplier);
     this.UpdateGrass(SaveManager.Instance.state.grass);
     this.UpdateTutorial(SaveManager.Instance.state.tutorial);
@@ -44,6 +58,7 @@ public class CurrentSettings : MonoBehaviour
     this.UpdateResolution((int) resolution.x, (int) resolution.y, refreshRate);
     this.UpdateFullscreen(SaveManager.Instance.state.fullscreen);
     this.UpdateVSync(SaveManager.Instance.state.vSync);
+    this.UpdateFullscreenMode(SaveManager.Instance.state.fullscreenMode);
     this.UpdateMaxFps(SaveManager.Instance.state.fpsLimit);
     this.UpdateVolume(SaveManager.Instance.state.volume);
     this.UpdateMusic(SaveManager.Instance.state.music);
@@ -65,12 +80,27 @@ public class CurrentSettings : MonoBehaviour
     PlayerInput.sensMultiplier = i;
   }
 
-  public void UpdateInverted(bool b)
+  public void UpdateFov(float i)
   {
-    Debug.Log((object) ("Setting inverted to: " + b.ToString()));
-    SaveManager.Instance.state.invertedMouse = b;
+    int num = (int) i;
+    Debug.LogError((object) ("updates fov to: " + (object) num));
+    SaveManager.Instance.state.fov = num;
     SaveManager.Instance.Save();
-    CurrentSettings.inverted = b;
+    Debug.LogError((object) ("Save fov as: " + (object) num));
+    this.fov = num;
+    if (!Object.op_Implicit((Object) MoveCamera.Instance))
+      return;
+    MoveCamera.Instance.UpdateFov((float) this.fov);
+  }
+
+  public void UpdateInverted(bool hor, bool ver)
+  {
+    Debug.Log((object) ("Setting inverted to: " + hor.ToString() + ", ver: " + ver.ToString()));
+    SaveManager.Instance.state.invertedMouseHor = hor;
+    SaveManager.Instance.state.invertedMouseVert = ver;
+    SaveManager.Instance.Save();
+    CurrentSettings.invertedHor = hor;
+    CurrentSettings.invertedVer = ver;
   }
 
   public void UpdateGrass(bool b)
@@ -93,7 +123,7 @@ public class CurrentSettings : MonoBehaviour
   {
     SaveManager.Instance.state.shadowQuality = i;
     SaveManager.Instance.Save();
-    QualitySettings.shadows = (UnityEngine.ShadowQuality) i;
+    QualitySettings.set_shadows((ShadowQuality) i);
     MonoBehaviour.print((object) "updating shadow quality");
   }
 
@@ -101,7 +131,7 @@ public class CurrentSettings : MonoBehaviour
   {
     SaveManager.Instance.state.shadowResolution = i;
     SaveManager.Instance.Save();
-    QualitySettings.shadowResolution = (UnityEngine.ShadowResolution) i;
+    QualitySettings.set_shadowResolution((ShadowResolution) i);
     MonoBehaviour.print((object) "updating shadow res");
   }
 
@@ -109,7 +139,7 @@ public class CurrentSettings : MonoBehaviour
   {
     SaveManager.Instance.state.shadowCascade = i;
     SaveManager.Instance.Save();
-    QualitySettings.shadowCascades = 2 * i;
+    QualitySettings.set_shadowCascades(2 * i);
     MonoBehaviour.print((object) "updating shadow cascades");
   }
 
@@ -117,7 +147,7 @@ public class CurrentSettings : MonoBehaviour
   {
     SaveManager.Instance.state.shadowDistance = i;
     SaveManager.Instance.Save();
-    QualitySettings.shadowDistance = (float) (i * 40);
+    QualitySettings.set_shadowDistance((float) (i * 40));
     MonoBehaviour.print((object) "updating shadow distance");
   }
 
@@ -125,7 +155,7 @@ public class CurrentSettings : MonoBehaviour
   {
     SaveManager.Instance.state.textureQuality = i;
     SaveManager.Instance.Save();
-    QualitySettings.masterTextureLimit = 3 - i;
+    QualitySettings.set_masterTextureLimit(3 - i);
     MonoBehaviour.print((object) "updating texture quality");
   }
 
@@ -149,7 +179,7 @@ public class CurrentSettings : MonoBehaviour
         num = 8;
         break;
     }
-    QualitySettings.antiAliasing = num;
+    QualitySettings.set_antiAliasing(num);
     MonoBehaviour.print((object) "updating AA");
   }
 
@@ -157,7 +187,7 @@ public class CurrentSettings : MonoBehaviour
   {
     SaveManager.Instance.state.softParticles = b;
     SaveManager.Instance.Save();
-    QualitySettings.softParticles = b;
+    QualitySettings.set_softParticles(b);
     MonoBehaviour.print((object) "updating soft particles");
   }
 
@@ -187,12 +217,12 @@ public class CurrentSettings : MonoBehaviour
 
   public void UpdateResolution(int width, int height, int refreshRate)
   {
-    if (SaveManager.Instance.state.resolution == Vector2.zero)
+    if (Vector2.op_Equality(SaveManager.Instance.state.resolution, Vector2.get_zero()))
     {
-      Resolution currentResolution = Screen.currentResolution;
-      width = currentResolution.width;
-      height = currentResolution.height;
-      refreshRate = currentResolution.refreshRate;
+      Resolution currentResolution = Screen.get_currentResolution();
+      width = ((Resolution) ref currentResolution).get_width();
+      height = ((Resolution) ref currentResolution).get_height();
+      refreshRate = ((Resolution) ref currentResolution).get_refreshRate();
       MonoBehaviour.print((object) "finding custom res");
     }
     Screen.SetResolution(width, height, SaveManager.Instance.state.fullscreen, refreshRate);
@@ -205,15 +235,23 @@ public class CurrentSettings : MonoBehaviour
   {
     SaveManager.Instance.state.fullscreen = i;
     SaveManager.Instance.Save();
-    Screen.fullScreen = i;
+    Screen.set_fullScreen(i);
     MonoBehaviour.print((object) "updated fullscreen");
+  }
+
+  public void UpdateFullscreenMode(int i)
+  {
+    SaveManager.Instance.state.fullscreenMode = i;
+    SaveManager.Instance.Save();
+    Screen.set_fullScreenMode((FullScreenMode) i);
+    MonoBehaviour.print((object) "updated fullscreenmode");
   }
 
   public void UpdateVSync(int i)
   {
     SaveManager.Instance.state.vSync = i;
     SaveManager.Instance.Save();
-    QualitySettings.vSyncCount = i;
+    QualitySettings.set_vSyncCount(i);
     MonoBehaviour.print((object) "updated vsync");
   }
 
@@ -221,7 +259,7 @@ public class CurrentSettings : MonoBehaviour
   {
     SaveManager.Instance.state.fpsLimit = i;
     SaveManager.Instance.Save();
-    Application.targetFrameRate = i;
+    Application.set_targetFrameRate(i);
     MonoBehaviour.print((object) "updated fps limit");
   }
 
@@ -229,7 +267,7 @@ public class CurrentSettings : MonoBehaviour
   {
     SaveManager.Instance.state.volume = i;
     SaveManager.Instance.Save();
-    AudioListener.volume = (float) i / 10f;
+    AudioListener.set_volume((float) i / 10f);
     MonoBehaviour.print((object) "updated volume");
   }
 
@@ -240,4 +278,6 @@ public class CurrentSettings : MonoBehaviour
     MusicController.Instance.SetVolume((float) i / 10f);
     MonoBehaviour.print((object) "updated music");
   }
+
+  public CurrentSettings() => base.\u002Ector();
 }

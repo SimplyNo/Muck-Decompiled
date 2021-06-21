@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: LootContainerInteract
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -13,7 +13,7 @@ public class LootContainerInteract : MonoBehaviour, Interactable, SharedObject
   private int basePrice;
   private int id;
   private static int totalId = 69420;
-  private bool ready = true;
+  private bool ready;
   private bool opened;
   public Animator animator;
   public float white;
@@ -40,7 +40,7 @@ public class LootContainerInteract : MonoBehaviour, Interactable, SharedObject
   private void TestSpawn()
   {
     this.id = LootContainerInteract.totalId++;
-    ResourceManager.Instance.AddObject(this.id, this.gameObject);
+    ResourceManager.Instance.AddObject(this.id, ((Component) this).get_gameObject());
   }
 
   public void Interact()
@@ -60,16 +60,16 @@ public class LootContainerInteract : MonoBehaviour, Interactable, SharedObject
 
   public void AllExecute() => this.OpenContainer();
 
-  public void ServerExecute()
+  public void ServerExecute(int fromClient)
   {
     if (!LocalClient.serverOwner)
       return;
     Powerup powerup = ItemManager.Instance.GetRandomPowerup(this.white, this.blue, this.gold);
-    if (this.testPowerup && (Object) this.powerupToTest != (Object) null)
+    if (this.testPowerup && Object.op_Inequality((Object) this.powerupToTest, (Object) null))
       powerup = this.powerupToTest;
     int nextId = ItemManager.Instance.GetNextId();
-    ItemManager.Instance.DropPowerupAtPosition(powerup.id, this.transform.position, nextId);
-    ServerSend.DropPowerupAtPosition(powerup.id, nextId, this.transform.position);
+    ItemManager.Instance.DropPowerupAtPosition(powerup.id, ((Component) this).get_transform().get_position(), nextId);
+    ServerSend.DropPowerupAtPosition(powerup.id, nextId, ((Component) this).get_transform().get_position());
   }
 
   public void RemoveObject()
@@ -79,10 +79,10 @@ public class LootContainerInteract : MonoBehaviour, Interactable, SharedObject
   public void OpenContainer()
   {
     this.opened = true;
-    if (!this.gameObject.activeInHierarchy)
+    if (!((Component) this).get_gameObject().get_activeInHierarchy())
       return;
     this.animator.Play("OpenChest");
-    Object.Destroy((Object) this.gameObject);
+    Object.Destroy((Object) ((Component) this).get_gameObject());
   }
 
   public string GetName()
@@ -91,7 +91,11 @@ public class LootContainerInteract : MonoBehaviour, Interactable, SharedObject
     return this.price < 1 ? "Open chest" : string.Format("{0} Gold\n<size=75%>open chest", (object) this.price);
   }
 
+  public bool IsStarted() => false;
+
   public void SetId(int id) => this.id = id;
 
   public int GetId() => this.id;
+
+  public LootContainerInteract() => base.\u002Ector();
 }

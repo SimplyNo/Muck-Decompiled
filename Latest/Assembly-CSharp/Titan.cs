@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: Titan
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -13,17 +13,19 @@ public class Titan : MonoBehaviour
   public Transform stompPosition;
   private Mob m;
 
-  private void Awake() => this.m = this.GetComponent<Mob>();
+  private void Awake() => this.m = (Mob) ((Component) this).GetComponent<Mob>();
 
   public void StompFx()
   {
-    ImpactDamage componentInChildren = Object.Instantiate<GameObject>(this.stompAttack, this.stompPosition.transform.position, this.stompAttack.transform.rotation).GetComponentInChildren<ImpactDamage>();
-    componentInChildren.baseDamage = (int) ((double) componentInChildren.baseDamage * (double) this.m.multiplier);
+    M0 componentInChildren = ((GameObject) Object.Instantiate<GameObject>((M0) this.stompAttack, ((Component) this.stompPosition).get_transform().get_position(), this.stompAttack.get_transform().get_rotation())).GetComponentInChildren<ImpactDamage>();
+    ((ImpactDamage) componentInChildren).baseDamage = (int) ((double) ((ImpactDamage) componentInChildren).baseDamage * (double) this.m.multiplier);
   }
 
   public void JumpFx()
   {
-    ImpactDamage componentInChildren = Object.Instantiate<GameObject>(this.jumpFx, this.stompPosition.transform.position, this.stompAttack.transform.rotation).GetComponentInChildren<ImpactDamage>();
-    componentInChildren.baseDamage = (int) ((double) componentInChildren.baseDamage * (double) this.m.multiplier);
+    M0 componentInChildren = ((GameObject) Object.Instantiate<GameObject>((M0) this.jumpFx, ((Component) this.stompPosition).get_transform().get_position(), this.stompAttack.get_transform().get_rotation())).GetComponentInChildren<ImpactDamage>();
+    ((ImpactDamage) componentInChildren).baseDamage = (int) ((double) ((ImpactDamage) componentInChildren).baseDamage * (double) this.m.multiplier);
   }
+
+  public Titan() => base.\u002Ector();
 }

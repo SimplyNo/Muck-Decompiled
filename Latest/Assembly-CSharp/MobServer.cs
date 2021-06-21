@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: MobServer
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,17 +10,13 @@ using UnityEngine;
 public abstract class MobServer : MonoBehaviour
 {
   protected Mob mob;
-  private float syncPositionInterval = 2f;
-  protected float FindPositionInterval = 0.5f;
-  protected float behaviourInterval = 0.1f;
-  protected float[] findPositionInterval = new float[3]
-  {
-    0.5f,
-    2f,
-    5f
-  };
+  private float syncPositionInterval;
+  protected float FindPositionInterval;
+  protected float behaviourInterval;
+  protected float[] findPositionInterval;
+  protected int previousTargetId;
 
-  private void Awake() => this.mob = this.GetComponent<Mob>();
+  private void Awake() => this.mob = (Mob) ((Component) this).GetComponent<Mob>();
 
   protected void StartRoutines()
   {
@@ -29,7 +25,12 @@ public abstract class MobServer : MonoBehaviour
     this.InvokeRepeating("Behaviour", Random.Range(0.0f, this.behaviourInterval) + this.mob.mobType.spawnTime, this.behaviourInterval);
   }
 
-  private void Update() => this.Behaviour();
+  private void Update()
+  {
+    if (!this.mob.ready)
+      return;
+    this.Behaviour();
+  }
 
   protected abstract void Behaviour();
 
@@ -39,8 +40,8 @@ public abstract class MobServer : MonoBehaviour
   {
     using (Dictionary<int, PlayerManager>.ValueCollection.Enumerator enumerator = GameManager.players.Values.GetEnumerator())
     {
-      while (enumerator.MoveNext() && (bool) (Object) enumerator.Current)
-        ServerSend.MobMove(this.mob.GetId(), this.transform.position);
+      while (enumerator.MoveNext() && Object.op_Implicit((Object) enumerator.Current))
+        ServerSend.MobMove(this.mob.GetId(), ((Component) this).get_transform().get_position());
     }
   }
 
@@ -49,11 +50,16 @@ public abstract class MobServer : MonoBehaviour
     if (GameManager.players == null)
       return;
     Vector3 nextPosition = this.FindNextPosition();
-    if (nextPosition == Vector3.zero)
+    if (this.mob.targetPlayerId != this.previousTargetId)
+      ServerSend.SendMobTarget(this.mob.id, this.mob.targetPlayerId);
+    this.previousTargetId = this.mob.targetPlayerId;
+    if (Vector3.op_Equality(nextPosition, Vector3.get_zero()))
       return;
     this.mob.SetDestination(nextPosition);
     ServerSend.MobSetDestination(this.mob.GetId(), nextPosition);
   }
 
   protected abstract Vector3 FindNextPosition();
+
+  protected MobServer() => base.\u002Ector();
 }

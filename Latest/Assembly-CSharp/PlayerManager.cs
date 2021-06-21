@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: PlayerManager
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using TMPro;
@@ -29,13 +29,13 @@ public class PlayerManager : MonoBehaviour, IComparable
 
   private void Awake()
   {
-    this.hitable = this.GetComponent<HitableActor>();
-    this.collider = this.GetComponent<Collider>();
+    this.hitable = (HitableActor) ((Component) this).GetComponent<HitableActor>();
+    this.collider = (Collider) ((Component) this).GetComponent<Collider>();
   }
 
   public void DamagePlayer(int hpLeft)
   {
-    if ((bool) (UnityEngine.Object) this.onlinePlayer)
+    if (Object.op_Implicit((Object) this.onlinePlayer))
       this.SetDesiredHpRatio((float) hpLeft / 100f);
     else
       PlayerStatus.Instance.Damage(hpLeft);
@@ -43,7 +43,7 @@ public class PlayerManager : MonoBehaviour, IComparable
 
   public void SetHpRatio(float hpRatio)
   {
-    if (!(bool) (UnityEngine.Object) this.onlinePlayer)
+    if (!Object.op_Implicit((Object) this.onlinePlayer))
       return;
     this.SetDesiredHpRatio(hpRatio);
   }
@@ -58,42 +58,42 @@ public class PlayerManager : MonoBehaviour, IComparable
 
   public void SetArmor(int armorSlot, int itemId)
   {
-    if (!(bool) (UnityEngine.Object) this.onlinePlayer)
+    if (!Object.op_Implicit((Object) this.onlinePlayer))
       return;
     if (itemId == -1)
     {
-      this.onlinePlayer.armor[armorSlot].gameObject.SetActive(false);
-      this.onlinePlayer.armor[armorSlot].material = (Material) null;
+      ((Component) this.onlinePlayer.armor[armorSlot]).get_gameObject().SetActive(false);
+      ((Renderer) this.onlinePlayer.armor[armorSlot]).set_material((Material) null);
     }
     else
     {
-      this.onlinePlayer.armor[armorSlot].gameObject.SetActive(true);
+      ((Component) this.onlinePlayer.armor[armorSlot]).get_gameObject().SetActive(true);
       InventoryItem allItem = ItemManager.Instance.allItems[itemId];
-      this.onlinePlayer.armor[armorSlot].material = allItem.material;
+      ((Renderer) this.onlinePlayer.armor[armorSlot]).set_material(allItem.material);
     }
   }
 
   private void Start()
   {
-    if ((bool) (UnityEngine.Object) this.nameText)
+    if (Object.op_Implicit((Object) this.nameText))
     {
-      this.nameText.text = "";
+      ((TMP_Text) this.nameText).set_text("");
       TextMeshProUGUI nameText = this.nameText;
-      nameText.text = nameText.text + "\n<size=100%>" + this.username;
+      ((TMP_Text) nameText).set_text(((TMP_Text) nameText).get_text() + "\n<size=100%>" + this.username);
     }
     this.hitable.SetId(this.id);
   }
 
   public void SetDesiredPosition(Vector3 position)
   {
-    if (!(bool) (UnityEngine.Object) this.onlinePlayer)
+    if (!Object.op_Implicit((Object) this.onlinePlayer))
       return;
     this.onlinePlayer.desiredPos = position;
   }
 
   public void SetDesiredRotation(float orientationY, float orientationX)
   {
-    if (!(bool) (UnityEngine.Object) this.onlinePlayer)
+    if (!Object.op_Implicit((Object) this.onlinePlayer))
       return;
     this.onlinePlayer.orientationY = orientationY;
     this.onlinePlayer.orientationX = orientationX;
@@ -104,4 +104,6 @@ public class PlayerManager : MonoBehaviour, IComparable
   public int CompareTo(object obj) => 0;
 
   public Collider GetCollider() => this.collider;
+
+  public PlayerManager() => base.\u002Ector();
 }

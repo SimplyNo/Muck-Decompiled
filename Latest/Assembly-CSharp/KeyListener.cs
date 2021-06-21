@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: KeyListener
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using TMPro;
@@ -23,27 +23,27 @@ public class KeyListener : MonoBehaviour
 
   public void ListenForKey(ControlSetting listener, string actionName)
   {
-    this.alertText.text = "Press any key for\n\"" + actionName + "\"\n\n<i><size=60%>...escape to go back";
+    ((TMP_Text) this.alertText).set_text("Press any key for\n\"" + actionName + "\"\n\n<i><size=60%>...escape to go back");
     this.currentlyChanging = listener;
     this.overlay.SetActive(true);
   }
 
   private void Update()
   {
-    if (!this.overlay.activeInHierarchy)
+    if (!this.overlay.get_activeInHierarchy())
       return;
     MonoBehaviour.print((object) "listenign");
-    if (Input.GetKeyDown(KeyCode.Escape))
+    if (Input.GetKeyDown((KeyCode) 27))
     {
       this.CloseListener();
     }
     else
     {
-      foreach (KeyCode keyCode in Enum.GetValues(typeof (KeyCode)))
+      foreach (KeyCode k in Enum.GetValues(typeof (KeyCode)))
       {
-        if (Input.GetKey(keyCode))
+        if (Input.GetKey(k))
         {
-          this.currentlyChanging.SetKey(keyCode);
+          this.currentlyChanging.SetKey(k);
           this.CloseListener();
           break;
         }
@@ -57,4 +57,6 @@ public class KeyListener : MonoBehaviour
     this.currentlyChanging = (ControlSetting) null;
     UiSfx.Instance.PlayClick();
   }
+
+  public KeyListener() => base.\u002Ector();
 }

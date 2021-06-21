@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: GrowableFoodZone
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -16,7 +16,7 @@ public class GrowableFoodZone : SpawnZone
   {
     MonoBehaviour.print((object) ("spawning food from id: " + (object) this.id));
     Vector3 randomPos = this.FindRandomPos();
-    if (randomPos == Vector3.zero)
+    if (Vector3.op_Equality(randomPos, Vector3.get_zero()))
       return;
     --this.entityBuffer;
     int nextId = ResourceManager.Instance.GetNextId();
@@ -31,8 +31,8 @@ public class GrowableFoodZone : SpawnZone
     int objectId,
     int zoneId)
   {
-    GameObject o = Object.Instantiate<GameObject>(ItemManager.Instance.allItems[entityId].prefab, pos, Quaternion.identity);
-    o.GetComponentInChildren<SharedObject>().SetId(objectId);
+    GameObject o = (GameObject) Object.Instantiate<GameObject>((M0) ItemManager.Instance.allItems[entityId].prefab, pos, Quaternion.get_identity());
+    ((SharedObject) o.GetComponentInChildren<SharedObject>()).SetId(objectId);
     ResourceManager.Instance.AddObject(objectId, o);
     this.entities.Add(o);
     return o;

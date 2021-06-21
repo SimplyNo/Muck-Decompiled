@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: LoadingScreen
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
 using UnityEngine;
@@ -30,9 +30,36 @@ public class LoadingScreen : MonoBehaviour
   private void Awake()
   {
     LoadingScreen.Instance = this;
-    this.canvasGroup.alpha = 0.0f;
-    this.background.gameObject.SetActive(false);
+    this.canvasGroup.set_alpha(0.0f);
+    ((Component) this.background).get_gameObject().SetActive(false);
     this.players = new bool[10];
+    if (!LocalClient.serverOwner)
+      return;
+    this.InvokeRepeating("CheckAllPlayersLoading", 10f, 10f);
+  }
+
+  private void CheckAllPlayersLoading()
+  {
+    if (GameManager.state == GameManager.GameState.Playing)
+    {
+      this.CancelInvoke(nameof (CheckAllPlayersLoading));
+    }
+    else
+    {
+      Debug.LogError((object) "Checking all players");
+      foreach (Client client in Server.clients.Values)
+      {
+        if (client?.player != null)
+        {
+          Debug.LogError((object) "Checking players");
+          if (!client.player.loading)
+          {
+            ServerSend.StartGame(client.player.id, GameManager.gameSettings);
+            Debug.LogError((object) (client.player.username + " failed to load, trying to get him to load again..."));
+          }
+        }
+      }
+    }
   }
 
   private void Start()
@@ -44,8 +71,8 @@ public class LoadingScreen : MonoBehaviour
 
   public void SetText(string s, float loadProgress)
   {
-    this.background.gameObject.SetActive(true);
-    this.text.text = s;
+    ((Component) this.background).get_gameObject().SetActive(true);
+    ((TMP_Text) this.text).set_text(s);
     this.desiredLoad = loadProgress;
   }
 
@@ -55,25 +82,25 @@ public class LoadingScreen : MonoBehaviour
     this.totalFadeTime = fadeTime;
     this.currentFadeTime = 0.0f;
     if ((double) fadeTime == 0.0)
-      this.canvasGroup.alpha = 0.0f;
+      this.canvasGroup.set_alpha(0.0f);
     this.Invoke("HideStuff", this.totalFadeTime);
   }
 
-  private void HideStuff() => this.background.gameObject.SetActive(false);
+  private void HideStuff() => ((Component) this.background).get_gameObject().SetActive(false);
 
   public void FinishLoading()
   {
     foreach (GameObject gameObject in this.loadingObject)
       gameObject.SetActive(false);
-    this.loadingParent.gameObject.SetActive(true);
+    ((Component) this.loadingParent).get_gameObject().SetActive(true);
   }
 
   public void UpdateStatuses(int id)
   {
     this.players[id] = true;
-    if (this.loadingParent.childCount <= id)
+    if (this.loadingParent.get_childCount() <= id)
       return;
-    this.loadingParent.GetChild(id).GetComponent<PlayerLoading>().ChangeStatus("<color=green>Ready");
+    ((PlayerLoading) ((Component) this.loadingParent.GetChild(id)).GetComponent<PlayerLoading>()).ChangeStatus("<color=green>Ready");
   }
 
   public void Show(float fadeTime = 1f)
@@ -82,31 +109,33 @@ public class LoadingScreen : MonoBehaviour
     this.currentFadeTime = 0.0f;
     this.totalFadeTime = fadeTime;
     if ((double) fadeTime == 0.0)
-      this.canvasGroup.alpha = 1f;
-    this.background.gameObject.SetActive(true);
+      this.canvasGroup.set_alpha(1f);
+    ((Component) this.background).get_gameObject().SetActive(true);
   }
 
   public void InitLoadingPlayers()
   {
-    this.loadingParent.gameObject.SetActive(false);
+    ((Component) this.loadingParent).get_gameObject().SetActive(false);
     for (int index = 0; index < NetworkController.Instance.playerNames.Length; ++index)
     {
-      PlayerLoading component = Object.Instantiate<GameObject>(this.loadingPlayerPrefab, this.loadingParent).GetComponent<PlayerLoading>();
+      M0 component = ((GameObject) Object.Instantiate<GameObject>((M0) this.loadingPlayerPrefab, this.loadingParent)).GetComponent<PlayerLoading>();
       string str = "<color=red>Loading";
       string playerName = NetworkController.Instance.playerNames[index];
       string status = str;
-      component.SetStatus(playerName, status);
+      ((PlayerLoading) component).SetStatus(playerName, status);
     }
   }
 
-  public float totalFadeTime { get; set; } = 1f;
+  public float totalFadeTime { get; set; }
 
   private void Update()
   {
-    this.loadingBar.transform.localScale = new Vector3(this.desiredLoad, 1f, 1f);
+    ((Component) this.loadingBar).get_transform().set_localScale(new Vector3(this.desiredLoad, 1f, 1f));
     if ((double) this.currentFadeTime >= (double) this.totalFadeTime || (double) this.totalFadeTime <= 0.0)
       return;
-    this.currentFadeTime += Time.deltaTime;
-    this.canvasGroup.alpha = Mathf.Lerp(this.canvasGroup.alpha, this.desiredAlpha, this.currentFadeTime / this.totalFadeTime);
+    this.currentFadeTime += Time.get_deltaTime();
+    this.canvasGroup.set_alpha(Mathf.Lerp(this.canvasGroup.get_alpha(), this.desiredAlpha, this.currentFadeTime / this.totalFadeTime));
   }
+
+  public LoadingScreen() => base.\u002Ector();
 }

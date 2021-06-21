@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: DebugStuff.ConsoleToGUI
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
 using UnityEngine;
@@ -19,20 +19,20 @@ namespace DebugStuff
 
     private void Awake()
     {
-      if ((bool) (Object) ConsoleToGUI.Instance)
+      if (Object.op_Implicit((Object) ConsoleToGUI.Instance))
       {
-        Object.Destroy((Object) this.gameObject);
+        Object.Destroy((Object) ((Component) this).get_gameObject());
       }
       else
       {
         ConsoleToGUI.Instance = this;
-        Object.DontDestroyOnLoad((Object) this.gameObject);
+        Object.DontDestroyOnLoad((Object) ((Component) this).get_gameObject());
       }
     }
 
-    private void OnEnable() => Application.logMessageReceived += new Application.LogCallback(this.Log);
+    private void OnEnable() => Application.add_logMessageReceived(new Application.LogCallback((object) this, __methodptr(Log)));
 
-    private void OnDisable() => Application.logMessageReceived -= new Application.LogCallback(this.Log);
+    private void OnDisable() => Application.remove_logMessageReceived(new Application.LogCallback((object) this, __methodptr(Log)));
 
     public void Log(string logString, string stackTrace, LogType type)
     {
@@ -41,11 +41,13 @@ namespace DebugStuff
       ConsoleToGUI.myLog = this.output + "\n" + ConsoleToGUI.myLog;
       if (ConsoleToGUI.myLog.Length > 300)
         ConsoleToGUI.myLog = ConsoleToGUI.myLog.Substring(0, 200);
-      this.debugText.text = ConsoleToGUI.myLog;
+      ((TMP_Text) this.debugText).set_text(ConsoleToGUI.myLog);
     }
 
     private void OnGUI()
     {
     }
+
+    public ConsoleToGUI() => base.\u002Ector();
   }
 }

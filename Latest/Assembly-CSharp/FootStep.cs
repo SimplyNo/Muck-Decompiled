@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: FootStep
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -16,9 +16,11 @@ public class FootStep : MonoBehaviour
 
   private void FindGroundType()
   {
-    RaycastHit hitInfo;
-    if (Physics.Raycast(this.transform.position, Vector3.down, out hitInfo, 5f, (int) this.whatIsGround) && hitInfo.collider.gameObject.CompareTag("Build"))
+    RaycastHit raycastHit;
+    if (Physics.Raycast(((Component) this).get_transform().get_position(), Vector3.get_down(), ref raycastHit, 5f, LayerMask.op_Implicit(this.whatIsGround)) && ((Component) ((RaycastHit) ref raycastHit).get_collider()).get_gameObject().CompareTag("Build"))
       this.randomSfx.sounds = this.woodSfx;
     this.randomSfx.Randomize(0.0f);
   }
+
+  public FootStep() => base.\u002Ector();
 }

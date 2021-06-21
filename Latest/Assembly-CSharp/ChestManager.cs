@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ChestManager
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,7 +37,7 @@ public class ChestManager : MonoBehaviour
     InventoryItem inventoryItem = (InventoryItem) null;
     if (itemId != -1)
     {
-      inventoryItem = ScriptableObject.CreateInstance<InventoryItem>();
+      inventoryItem = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
       inventoryItem.Copy(ItemManager.Instance.allItems[itemId], amount);
     }
     this.chests[chestId].cells[cellId] = inventoryItem;
@@ -51,8 +51,8 @@ public class ChestManager : MonoBehaviour
   {
     Chest chest = this.chests[chestId];
     this.chests.Remove(chestId);
-    Object.Destroy((Object) chest.transform.parent.gameObject);
-    if ((Object) OtherInput.Instance.currentChest == (Object) chest)
+    Object.Destroy((Object) ((Component) ((Component) chest).get_transform().get_parent()).get_gameObject());
+    if (Object.op_Equality((Object) OtherInput.Instance.currentChest, (Object) chest))
       OtherInput.Instance.ToggleInventory(OtherInput.CraftingState.Inventory);
     if (!LocalClient.serverOwner)
       return;
@@ -61,16 +61,23 @@ public class ChestManager : MonoBehaviour
 
   private void DropChest(Chest chest)
   {
-    Vector3 position = chest.transform.position;
+    Vector3 pos = ((Component) chest).get_transform().get_position();
     foreach (InventoryItem cell in chest.cells)
     {
-      if ((Object) cell != (Object) null)
+      if (Object.op_Inequality((Object) cell, (Object) null))
       {
-        position += Vector3.up * (cell.mesh.bounds.extents.y * 2f);
+        Vector3 vector3_1 = pos;
+        Vector3 up = Vector3.get_up();
+        Bounds bounds = cell.mesh.get_bounds();
+        double num = ((Bounds) ref bounds).get_extents().y * 2.0;
+        Vector3 vector3_2 = Vector3.op_Multiply(up, (float) num);
+        pos = Vector3.op_Addition(vector3_1, vector3_2);
         int nextId = ItemManager.Instance.GetNextId();
-        ItemManager.Instance.DropItemAtPosition(cell.id, cell.amount, position, nextId);
-        ServerSend.DropItemAtPosition(cell.id, cell.amount, nextId, position);
+        ItemManager.Instance.DropItemAtPosition(cell.id, cell.amount, pos, nextId);
+        ServerSend.DropItemAtPosition(cell.id, cell.amount, nextId, pos);
       }
     }
   }
+
+  public ChestManager() => base.\u002Ector();
 }

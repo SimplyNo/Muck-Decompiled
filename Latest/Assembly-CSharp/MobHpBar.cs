@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: MobHpBar
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,25 +18,25 @@ public class MobHpBar : MonoBehaviour
   public void SetMob(GameObject mob)
   {
     this.buffIcon.SetActive(false);
-    this.gameObject.SetActive(true);
+    ((Component) this).get_gameObject().SetActive(true);
     this.attachedObject = mob;
-    Bounds bounds = mob.GetComponent<Collider>().bounds;
-    this.mob = mob.transform.root.GetComponent<HitableMob>();
+    Bounds bounds = ((Collider) mob.GetComponent<Collider>()).get_bounds();
+    this.mob = (HitableMob) ((Component) mob.get_transform().get_root()).GetComponent<HitableMob>();
     Vector3 vector3_1 = new Vector3((float) this.mob.hp / (float) this.mob.maxHp, 1f, 1f);
-    Vector3 vector3_2 = bounds.center - mob.transform.position;
-    this.offsetPos = new Vector3(0.0f, bounds.extents.y + 0.5f, 0.0f) + vector3_2;
-    SendToBossUi component1 = mob.transform.root.GetComponent<SendToBossUi>();
-    if ((bool) (Object) component1)
-      BossUI.Instance.SetBoss(component1.GetComponent<Mob>());
-    Mob component2 = mob.transform.root.GetComponent<Mob>();
-    if (!(bool) (Object) component2 || !component2.IsBuff())
+    Vector3 vector3_2 = Vector3.op_Subtraction(((Bounds) ref bounds).get_center(), mob.get_transform().get_position());
+    this.offsetPos = Vector3.op_Addition(new Vector3(0.0f, (float) (((Bounds) ref bounds).get_extents().y + 0.5), 0.0f), vector3_2);
+    SendToBossUi component1 = (SendToBossUi) ((Component) mob.get_transform().get_root()).GetComponent<SendToBossUi>();
+    if (Object.op_Implicit((Object) component1))
+      BossUI.Instance.SetBoss((Mob) ((Component) component1).GetComponent<Mob>());
+    Mob component2 = (Mob) ((Component) mob.get_transform().get_root()).GetComponent<Mob>();
+    if (!Object.op_Implicit((Object) component2) || !component2.IsBuff())
       return;
     this.buffIcon.SetActive(true);
   }
 
   public void RemoveMob()
   {
-    this.gameObject.SetActive(false);
+    ((Component) this).get_gameObject().SetActive(false);
     this.buffIcon.SetActive(false);
     this.attachedObject = (GameObject) null;
     this.mob = (HitableMob) null;
@@ -44,14 +44,19 @@ public class MobHpBar : MonoBehaviour
 
   private void Update()
   {
-    if (!(bool) (Object) this.mob)
+    if (!Object.op_Implicit((Object) this.mob))
     {
-      this.gameObject.SetActive(false);
+      ((Component) this).get_gameObject().SetActive(false);
     }
     else
     {
-      this.transform.position = this.mob.transform.position + this.offsetPos;
-      this.hpBar.transform.localScale = Vector3.Lerp(this.hpBar.transform.localScale, new Vector3((float) this.mob.hp / (float) this.mob.maxHp, 1f, 1f), Time.deltaTime * 10f);
+      ((Component) this).get_transform().set_position(Vector3.op_Addition(this.attachedObject.get_transform().get_position(), this.offsetPos));
+      float num = (float) this.mob.hp / (float) this.mob.maxHp;
+      Vector3 vector3;
+      ((Vector3) ref vector3).\u002Ector(num, 1f, 1f);
+      ((Component) this.hpBar).get_transform().set_localScale(Vector3.Lerp(((Component) this.hpBar).get_transform().get_localScale(), vector3, Time.get_deltaTime() * 10f));
     }
   }
+
+  public MobHpBar() => base.\u002Ector();
 }

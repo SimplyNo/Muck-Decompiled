@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: HitableResource
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -23,7 +23,7 @@ public class HitableResource : Hitable
   private Vector3 desiredScale;
   private Vector3 currentScale;
 
-  protected void Start() => this.materialText = this.GetComponentInChildren<Renderer>().materials[0].mainTexture;
+  protected void Start() => this.materialText = ((Renderer) ((Component) this).GetComponentInChildren<Renderer>()).get_materials()[0].get_mainTexture();
 
   public override void Hit(int damage, float sharpness, int hitEffect, Vector3 pos)
   {
@@ -33,30 +33,31 @@ public class HitableResource : Hitable
     }
     else
     {
-      Vector3 vector3 = GameManager.players[LocalClient.instance.myId].transform.position + Vector3.up * 1.5f;
-      Vector3 normalized = (vector3 - pos).normalized;
-      pos = this.hitCollider.ClosestPoint(vector3);
+      Vector3 vector3_1 = Vector3.op_Addition(((Component) GameManager.players[LocalClient.instance.myId]).get_transform().get_position(), Vector3.op_Multiply(Vector3.get_up(), 1.5f));
+      Vector3 vector3_2 = Vector3.op_Subtraction(vector3_1, pos);
+      Vector3 normalized = ((Vector3) ref vector3_2).get_normalized();
+      pos = this.hitCollider.ClosestPoint(vector3_1);
       this.SpawnParticles(pos, normalized, hitEffect);
-      float num = Vector3.Distance(pos, vector3);
-      pos += normalized * num * 0.5f;
+      float num = Vector3.Distance(pos, vector3_1);
+      pos = Vector3.op_Addition(pos, Vector3.op_Multiply(Vector3.op_Multiply(normalized, num), 0.5f));
       HitEffect hitEffect1 = (HitEffect) hitEffect;
-      Object.Instantiate<GameObject>(this.numberFx, pos, Quaternion.identity).GetComponent<HitNumber>().SetTextAndDir(0.0f, normalized, hitEffect1);
+      ((HitNumber) ((GameObject) Object.Instantiate<GameObject>((M0) this.numberFx, pos, Quaternion.get_identity())).GetComponent<HitNumber>()).SetTextAndDir(0.0f, normalized, hitEffect1);
     }
   }
 
-  protected override void SpawnDeathParticles() => Object.Instantiate<GameObject>(this.destroyFx, this.transform.position, this.destroyFx.transform.rotation).GetComponent<ParticleSystemRenderer>().material.mainTexture = this.materialText;
+  protected override void SpawnDeathParticles() => ((Renderer) ((GameObject) Object.Instantiate<GameObject>((M0) this.destroyFx, ((Component) this).get_transform().get_position(), this.destroyFx.get_transform().get_rotation())).GetComponent<ParticleSystemRenderer>()).get_material().set_mainTexture(this.materialText);
 
   protected override void SpawnParticles(Vector3 pos, Vector3 dir, int hitEffect)
   {
-    GameObject gameObject = Object.Instantiate<GameObject>(this.hitFx);
-    gameObject.transform.position = pos;
-    gameObject.transform.rotation = Quaternion.LookRotation(dir);
-    gameObject.GetComponent<ParticleSystemRenderer>().material.mainTexture = this.materialText;
+    GameObject gameObject = (GameObject) Object.Instantiate<GameObject>((M0) this.hitFx);
+    gameObject.get_transform().set_position(pos);
+    gameObject.get_transform().set_rotation(Quaternion.LookRotation(dir));
+    ((Renderer) gameObject.GetComponent<ParticleSystemRenderer>()).get_material().set_mainTexture(this.materialText);
     HitEffect effect = (HitEffect) hitEffect;
     if (effect == HitEffect.Normal)
       return;
-    HitParticles componentInChildren = gameObject.GetComponentInChildren<HitParticles>();
-    if (!((Object) componentInChildren != (Object) null))
+    HitParticles componentInChildren = (HitParticles) gameObject.GetComponentInChildren<HitParticles>();
+    if (!Object.op_Inequality((Object) componentInChildren, (Object) null))
       return;
     componentInChildren.SetEffect(effect);
   }
@@ -67,7 +68,7 @@ public class HitableResource : Hitable
   {
     if (this.dontScale)
       return;
-    this.transform.localScale = Vector3.zero;
+    ((Component) this).get_transform().set_localScale(Vector3.get_zero());
   }
 
   private new void Awake()
@@ -75,10 +76,10 @@ public class HitableResource : Hitable
     base.Awake();
     if (this.dontScale)
       return;
-    if (this.defaultScale == Vector3.zero)
-      this.defaultScale = this.transform.localScale;
+    if (Vector3.op_Equality(this.defaultScale, Vector3.get_zero()))
+      this.defaultScale = ((Component) this).get_transform().get_localScale();
     this.desiredScale = this.defaultScale;
-    this.transform.localScale = Vector3.zero;
+    ((Component) this).get_transform().set_localScale(Vector3.get_zero());
   }
 
   public void SetDefaultScale(Vector3 scale) => this.defaultScale = scale;
@@ -86,20 +87,20 @@ public class HitableResource : Hitable
   protected override void ExecuteHit()
   {
     MonoBehaviour.print((object) "changing scale lol");
-    this.currentScale = this.defaultScale * 0.7f;
+    this.currentScale = Vector3.op_Multiply(this.defaultScale, 0.7f);
   }
 
   public void PopIn()
   {
-    this.transform.localScale = Vector3.zero;
+    ((Component) this).get_transform().set_localScale(Vector3.get_zero());
     this.desiredScale = this.defaultScale;
   }
 
   private void Update()
   {
-    if (this.dontScale || (double) Mathf.Abs(this.transform.localScale.x - this.desiredScale.x) < 1.0 / 500.0 && (double) Mathf.Abs(this.desiredScale.x - this.currentScale.x) < 1.0 / 500.0)
+    if (this.dontScale || (double) Mathf.Abs((float) (((Component) this).get_transform().get_localScale().x - this.desiredScale.x)) < 1.0 / 500.0 && (double) Mathf.Abs((float) (this.desiredScale.x - this.currentScale.x)) < 1.0 / 500.0)
       return;
-    this.currentScale = Vector3.Lerp(this.currentScale, this.desiredScale, Time.deltaTime * 10f);
-    this.transform.localScale = Vector3.Lerp(this.transform.localScale, this.currentScale, Time.deltaTime * 15f);
+    this.currentScale = Vector3.Lerp(this.currentScale, this.desiredScale, Time.get_deltaTime() * 10f);
+    ((Component) this).get_transform().set_localScale(Vector3.Lerp(((Component) this).get_transform().get_localScale(), this.currentScale, Time.get_deltaTime() * 15f));
   }
 }

@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ServerSend
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using Steamworks;
 using System.Collections.Generic;
@@ -10,8 +10,8 @@ using UnityEngine;
 
 public class ServerSend
 {
-  private static P2PSend TCPvariant = P2PSend.Reliable;
-  private static P2PSend UDPVariant = P2PSend.Unreliable;
+  private static P2PSend TCPvariant = (P2PSend) 2;
+  private static P2PSend UDPVariant = (P2PSend) 0;
 
   private static void SendTCPData(int toClient, Packet packet)
   {
@@ -21,7 +21,7 @@ public class ServerSend
     if (NetworkController.Instance.networkType == NetworkController.NetworkType.Classic)
       Server.clients[toClient].tcp.SendData(packet1);
     else
-      SteamPacketManager.SendPacket((SteamId) Server.clients[toClient].player.steamId.Value, packet1, ServerSend.TCPvariant, SteamPacketManager.NetworkChannel.ToClient);
+      SteamPacketManager.SendPacket(SteamId.op_Implicit((ulong) Server.clients[toClient].player.steamId.Value), packet1, ServerSend.TCPvariant, SteamPacketManager.NetworkChannel.ToClient);
   }
 
   private static void SendUDPData(int toClient, Packet packet)
@@ -32,7 +32,7 @@ public class ServerSend
     if (NetworkController.Instance.networkType == NetworkController.NetworkType.Classic)
       Server.clients[toClient].udp.SendData(packet1);
     else
-      SteamPacketManager.SendPacket((SteamId) Server.clients[toClient].player.steamId.Value, packet1, ServerSend.UDPVariant, SteamPacketManager.NetworkChannel.ToClient);
+      SteamPacketManager.SendPacket(SteamId.op_Implicit((ulong) Server.clients[toClient].player.steamId.Value), packet1, ServerSend.UDPVariant, SteamPacketManager.NetworkChannel.ToClient);
   }
 
   private static void SendTCPDataToAll(Packet packet)
@@ -48,10 +48,7 @@ public class ServerSend
       foreach (Client client in Server.clients.Values)
       {
         if (client?.player != null)
-        {
-          Debug.Log((object) ("Sending packet to id: " + (object) client.id));
-          SteamPacketManager.SendPacket((SteamId) client.player.steamId.Value, packet, ServerSend.TCPvariant, SteamPacketManager.NetworkChannel.ToClient);
-        }
+          SteamPacketManager.SendPacket(SteamId.op_Implicit((ulong) client.player.steamId.Value), packet, ServerSend.TCPvariant, SteamPacketManager.NetworkChannel.ToClient);
       }
     }
   }
@@ -71,8 +68,8 @@ public class ServerSend
     {
       foreach (Client client in Server.clients.Values)
       {
-        if (client?.player != null && SteamLobby.steamIdToClientId[client.player.steamId.Value] != exceptClient)
-          SteamPacketManager.SendPacket((SteamId) client.player.steamId.Value, packet, ServerSend.TCPvariant, SteamPacketManager.NetworkChannel.ToClient);
+        if (client?.player != null && SteamLobby.steamIdToClientId[(ulong) client.player.steamId.Value] != exceptClient)
+          SteamPacketManager.SendPacket(SteamId.op_Implicit((ulong) client.player.steamId.Value), packet, ServerSend.TCPvariant, SteamPacketManager.NetworkChannel.ToClient);
       }
     }
   }
@@ -103,11 +100,11 @@ public class ServerSend
           bool flag = false;
           foreach (int exceptClient in exceptClients)
           {
-            if (SteamLobby.steamIdToClientId[client.player.steamId.Value] == exceptClient)
+            if (SteamLobby.steamIdToClientId[(ulong) client.player.steamId.Value] == exceptClient)
               flag = true;
           }
           if (!flag)
-            SteamPacketManager.SendPacket((SteamId) client.player.steamId.Value, packet, ServerSend.TCPvariant, SteamPacketManager.NetworkChannel.ToClient);
+            SteamPacketManager.SendPacket(SteamId.op_Implicit((ulong) client.player.steamId.Value), packet, ServerSend.TCPvariant, SteamPacketManager.NetworkChannel.ToClient);
         }
       }
     }
@@ -126,7 +123,7 @@ public class ServerSend
       foreach (Client client in Server.clients.Values)
       {
         if (client?.player != null)
-          SteamPacketManager.SendPacket((SteamId) client.player.steamId.Value, packet, ServerSend.UDPVariant, SteamPacketManager.NetworkChannel.ToClient);
+          SteamPacketManager.SendPacket(SteamId.op_Implicit((ulong) client.player.steamId.Value), packet, ServerSend.UDPVariant, SteamPacketManager.NetworkChannel.ToClient);
       }
     }
   }
@@ -146,8 +143,8 @@ public class ServerSend
     {
       foreach (Client client in Server.clients.Values)
       {
-        if (client?.player != null && SteamLobby.steamIdToClientId[client.player.steamId.Value] != exceptClient)
-          SteamPacketManager.SendPacket((SteamId) client.player.steamId.Value, packet, ServerSend.UDPVariant, SteamPacketManager.NetworkChannel.ToClient);
+        if (client?.player != null && SteamLobby.steamIdToClientId[(ulong) client.player.steamId.Value] != exceptClient)
+          SteamPacketManager.SendPacket(SteamId.op_Implicit((ulong) client.player.steamId.Value), packet, ServerSend.UDPVariant, SteamPacketManager.NetworkChannel.ToClient);
       }
     }
   }
@@ -173,6 +170,7 @@ public class ServerSend
       packet.Write((int) settings.friendlyFire);
       packet.Write((int) settings.difficulty);
       packet.Write((int) settings.gameLength);
+      packet.Write((int) settings.multiplayer);
       List<Player> playerList = new List<Player>();
       for (int key = 0; key < Server.clients.Values.Count; ++key)
       {
@@ -460,7 +458,8 @@ public class ServerSend
       Debug.Log((object) ("spawning player, id: " + (object) player.id + ", sending to " + (object) toClient));
       packet.Write(player.id);
       packet.Write(player.username);
-      Vector3 vector3 = new Vector3(player.color.r, player.color.g, player.color.b);
+      Vector3 vector3;
+      ((Vector3) ref vector3).\u002Ector((float) player.color.r, (float) player.color.g, (float) player.color.b);
       packet.Write(vector3);
       player.pos = pos;
       packet.Write(pos);
@@ -552,6 +551,16 @@ public class ServerSend
     }
   }
 
+  public static void SendMobTarget(int mobId, int targetId)
+  {
+    using (Packet packet = new Packet(54))
+    {
+      packet.Write(mobId);
+      packet.Write(targetId);
+      ServerSend.SendUDPDataToAll(LocalClient.instance.myId, packet);
+    }
+  }
+
   public static void MobSpawn(
     Vector3 pos,
     int mobType,
@@ -624,6 +633,16 @@ public class ServerSend
       packet.Write(mobId);
       packet.Write(dir);
       ServerSend.SendTCPDataToAll(packet);
+    }
+  }
+
+  public static void Interact(int interactId, int fromId)
+  {
+    using (Packet packet = new Packet(53))
+    {
+      packet.Write(interactId);
+      packet.Write(fromId);
+      ServerSend.SendTCPDataToAll(LocalClient.instance.myId, packet);
     }
   }
 

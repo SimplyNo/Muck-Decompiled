@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: GameLoop
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using Steamworks;
 using System;
@@ -11,21 +11,29 @@ using UnityEngine;
 
 public class GameLoop : MonoBehaviour
 {
-  public int currentDay = -1;
-  private Vector2 maxCheckMobUpdateInterval = new Vector2(3f, 10f);
-  private Vector2 checkMobUpdateInterval = new Vector2(3f, 10f);
+  public int currentDay;
+  private Vector2 maxCheckMobUpdateInterval;
+  private Vector2 checkMobUpdateInterval;
   public GameLoop.MobSpawn[] mobs;
   private int activeMobs;
-  private int maxMobCap = 999;
+  private int maxMobCap;
   private float totalWeight;
   public LayerMask whatIsSpawnable;
   [Header("Boss Stuff")]
   public MobType[] bosses;
+  private List<MobType> bossRotation;
   public static GameLoop Instance;
   private bool nightStarted;
   private bool bossNight;
 
   public static int currentMobCap { get; set; } = 999;
+
+  private void ResetBossRotations()
+  {
+    this.bossRotation = new List<MobType>();
+    foreach (MobType boss in this.bosses)
+      this.bossRotation.Add(boss);
+  }
 
   private void Update()
   {
@@ -34,12 +42,16 @@ public class GameLoop : MonoBehaviour
     this.DayLoop();
   }
 
-  private void Awake() => GameLoop.Instance = this;
+  private void Awake()
+  {
+    GameLoop.Instance = this;
+    this.ResetBossRotations();
+  }
 
   public void StartLoop()
   {
     if (!LocalClient.serverOwner)
-      UnityEngine.Object.Destroy((UnityEngine.Object) this);
+      Object.Destroy((Object) this);
     foreach (Client client in Server.clients.Values)
       client?.player?.PingPlayer();
     this.InvokeRepeating("TimeoutPlayers", 2f, 2f);
@@ -56,17 +68,25 @@ public class GameLoop : MonoBehaviour
     ServerSend.NewDay(day);
     GameManager.instance.UpdateDay(day);
     this.totalWeight = this.CalculateSpawnWeights(this.currentDay);
+    this.FindMobCap();
+    this.checkMobUpdateInterval = Vector2.op_Multiply(this.maxCheckMobUpdateInterval, 1f - PowerupInventory.CumulativeDistribution(this.currentDay, 0.05f, 0.5f));
+    MusicController.Instance.PlaySong(MusicController.SongType.Day);
+  }
+
+  private void FindMobCap()
+  {
     int num = GameManager.instance.GetPlayersInLobby();
     if (GameManager.gameSettings.gameMode == GameSettings.GameMode.Versus)
       num = GameManager.instance.GetPlayersAlive();
     GameLoop.currentMobCap = (int) (3 + GameManager.gameSettings.difficulty + (int) ((double) (num - 1) * 0.200000002980232));
-    GameLoop.currentMobCap = (int) ((double) GameLoop.currentMobCap + (double) (GameLoop.currentMobCap * this.currentDay) * 0.5);
+    GameLoop.currentMobCap = (int) ((double) GameLoop.currentMobCap + (double) (GameLoop.currentMobCap * this.currentDay) * 0.400000005960464);
     if (GameLoop.currentMobCap > this.maxMobCap)
       GameLoop.currentMobCap = this.maxMobCap;
-    if (GameManager.gameSettings.gameMode == GameSettings.GameMode.Versus)
-      GameLoop.currentMobCap = (int) ((double) num + (double) this.currentDay * 0.5);
-    this.checkMobUpdateInterval = this.maxCheckMobUpdateInterval * (1f - PowerupInventory.CumulativeDistribution(this.currentDay, 0.05f, 0.5f));
-    MusicController.Instance.PlaySong(MusicController.SongType.Day);
+    if (this.bossNight)
+      GameLoop.currentMobCap /= 3;
+    if (GameManager.gameSettings.gameMode != GameSettings.GameMode.Versus)
+      return;
+    GameLoop.currentMobCap = (int) ((double) num + (double) this.currentDay * 0.5);
   }
 
   private void DayLoop()
@@ -89,26 +109,35 @@ public class GameLoop : MonoBehaviour
   {
     if (this.currentDay != 0 && this.currentDay % GameManager.gameSettings.BossDay() == 0 && GameManager.gameSettings.gameMode == GameSettings.GameMode.Survival)
     {
-      this.StartBoss(this.bosses[0]);
+      MobType bossMob = this.bossRotation[Random.Range(0, this.bossRotation.Count)];
+      this.bossRotation.Remove(bossMob);
+      if (this.bossRotation.Count < 1)
+        this.ResetBossRotations();
+      if (this.currentDay == GameManager.gameSettings.BossDay())
+      {
+        this.bossNight = true;
+        this.FindMobCap();
+      }
+      this.StartBoss(bossMob);
       MusicController.Instance.PlaySong(MusicController.SongType.Boss, false);
     }
     else
       MusicController.Instance.PlaySong(MusicController.SongType.Night);
-    this.Invoke("CheckMobSpawns", UnityEngine.Random.Range(this.checkMobUpdateInterval.x, this.checkMobUpdateInterval.y));
+    this.Invoke("CheckMobSpawns", Random.Range((float) this.checkMobUpdateInterval.x, (float) this.checkMobUpdateInterval.y));
   }
 
   public void StartBoss(MobType bossMob)
   {
-    float bossMultiplier = (float) (0.899999976158142 + 0.100000001490116 * (double) GameManager.instance.GetPlayersAlive());
-    this.SpawnMob(bossMob, this.FindBossPosition(), bossMultiplier: bossMultiplier);
+    float bossMultiplier = (float) (0.850000023841858 + 0.150000005960464 * (double) GameManager.instance.GetPlayersAlive());
+    this.SpawnMob(bossMob, this.FindBossPosition(), bossMultiplier: bossMultiplier, bossType: Mob.BossType.BossNight, bypassCap: true);
   }
 
   private void CheckMobSpawns()
   {
-    if (this.bossNight || GameManager.gameSettings.gameMode == GameSettings.GameMode.Creative)
+    if (GameManager.gameSettings.gameMode == GameSettings.GameMode.Creative)
       return;
     float num1 = (float) GameManager.instance.GetPlayersAlive() / 2f;
-    this.Invoke(nameof (CheckMobSpawns), UnityEngine.Random.Range(this.checkMobUpdateInterval.x / num1, this.checkMobUpdateInterval.y / num1));
+    this.Invoke(nameof (CheckMobSpawns), Random.Range((float) this.checkMobUpdateInterval.x / num1, (float) this.checkMobUpdateInterval.y / num1));
     this.activeMobs = MobManager.Instance.GetActiveEnemies();
     if (GameManager.state != GameManager.GameState.Playing || (double) DayCycle.time < 0.5 || (this.activeMobs > this.maxMobCap || this.activeMobs > GameLoop.currentMobCap))
       return;
@@ -116,7 +145,7 @@ public class GameLoop : MonoBehaviour
     if (randomAlivePlayer == -1)
       return;
     MobType spawn = this.SelectMobToSpawn();
-    int num2 = Mathf.Clamp(UnityEngine.Random.Range(1, 3), 1, GameLoop.currentMobCap - this.activeMobs);
+    int num2 = Mathf.Clamp(Random.Range(1, 3), 1, GameLoop.currentMobCap - this.activeMobs);
     for (int index = 0; index < num2; ++index)
       this.SpawnMob(spawn, this.FindPositionAroundPlayer(randomAlivePlayer));
   }
@@ -126,15 +155,15 @@ public class GameLoop : MonoBehaviour
     List<int> intList = new List<int>();
     foreach (PlayerManager playerManager in GameManager.players.Values)
     {
-      if ((bool) (UnityEngine.Object) playerManager && !playerManager.dead)
+      if (Object.op_Implicit((Object) playerManager) && !playerManager.dead)
         intList.Add(playerManager.id);
     }
-    return intList.Count < 1 ? -1 : intList[UnityEngine.Random.Range(0, intList.Count)];
+    return intList.Count < 1 ? -1 : intList[Random.Range(0, intList.Count)];
   }
 
   public MobType SelectMobToSpawn(bool shrine = false)
   {
-    float num1 = UnityEngine.Random.Range(0.0f, 1f);
+    float num1 = Random.Range(0.0f, 1f);
     float num2 = 0.0f;
     float num3 = this.totalWeight;
     if (shrine)
@@ -152,31 +181,41 @@ public class GameLoop : MonoBehaviour
 
   private Vector3 FindPositionAroundPlayer(int selectedPlayerId)
   {
-    if (!(bool) (UnityEngine.Object) GameManager.players[selectedPlayerId])
-      return Vector3.zero;
-    Vector3 position = GameManager.players[selectedPlayerId].transform.position;
-    Vector2 vector2 = UnityEngine.Random.insideUnitCircle * 60f;
-    Vector3 vector3_1 = new Vector3(vector2.x, 0.0f, vector2.y);
-    MonoBehaviour.print((object) ("offset: " + (object) vector3_1));
-    Vector3 vector3_2 = Vector3.up * 20f;
-    RaycastHit hitInfo;
-    if (Physics.Raycast(position + vector3_2 + vector3_1, Vector3.down, out hitInfo, 5000f, (int) this.whatIsSpawnable))
-      return hitInfo.point;
+    if (!Object.op_Implicit((Object) GameManager.players[selectedPlayerId]))
+    {
+      Debug.LogError((object) "COuldnt find selected player");
+      Vector3.get_zero();
+      return Vector3.get_zero();
+    }
+    Vector3 position = ((Component) GameManager.players[selectedPlayerId]).get_transform().get_position();
+    Vector2 vector2 = Vector2.op_Multiply(Random.get_insideUnitCircle(), 60f);
+    Vector3 vector3;
+    ((Vector3) ref vector3).\u002Ector((float) vector2.x, 0.0f, (float) vector2.y);
+    MonoBehaviour.print((object) ("offset: " + (object) vector3));
+    RaycastHit raycastHit;
+    if (Physics.Raycast(Vector3.op_Addition(Vector3.op_Addition(position, Vector3.op_Multiply(Vector3.get_up(), 20f)), vector3), Vector3.get_down(), ref raycastHit, 5000f, LayerMask.op_Implicit(this.whatIsSpawnable)))
+      return ((RaycastHit) ref raycastHit).get_point();
     Debug.LogError((object) "Failed to spawn");
-    return Vector3.zero;
+    return Vector3.get_zero();
   }
 
   private Vector3 FindBossPosition() => this.FindPositionAroundPlayer(this.FindRandomAlivePlayer());
 
-  private int SpawnMob(MobType mob, Vector3 pos, float multiplier = 1f, float bossMultiplier = 1f)
+  private int SpawnMob(
+    MobType mob,
+    Vector3 pos,
+    float multiplier = 1f,
+    float bossMultiplier = 1f,
+    Mob.BossType bossType = Mob.BossType.None,
+    bool bypassCap = false)
   {
     float num = 0.01f + Mathf.Clamp((float) this.currentDay * 0.01f, 0.05f, 0.3f);
-    if ((double) UnityEngine.Random.Range(0.0f, 1f) < (double) num)
+    if ((double) Random.Range(0.0f, 1f) < (double) num)
       multiplier = 1.5f;
-    if (this.activeMobs > this.maxMobCap || this.activeMobs > GameLoop.currentMobCap)
+    if (!bypassCap && (this.activeMobs > this.maxMobCap || this.activeMobs > GameLoop.currentMobCap))
       return -1;
     int nextId = MobManager.Instance.GetNextId();
-    MobSpawner.Instance.ServerSpawnNewMob(nextId, mob.id, pos, multiplier, bossMultiplier);
+    MobSpawner.Instance.ServerSpawnNewMob(nextId, mob.id, pos, multiplier, bossMultiplier, bossType);
     return nextId;
   }
 
@@ -202,19 +241,21 @@ public class GameLoop : MonoBehaviour
   {
     foreach (Client client in Server.clients.Values)
     {
-      if (client != null && client.player != null)
+      if (client != null && client.player != null && client.player.id != LocalClient.instance.myId)
       {
         int num = 60;
-        if ((double) Time.time - (double) client.player.lastPingTime > (double) num)
+        if ((double) Time.get_time() - (double) client.player.lastPingTime > (double) num)
         {
           Debug.Log((object) ("Kicking player: " + client.player.username + " with id " + (object) client.player.id));
-          SteamNetworking.CloseP2PSessionWithUser((SteamId) client.player.steamId.Value);
+          SteamNetworking.CloseP2PSessionWithUser(SteamId.op_Implicit((ulong) client.player.steamId.Value));
           ServerHandle.DisconnectPlayer(client.player.id);
           break;
         }
       }
     }
   }
+
+  public GameLoop() => base.\u002Ector();
 
   [Serializable]
   public class MobSpawn

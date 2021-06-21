@@ -1,42 +1,47 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: FloatItem
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
 public class FloatItem : MonoBehaviour
 {
   private LayerMask whatIsGround;
-  private float floatHeight = 2f;
+  private float floatHeight;
   private Vector3 desiredScale;
   private float yPos;
   private float yOffset;
-  public float maxOffset = 0.5f;
+  public float maxOffset;
 
   private void Start()
   {
     this.PositionItem();
-    this.yPos = this.transform.position.y;
-    this.desiredScale = this.transform.localScale;
-    this.transform.localScale = Vector3.zero;
+    this.yPos = (float) ((Component) this).get_transform().get_position().y;
+    this.desiredScale = ((Component) this).get_transform().get_localScale();
+    ((Component) this).get_transform().set_localScale(Vector3.get_zero());
   }
 
   private void Update()
   {
-    this.transform.localScale = Vector3.Lerp(this.transform.localScale, this.desiredScale, Time.deltaTime * 7f);
-    this.transform.Rotate(Vector3.up, 20f * Time.deltaTime);
-    this.yOffset = Mathf.Lerp(this.yOffset, Mathf.PingPong(Time.time * 0.5f, this.maxOffset) - this.maxOffset / 2f, Time.deltaTime * 2f);
-    this.transform.position = new Vector3(this.transform.position.x, this.yPos + this.yOffset, this.transform.position.z);
+    ((Component) this).get_transform().set_localScale(Vector3.Lerp(((Component) this).get_transform().get_localScale(), this.desiredScale, Time.get_deltaTime() * 7f));
+    ((Component) this).get_transform().Rotate(Vector3.get_up(), 20f * Time.get_deltaTime());
+    this.yOffset = Mathf.Lerp(this.yOffset, Mathf.PingPong(Time.get_time() * 0.5f, this.maxOffset) - this.maxOffset / 2f, Time.get_deltaTime() * 2f);
+    ((Component) this).get_transform().set_position(new Vector3((float) ((Component) this).get_transform().get_position().x, this.yPos + this.yOffset, (float) ((Component) this).get_transform().get_position().z));
   }
 
   private void PositionItem()
   {
-    this.whatIsGround = (LayerMask) LayerMask.GetMask("Ground");
-    RaycastHit hitInfo;
-    if (!Physics.Raycast(this.transform.position + Vector3.up * 20f, Vector3.down, out hitInfo, 50f, (int) this.whatIsGround))
+    this.whatIsGround = LayerMask.op_Implicit(LayerMask.GetMask(new string[1]
+    {
+      "Ground"
+    }));
+    RaycastHit raycastHit;
+    if (!Physics.Raycast(Vector3.op_Addition(((Component) this).get_transform().get_position(), Vector3.op_Multiply(Vector3.get_up(), 20f)), Vector3.get_down(), ref raycastHit, 50f, LayerMask.op_Implicit(this.whatIsGround)))
       return;
-    this.transform.position = hitInfo.point + Vector3.up * this.floatHeight;
+    ((Component) this).get_transform().set_position(Vector3.op_Addition(((RaycastHit) ref raycastHit).get_point(), Vector3.op_Multiply(Vector3.get_up(), this.floatHeight)));
   }
+
+  public FloatItem() => base.\u002Ector();
 }

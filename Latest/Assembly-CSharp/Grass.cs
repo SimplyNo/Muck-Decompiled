@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: Grass
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,12 +10,12 @@ using UnityEngine;
 public class Grass : MonoBehaviour
 {
   public float length;
-  public int thicc = 10;
+  public int thicc;
   public GameObject grass;
   private GameObject[,] grassPool;
   private Dictionary<(float, float), int> grassPositions;
   public LayerMask whatIsGround;
-  private float updateRate = 0.02f;
+  private float updateRate;
 
   private void Awake()
   {
@@ -24,7 +24,7 @@ public class Grass : MonoBehaviour
     for (int index1 = 0; index1 < this.thicc; ++index1)
     {
       for (int index2 = 0; index2 < this.thicc; ++index2)
-        this.grassPool[index1, index2] = Object.Instantiate<GameObject>(this.grass);
+        this.grassPool[index1, index2] = (GameObject) Object.Instantiate<GameObject>((M0) this.grass);
     }
     this.InvokeRepeating("MakeGrass", 0.0f, this.updateRate);
   }
@@ -36,21 +36,24 @@ public class Grass : MonoBehaviour
     {
       for (int index2 = 0; index2 < this.thicc; ++index2)
       {
-        double num2 = (double) this.transform.position.x - (double) this.transform.position.x % (double) num1;
-        float num3 = this.transform.position.z - this.transform.position.z % num1;
+        double num2 = ((Component) this).get_transform().get_position().x - ((Component) this).get_transform().get_position().x % (double) num1;
+        float num3 = (float) (((Component) this).get_transform().get_position().z - ((Component) this).get_transform().get_position().z % (double) num1);
         double num4 = (double) (index1 - this.thicc / 2) / (double) this.thicc * (double) this.length;
-        Vector3 vector3 = new Vector3((float) (num2 + num4), this.transform.position.y + 50f, num3 + (float) (index2 - this.thicc / 2) / (float) this.thicc * this.length);
-        RaycastHit hitInfo;
-        if (Physics.Raycast(vector3, Vector3.down, out hitInfo, 60f, (int) this.whatIsGround))
+        float num5 = (float) (num2 + num4);
+        float num6 = num3 + (float) (index2 - this.thicc / 2) / (float) this.thicc * this.length;
+        Vector3 vector3;
+        ((Vector3) ref vector3).\u002Ector(num5, (float) (((Component) this).get_transform().get_position().y + 50.0), num6);
+        RaycastHit raycastHit;
+        if (Physics.Raycast(vector3, Vector3.get_down(), ref raycastHit, 60f, LayerMask.op_Implicit(this.whatIsGround)))
         {
-          Debug.DrawLine(vector3, hitInfo.point, Color.blue);
-          vector3.y = hitInfo.point.y;
-          Quaternion quaternion = Quaternion.LookRotation(Vector3.Cross(Vector3.up, hitInfo.normal));
-          Transform transform = this.grassPool[index1, index2].transform;
-          transform.gameObject.SetActive(true);
-          transform.position = vector3;
-          transform.rotation = quaternion;
-          transform.localScale = Vector3.one * Random.Range(0.85f, 1.4f);
+          Debug.DrawLine(vector3, ((RaycastHit) ref raycastHit).get_point(), Color.get_blue());
+          vector3.y = ((RaycastHit) ref raycastHit).get_point().y;
+          Quaternion quaternion = Quaternion.LookRotation(Vector3.Cross(Vector3.get_up(), ((RaycastHit) ref raycastHit).get_normal()));
+          Transform transform = this.grassPool[index1, index2].get_transform();
+          ((Component) transform).get_gameObject().SetActive(true);
+          transform.set_position(vector3);
+          transform.set_rotation(quaternion);
+          transform.set_localScale(Vector3.op_Multiply(Vector3.get_one(), Random.Range(0.85f, 1.4f)));
         }
         else
           this.grassPool[index1, index2].SetActive(false);
@@ -60,7 +63,9 @@ public class Grass : MonoBehaviour
 
   private void OnDrawGizmos()
   {
-    Gizmos.color = Color.green;
-    Gizmos.DrawWireCube(this.transform.position, Vector3.one * this.length);
+    Gizmos.set_color(Color.get_green());
+    Gizmos.DrawWireCube(((Component) this).get_transform().get_position(), Vector3.op_Multiply(Vector3.get_one(), this.length));
   }
+
+  public Grass() => base.\u002Ector();
 }

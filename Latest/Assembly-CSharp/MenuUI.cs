@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: MenuUI
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
 using UnityEngine;
@@ -18,10 +18,10 @@ public class MenuUI : MonoBehaviour
   private void Start()
   {
     this.lobbyUi.SetActive(false);
-    Cursor.visible = true;
-    Cursor.lockState = CursorLockMode.None;
+    Cursor.set_visible(true);
+    Cursor.set_lockState((CursorLockMode) 0);
     PPController.Instance.Reset();
-    this.version.text = "Version" + Application.version;
+    ((TMP_Text) this.version).set_text("Version" + Application.get_version());
   }
 
   public void StartLobby() => SteamManager.Instance.StartLobby();
@@ -47,4 +47,6 @@ public class MenuUI : MonoBehaviour
   }
 
   public void StartGame() => SteamLobby.Instance.StartGame();
+
+  public MenuUI() => base.\u002Ector();
 }

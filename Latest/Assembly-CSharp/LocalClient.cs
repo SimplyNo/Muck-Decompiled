@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: LocalClient
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using Steamworks;
 using System;
@@ -16,8 +16,8 @@ public class LocalClient : MonoBehaviour
   public static LocalClient instance;
   public static int dataBufferSize = 4096;
   public SteamId serverHost;
-  public string ip = "127.0.0.1";
-  public int port = 26950;
+  public string ip;
+  public int port;
   public int myId;
   public LocalClient.TCP tcp;
   public LocalClient.UDP udp;
@@ -29,16 +29,16 @@ public class LocalClient : MonoBehaviour
 
   private void Awake()
   {
-    if ((UnityEngine.Object) LocalClient.instance == (UnityEngine.Object) null)
+    if (Object.op_Equality((Object) LocalClient.instance, (Object) null))
     {
       LocalClient.instance = this;
     }
     else
     {
-      if (!((UnityEngine.Object) LocalClient.instance != (UnityEngine.Object) this))
+      if (!Object.op_Inequality((Object) LocalClient.instance, (Object) this))
         return;
       Debug.Log((object) "Instance already exists, destroying object");
-      UnityEngine.Object.Destroy((UnityEngine.Object) this);
+      Object.Destroy((Object) this);
     }
   }
 
@@ -212,6 +212,10 @@ public class LocalClient : MonoBehaviour
         new LocalClient.PacketHandler(ClientHandle.MobSetDestination)
       },
       {
+        54,
+        new LocalClient.PacketHandler(ClientHandle.MobSetTarget)
+      },
+      {
         32,
         new LocalClient.PacketHandler(ClientHandle.MobAttack)
       },
@@ -226,6 +230,10 @@ public class LocalClient : MonoBehaviour
       {
         48,
         new LocalClient.PacketHandler(ClientHandle.KnockbackMob)
+      },
+      {
+        53,
+        new LocalClient.PacketHandler(ClientHandle.Interact)
       },
       {
         34,
@@ -279,6 +287,8 @@ public class LocalClient : MonoBehaviour
     this.udp.socket.Close();
     Debug.Log((object) "Disconnected from server.");
   }
+
+  public LocalClient() => base.\u002Ector();
 
   public delegate void PacketHandler(Packet packet);
 

@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: TutorialTaskUI
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
 using UnityEngine;
@@ -16,42 +16,43 @@ public class TutorialTaskUI : MonoBehaviour
   private HorizontalLayoutGroup layout;
   public Texture checkedBox;
   private float desiredPad;
-  private float fadeStart = 1.5f;
-  private float fadeTime = 1.5f;
+  private float fadeStart;
+  private float fadeTime;
   private float padUp;
 
   private void Awake()
   {
-    this.layout = this.GetComponent<HorizontalLayoutGroup>();
-    this.desiredPad = (float) this.layout.padding.left;
-    this.layout.padding.left = 400;
-    this.padUp = (float) this.layout.padding.left;
+    this.layout = (HorizontalLayoutGroup) ((Component) this).GetComponent<HorizontalLayoutGroup>();
+    this.desiredPad = (float) ((LayoutGroup) this.layout).get_padding().get_left();
+    ((LayoutGroup) this.layout).get_padding().set_left(400);
+    this.padUp = (float) ((LayoutGroup) this.layout).get_padding().get_left();
   }
 
   public void StartFade()
   {
-    this.icon.texture = this.checkedBox;
-    this.icon.CrossFadeAlpha(0.0f, this.fadeTime, true);
-    this.item.CrossFadeAlpha(0.0f, this.fadeTime, true);
-    this.overlay.CrossFadeAlpha(0.0f, this.fadeTime, true);
+    this.icon.set_texture(this.checkedBox);
+    ((Graphic) this.icon).CrossFadeAlpha(0.0f, this.fadeTime, true);
+    ((Graphic) this.item).CrossFadeAlpha(0.0f, this.fadeTime, true);
+    ((Graphic) this.overlay).CrossFadeAlpha(0.0f, this.fadeTime, true);
     this.Invoke("DestroySelf", this.fadeTime);
   }
 
-  private void DestroySelf() => Object.Destroy((Object) this.gameObject);
+  private void DestroySelf() => Object.Destroy((Object) ((Component) this).get_gameObject());
 
   public void SetItem(InventoryItem i, string text)
   {
     text = text.Replace("[inv]", "[" + (object) InputManager.inventory + "]");
     text = text.Replace("[m2]", "[" + (object) InputManager.rightClick + "]");
-    this.item.text = text;
+    ((TMP_Text) this.item).set_text(text);
   }
 
   public void Update()
   {
-    this.padUp = Mathf.Lerp(this.padUp, this.desiredPad, Time.deltaTime * 6f);
-    this.layout.padding = new RectOffset(this.layout.padding.left, this.layout.padding.right, this.layout.padding.top, this.layout.padding.bottom)
-    {
-      left = (int) this.padUp
-    };
+    this.padUp = Mathf.Lerp(this.padUp, this.desiredPad, Time.get_deltaTime() * 6f);
+    RectOffset rectOffset = new RectOffset(((LayoutGroup) this.layout).get_padding().get_left(), ((LayoutGroup) this.layout).get_padding().get_right(), ((LayoutGroup) this.layout).get_padding().get_top(), ((LayoutGroup) this.layout).get_padding().get_bottom());
+    rectOffset.set_left((int) this.padUp);
+    ((LayoutGroup) this.layout).set_padding(rectOffset);
   }
+
+  public TutorialTaskUI() => base.\u002Ector();
 }

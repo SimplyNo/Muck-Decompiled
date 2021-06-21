@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: RespawnTotemUI
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
 using UnityEngine;
@@ -13,7 +13,7 @@ public class RespawnTotemUI : MonoBehaviour
   public Transform nameContainer;
   public GameObject root;
   public TextMeshProUGUI respawnPrice;
-  public int basePrice = 25;
+  public int basePrice;
   public static RespawnTotemUI Instance;
 
   public bool active { get; set; }
@@ -23,19 +23,19 @@ public class RespawnTotemUI : MonoBehaviour
   public void Show()
   {
     this.root.SetActive(true);
-    this.respawnPrice.text = string.Concat((object) this.GetRevivePrice());
+    ((TMP_Text) this.respawnPrice).set_text(string.Concat((object) this.GetRevivePrice()));
     this.Refresh();
     this.active = true;
-    Cursor.lockState = CursorLockMode.None;
-    Cursor.visible = true;
+    Cursor.set_lockState((CursorLockMode) 0);
+    Cursor.set_visible(true);
   }
 
   public void Hide()
   {
     this.root.SetActive(false);
     this.active = false;
-    Cursor.lockState = CursorLockMode.Locked;
-    Cursor.visible = false;
+    Cursor.set_lockState((CursorLockMode) 1);
+    Cursor.set_visible(false);
   }
 
   public void RequestRevive(int playerId)
@@ -44,7 +44,7 @@ public class RespawnTotemUI : MonoBehaviour
     if (InventoryUI.Instance.GetMoney() < this.GetRevivePrice())
       return;
     PlayerManager player = GameManager.players[playerId];
-    if ((Object) player == (Object) null || player.disconnected || !player.dead)
+    if (Object.op_Equality((Object) player, (Object) null) || player.disconnected || !player.dead)
       return;
     Debug.LogError((object) "sendinging revie");
     ClientSend.RevivePlayer(playerId);
@@ -59,18 +59,20 @@ public class RespawnTotemUI : MonoBehaviour
     else if (gameSettings.difficulty == GameSettings.Difficulty.Easy)
       num1 = 0.8f;
     float num2 = 5f;
-    float min = num1;
-    return (int) ((double) this.basePrice * (double) Mathf.Clamp(num1 * (float) (1.0 + (double) (GameManager.instance.currentDay - 2) / (double) num2), min, 100f));
+    float num3 = num1;
+    return (int) ((double) this.basePrice * (double) Mathf.Clamp(num1 * (float) (1.0 + (double) (GameManager.instance.currentDay - 2) / (double) num2), num3, 100f));
   }
 
   public void Refresh()
   {
-    for (int index = this.nameContainer.childCount - 1; index >= 0; --index)
-      Object.Destroy((Object) this.nameContainer.GetChild(index).gameObject);
+    for (int index = this.nameContainer.get_childCount() - 1; index >= 0; --index)
+      Object.Destroy((Object) ((Component) this.nameContainer.GetChild(index)).get_gameObject());
     foreach (PlayerManager playerManager in GameManager.players.Values)
     {
-      if (!((Object) playerManager == (Object) null) && !((Object) playerManager == (Object) null) && (!playerManager.disconnected && playerManager.dead))
-        Object.Instantiate<GameObject>(this.namePrefab, this.nameContainer).GetComponent<RespawnPrefab>().Set(playerManager.id, InventoryUI.Instance.GetMoney() >= this.GetRevivePrice(), playerManager.username);
+      if (!Object.op_Equality((Object) playerManager, (Object) null) && !Object.op_Equality((Object) playerManager, (Object) null) && (!playerManager.disconnected && playerManager.dead))
+        ((RespawnPrefab) ((GameObject) Object.Instantiate<GameObject>((M0) this.namePrefab, this.nameContainer)).GetComponent<RespawnPrefab>()).Set(playerManager.id, InventoryUI.Instance.GetMoney() >= this.GetRevivePrice(), playerManager.username);
     }
   }
+
+  public RespawnTotemUI() => base.\u002Ector();
 }

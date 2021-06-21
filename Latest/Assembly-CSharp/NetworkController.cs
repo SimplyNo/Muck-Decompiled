@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: NetworkController
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using Steamworks.Data;
 using UnityEngine;
@@ -17,27 +17,32 @@ public class NetworkController : MonoBehaviour
   public string[] playerNames;
   public static NetworkController Instance;
 
+  public bool loading { get; set; }
+
   private void Awake()
   {
-    if ((bool) (Object) NetworkController.Instance)
+    if (Object.op_Implicit((Object) NetworkController.Instance))
     {
-      Object.Destroy((Object) this.gameObject);
+      Object.Destroy((Object) ((Component) this).get_gameObject());
     }
     else
     {
       NetworkController.Instance = this;
-      Object.DontDestroyOnLoad((Object) this.gameObject);
+      Object.DontDestroyOnLoad((Object) ((Component) this).get_gameObject());
     }
   }
 
   public void LoadGame(string[] names)
   {
+    this.loading = true;
     this.playerNames = names;
     LoadingScreen.Instance.Show();
     this.Invoke("StartLoadingScene", LoadingScreen.Instance.totalFadeTime);
   }
 
   private void StartLoadingScene() => SceneManager.LoadScene("GameAfterLobby");
+
+  public NetworkController() => base.\u002Ector();
 
   public enum NetworkType
   {

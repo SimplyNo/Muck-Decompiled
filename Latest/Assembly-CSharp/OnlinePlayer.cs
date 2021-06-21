@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: OnlinePlayer
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -20,9 +20,9 @@ public class OnlinePlayer : MonoBehaviour
   public LayerMask whatIsGround;
   public GameObject jumpSfx;
   public GameObject dashFx;
-  private float moveSpeed = 15f;
-  private float rotationSpeed = 13f;
-  private float animationBlendSpeed = 8f;
+  private float moveSpeed;
+  private float rotationSpeed;
+  private float animationBlendSpeed;
   public GameObject weapon;
   private MeshFilter filter;
   private MeshRenderer renderer;
@@ -38,36 +38,36 @@ public class OnlinePlayer : MonoBehaviour
   public Transform jumpSmokeFxPos;
   private float speed;
 
-  public float hpRatio { get; set; } = 1f;
+  public float hpRatio { get; set; }
 
   private void Start()
   {
     this.grounded = true;
-    this.filter = this.weapon.GetComponent<MeshFilter>();
-    this.renderer = this.weapon.GetComponent<MeshRenderer>();
+    this.filter = (MeshFilter) this.weapon.GetComponent<MeshFilter>();
+    this.renderer = (MeshRenderer) this.weapon.GetComponent<MeshRenderer>();
   }
 
   private void FixedUpdate()
   {
-    this.fallSpeed = Mathf.Abs(this.rb.velocity.y);
-    this.rb.MovePosition(Vector3.Lerp(this.rb.position, this.desiredPos, Time.deltaTime * this.moveSpeed));
+    this.fallSpeed = Mathf.Abs((float) this.rb.get_velocity().y);
+    this.rb.MovePosition(Vector3.Lerp(this.rb.get_position(), this.desiredPos, Time.get_deltaTime() * this.moveSpeed));
   }
 
   private void Update()
   {
-    this.grounded = Physics.Raycast(this.transform.position, Vector3.down, 2.4f, (int) this.whatIsGround);
+    this.grounded = Physics.Raycast(((Component) this).get_transform().get_position(), Vector3.get_down(), 2.4f, LayerMask.op_Implicit(this.whatIsGround));
     this.Animate();
     this.Sfx();
     this.FootSteps();
-    this.transform.rotation = Quaternion.Lerp(this.transform.rotation, Quaternion.Euler(0.0f, this.orientationY, 0.0f), Time.deltaTime * this.rotationSpeed);
-    this.hpBar.localScale = new Vector3(Mathf.Lerp(this.hpBar.localScale.x, this.hpRatio, Time.deltaTime * 10f), 1f, 1f);
+    ((Component) this).get_transform().set_rotation(Quaternion.Lerp(((Component) this).get_transform().get_rotation(), Quaternion.Euler(0.0f, this.orientationY, 0.0f), Time.get_deltaTime() * this.rotationSpeed));
+    this.hpBar.set_localScale(new Vector3(Mathf.Lerp((float) this.hpBar.get_localScale().x, this.hpRatio, Time.get_deltaTime() * 10f), 1f, 1f));
   }
 
   private void LateUpdate()
   {
-    this.currentTorsoRotation = Mathf.Lerp(this.currentTorsoRotation, this.orientationX, Time.deltaTime * this.rotationSpeed);
-    this.upperBody.localRotation = Quaternion.Euler(this.currentTorsoRotation, this.upperBody.localRotation.y, this.upperBody.localRotation.z);
-    this.lastFallSpeed = this.rb.velocity.y;
+    this.currentTorsoRotation = Mathf.Lerp(this.currentTorsoRotation, this.orientationX, Time.get_deltaTime() * this.rotationSpeed);
+    this.upperBody.set_localRotation(Quaternion.Euler(this.currentTorsoRotation, (float) this.upperBody.get_localRotation().y, (float) this.upperBody.get_localRotation().z));
+    this.lastFallSpeed = (float) this.rb.get_velocity().y;
   }
 
   private void FootSteps()
@@ -75,30 +75,31 @@ public class OnlinePlayer : MonoBehaviour
     if ((double) this.DistToPlayer() > 30.0 || !this.grounded)
       return;
     float num1 = 1f;
-    float num2 = this.rb.velocity.magnitude;
+    Vector3 velocity = this.rb.get_velocity();
+    float num2 = ((Vector3) ref velocity).get_magnitude();
     if ((double) num2 > 20.0)
       num2 = 20f;
-    this.distance += (float) ((double) num2 * (double) Time.deltaTime * 50.0);
+    this.distance += (float) ((double) num2 * (double) Time.get_deltaTime() * 50.0);
     if ((double) this.distance <= 300.0 / (double) num1)
       return;
-    Object.Instantiate<GameObject>(this.footstepFx, this.transform.position, Quaternion.identity);
+    Object.Instantiate<GameObject>((M0) this.footstepFx, ((Component) this).get_transform().get_position(), Quaternion.get_identity());
     this.distance = 0.0f;
   }
 
-  public int currentWeaponId { get; set; } = -1;
+  public int currentWeaponId { get; set; }
 
   public void UpdateWeapon(int objectID)
   {
     this.currentWeaponId = objectID;
     if (objectID == -1)
     {
-      this.filter.mesh = (Mesh) null;
+      this.filter.set_mesh((Mesh) null);
     }
     else
     {
       InventoryItem allItem = ItemManager.Instance.allItems[objectID];
-      this.filter.mesh = allItem.mesh;
-      this.renderer.material = allItem.material;
+      this.filter.set_mesh(allItem.mesh);
+      ((Renderer) this.renderer).set_material(allItem.material);
       this.animator.SetFloat("AnimationSpeed", allItem.attackSpeed);
     }
   }
@@ -112,18 +113,19 @@ public class OnlinePlayer : MonoBehaviour
   {
     if ((double) this.DistToPlayer() > 30.0)
       return;
-    Object.Instantiate<GameObject>(this.smokeFx, this.jumpSmokeFxPos.position, Quaternion.LookRotation(Vector3.up));
+    Object.Instantiate<GameObject>((M0) this.smokeFx, this.jumpSmokeFxPos.get_position(), Quaternion.LookRotation(Vector3.get_up()));
   }
 
   private void Animate()
   {
-    this.speed = Mathf.Lerp(this.speed, Mathf.Clamp(this.rb.velocity.magnitude * 0.1f, 0.0f, 1f), Time.deltaTime * 10f);
+    Vector3 velocity = this.rb.get_velocity();
+    this.speed = Mathf.Lerp(this.speed, Mathf.Clamp(((Vector3) ref velocity).get_magnitude() * 0.1f, 0.0f, 1f), Time.get_deltaTime() * 10f);
     this.animator.SetBool("Grounded", this.grounded);
     this.animator.SetFloat("FallSpeed", this.lastFallSpeed);
     this.animator.SetFloat("Speed", this.speed);
   }
 
-  private float DistToPlayer() => !(bool) (Object) PlayerMovement.Instance ? 1000f : Vector3.Distance(PlayerMovement.Instance.transform.position, this.transform.position);
+  private float DistToPlayer() => !Object.op_Implicit((Object) PlayerMovement.Instance) ? 1000f : Vector3.Distance(((Component) PlayerMovement.Instance).get_transform().get_position(), ((Component) this).get_transform().get_position());
 
   public void NewAnimation(int animation, bool b)
   {
@@ -140,6 +142,8 @@ public class OnlinePlayer : MonoBehaviour
         break;
     }
   }
+
+  public OnlinePlayer() => base.\u002Ector();
 
   public enum SharedAnimation
   {

@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: SpectatorCamera
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -31,13 +31,16 @@ public class SpectatorCamera : MonoBehaviour
       this.target = (Transform) null;
       this.targetName = "";
     }
-    if (!this.ready || !(bool) (Object) this.target || (!this.target.gameObject.activeInHierarchy || !(bool) (Object) this.target))
+    if (!this.ready || !Object.op_Implicit((Object) this.target) || (!((Component) this.target).get_gameObject().get_activeInHierarchy() || !Object.op_Implicit((Object) this.target)))
       return;
-    this.transform.position = this.target.position - this.target.GetChild(0).forward * 5f + Vector3.up * 2f;
-    this.transform.LookAt(this.target);
+    Transform child = this.target.GetChild(0);
+    ((Component) this).get_transform().set_position(Vector3.op_Addition(Vector3.op_Subtraction(this.target.get_position(), Vector3.op_Multiply(child.get_forward(), 5f)), Vector3.op_Multiply(Vector3.get_up(), 2f)));
+    ((Component) this).get_transform().LookAt(this.target);
   }
 
   public void SetTarget(Transform target, string name) => this.target = target;
 
   private void GetReady() => this.ready = true;
+
+  public SpectatorCamera() => base.\u002Ector();
 }

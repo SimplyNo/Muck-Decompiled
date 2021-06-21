@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: CauldronSync
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,7 +22,7 @@ public class CauldronSync : Chest
   public override void UpdateCraftables()
   {
     InventoryItem inventoryItem = this.CanProcess();
-    if (!this.processing && (Object) inventoryItem != (Object) null)
+    if (!this.processing && Object.op_Inequality((Object) inventoryItem, (Object) null))
     {
       ItemFuel fuel = this.cells[this.fuelCellId].fuel;
       this.totalProcessTime = 0.0f;
@@ -30,26 +30,26 @@ public class CauldronSync : Chest
       this.timeToProcess = inventoryItem.processTime / fuel.speedMultiplier;
       this.processing = true;
     }
-    if (!(bool) (Object) CauldronUI.Instance || !((Object) OtherInput.Instance.currentChest == (Object) this))
+    if (!Object.op_Implicit((Object) CauldronUI.Instance) || !Object.op_Equality((Object) OtherInput.Instance.currentChest, (Object) this))
       return;
     CauldronUI.Instance.CopyChest(OtherInput.Instance.currentChest);
-    CauldronUI.Instance.processBar.transform.localScale = new Vector3(this.currentProcessTime / this.timeToProcess, 1f, 1f);
+    ((Component) CauldronUI.Instance.processBar).get_transform().set_localScale(new Vector3(this.currentProcessTime / this.timeToProcess, 1f, 1f));
   }
 
   private void Update()
   {
     if (!this.processing)
       return;
-    if (!(bool) (Object) this.CanProcess())
+    if (!Object.op_Implicit((Object) this.CanProcess()))
     {
       this.StopProcessing();
     }
     else
     {
-      this.currentProcessTime += Time.deltaTime;
-      this.totalProcessTime += Time.deltaTime;
-      if ((bool) (Object) CauldronUI.Instance && (Object) OtherInput.Instance.currentChest == (Object) this)
-        CauldronUI.Instance.processBar.transform.localScale = new Vector3(this.currentProcessTime / this.timeToProcess, 1f, 1f);
+      this.currentProcessTime += Time.get_deltaTime();
+      this.totalProcessTime += Time.get_deltaTime();
+      if (Object.op_Implicit((Object) CauldronUI.Instance) && Object.op_Equality((Object) OtherInput.Instance.currentChest, (Object) this))
+        ((Component) CauldronUI.Instance.processBar).get_transform().set_localScale(new Vector3(this.currentProcessTime / this.timeToProcess, 1f, 1f));
       if ((double) this.currentProcessTime < (double) this.timeToProcess)
         return;
       this.ProcessItem();
@@ -60,9 +60,9 @@ public class CauldronSync : Chest
   private void StopProcessing()
   {
     this.processing = false;
-    if (!(bool) (Object) CauldronUI.Instance)
+    if (!Object.op_Implicit((Object) CauldronUI.Instance))
       return;
-    CauldronUI.Instance.processBar.transform.localScale = Vector3.zero;
+    ((Component) CauldronUI.Instance.processBar).get_transform().set_localScale(Vector3.get_zero());
   }
 
   public void ProcessItem()
@@ -72,7 +72,7 @@ public class CauldronSync : Chest
     InventoryItem inventoryItem = this.CanProcess();
     foreach (int ingredientCell in this.ingredientCells)
     {
-      if (!((Object) this.cells[ingredientCell] == (Object) null))
+      if (!Object.op_Equality((Object) this.cells[ingredientCell], (Object) null))
       {
         foreach (InventoryItem.CraftRequirement requirement in inventoryItem.requirements)
         {
@@ -87,7 +87,7 @@ public class CauldronSync : Chest
     this.UseFuel(this.cells[this.fuelCellId]);
     this.AddMaterial(this.cells[this.resultCellId], inventoryItem.id);
     this.UpdateCraftables();
-    if (!(bool) (Object) CauldronUI.Instance || !((Object) OtherInput.Instance.currentChest == (Object) this))
+    if (!Object.op_Implicit((Object) CauldronUI.Instance) || !Object.op_Equality((Object) OtherInput.Instance.currentChest, (Object) this))
       return;
     CauldronUI.Instance.CopyChest(OtherInput.Instance.currentChest);
   }
@@ -122,9 +122,9 @@ public class CauldronSync : Chest
 
   private void AddMaterial(InventoryItem item, int processedItemId)
   {
-    if ((Object) this.cells[this.resultCellId] == (Object) null)
+    if (Object.op_Equality((Object) this.cells[this.resultCellId], (Object) null))
     {
-      this.cells[this.resultCellId] = Object.Instantiate<InventoryItem>(ItemManager.Instance.allItems[processedItemId]);
+      this.cells[this.resultCellId] = (InventoryItem) Object.Instantiate<InventoryItem>((M0) ItemManager.Instance.allItems[processedItemId]);
       this.cells[this.resultCellId].amount = 1;
     }
     else
@@ -134,12 +134,12 @@ public class CauldronSync : Chest
 
   public InventoryItem CanProcess()
   {
-    if (this.NoIngredients() || !(bool) (Object) this.cells[this.fuelCellId])
+    if (this.NoIngredients() || !Object.op_Implicit((Object) this.cells[this.fuelCellId]))
       return (InventoryItem) null;
     InventoryItem itemByIngredients = this.FindItemByIngredients(this.ingredientCells);
-    if ((Object) itemByIngredients == (Object) null)
+    if (Object.op_Equality((Object) itemByIngredients, (Object) null))
       return (InventoryItem) null;
-    if ((Object) this.cells[this.resultCellId] != (Object) null)
+    if (Object.op_Inequality((Object) this.cells[this.resultCellId], (Object) null))
     {
       if (itemByIngredients.id != this.cells[this.resultCellId].id)
         return (InventoryItem) null;
@@ -154,7 +154,7 @@ public class CauldronSync : Chest
     List<InventoryItem> inventoryItemList = new List<InventoryItem>();
     foreach (int iCell in iCells)
     {
-      if ((Object) this.cells[iCell] != (Object) null)
+      if (Object.op_Inequality((Object) this.cells[iCell], (Object) null))
         inventoryItemList.Add(this.cells[iCell]);
     }
     foreach (InventoryItem inventoryItem1 in CauldronUI.Instance.processableFood)
@@ -191,7 +191,7 @@ public class CauldronSync : Chest
   {
     foreach (int ingredientCell in this.ingredientCells)
     {
-      if ((Object) this.cells[ingredientCell] != (Object) null)
+      if (Object.op_Inequality((Object) this.cells[ingredientCell], (Object) null))
         return false;
     }
     return true;

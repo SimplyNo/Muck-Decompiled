@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ClientPackets
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 public enum ClientPackets
 {
@@ -37,4 +37,6 @@ public enum ClientPackets
   finishedLoading = 29, // 0x0000001D
   spawnEffect = 30, // 0x0000001E
   reviveRequest = 31, // 0x0000001F
+  interact = 32, // 0x00000020
+  startedLoading = 33, // 0x00000021
 }

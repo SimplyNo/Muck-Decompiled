@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: Player
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using Steamworks;
 using UnityEngine;
@@ -13,6 +13,7 @@ public class Player
   public string username;
   public bool ready;
   public bool joined;
+  public bool loading;
   public Color color;
   public Vector3 pos;
   public float yOrientation;
@@ -55,7 +56,7 @@ public class Player
       this.armor[index] = -1;
   }
 
-  public void PingPlayer() => this.lastPingTime = Time.time;
+  public void PingPlayer() => this.lastPingTime = Time.get_time();
 
   public void UpdateArmor(int armorSlot, int itemId)
   {

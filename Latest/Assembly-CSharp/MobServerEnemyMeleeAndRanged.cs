@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: MobServerEnemyMeleeAndRanged
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -20,14 +20,17 @@ public class MobServerEnemyMeleeAndRanged : MobServerEnemy
   protected override void AttackBehaviour()
   {
     this.rangedCooldown = this.mob.mobType.rangedCooldown;
-    float num1 = Vector3.Distance(this.mob.target.position, this.transform.position);
-    if ((double) num1 <= (double) this.mob.mobType.startAttackDistance)
+    float num1 = Vector3.Distance(this.mob.target.get_position(), ((Component) this).get_transform().get_position());
+    bool flag = true;
+    if ((double) num1 <= (double) this.mob.mobType.startAttackDistance && (double) num1 >= (double) this.mob.mobType.startRangedAttackDistance)
+      flag = (double) Random.Range(0.0f, 1f) < 0.5;
+    if ((double) num1 <= (double) this.mob.mobType.startAttackDistance & flag)
     {
-      if ((double) Mathf.Abs(Vector3.SignedAngle(this.transform.forward, VectorExtensions.XZVector(this.mob.target.position) - VectorExtensions.XZVector(this.transform.position), Vector3.up)) > (double) this.mob.mobType.minAttackAngle)
+      if ((double) Mathf.Abs(Vector3.SignedAngle(((Component) this).get_transform().get_forward(), Vector3.op_Subtraction(VectorExtensions.XZVector(this.mob.target.get_position()), VectorExtensions.XZVector(((Component) this).get_transform().get_position())), Vector3.get_up())) > (double) this.mob.mobType.minAttackAngle)
         return;
       int num2 = 0;
       if (this.mob.mobType.onlyRangedInRangedPattern)
-        num2 = 1;
+        num2 = this.mob.nRangedAttacks;
       int attackAnimationIndex = Random.Range(0, this.mob.attackAnimations.Length - num2);
       this.mob.Attack(this.mob.targetPlayerId, attackAnimationIndex);
       ServerSend.MobAttack(this.mob.GetId(), this.mob.targetPlayerId, attackAnimationIndex);
@@ -38,7 +41,7 @@ public class MobServerEnemyMeleeAndRanged : MobServerEnemy
     {
       if ((double) num1 > (double) this.mob.mobType.maxAttackDistance || !this.readyForRangedAttack)
         return;
-      int attackAnimationIndex = this.mob.attackAnimations.Length - 1;
+      int attackAnimationIndex = this.mob.attackAnimations.Length - 1 - Random.Range(0, this.mob.nRangedAttacks);
       this.mob.Attack(this.mob.targetPlayerId, attackAnimationIndex);
       ServerSend.MobAttack(this.mob.GetId(), this.mob.targetPlayerId, attackAnimationIndex);
       this.serverReadyToAttack = false;

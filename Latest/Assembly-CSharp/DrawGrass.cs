@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: DrawGrass
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,32 +13,32 @@ public class DrawGrass : MonoBehaviour
   public MeshFilter filter;
   public Color AdjustedColor;
   [Range(1f, 600000f)]
-  public int grassLimit = 50000;
-  private Vector3 lastPosition = Vector3.zero;
+  public int grassLimit;
+  private Vector3 lastPosition;
   public int toolbarInt;
   [SerializeField]
-  private List<Vector3> positions = new List<Vector3>();
+  private List<Vector3> positions;
   [SerializeField]
-  private List<Color> colors = new List<Color>();
+  private List<Color> colors;
   [SerializeField]
-  private List<int> indicies = new List<int>();
+  private List<int> indicies;
   [SerializeField]
-  private List<Vector3> normals = new List<Vector3>();
+  private List<Vector3> normals;
   [SerializeField]
-  private List<Vector2> length = new List<Vector2>();
+  private List<Vector2> length;
   public bool painting;
   public bool removing;
   public bool editing;
   public int i;
-  public float sizeWidth = 1f;
-  public float sizeLength = 1f;
-  public float density = 1f;
-  public float normalLimit = 1f;
+  public float sizeWidth;
+  public float sizeLength;
+  public float density;
+  public float normalLimit;
   public float rangeR;
   public float rangeG;
   public float rangeB;
-  public LayerMask hitMask = (LayerMask) 1;
-  public LayerMask paintMask = (LayerMask) 1;
+  public LayerMask hitMask;
+  public LayerMask paintMask;
   public float brushSize;
   private Vector3 mousePos;
   [HideInInspector]
@@ -47,16 +47,16 @@ public class DrawGrass : MonoBehaviour
   [HideInInspector]
   public Vector3 hitNormal;
   private int[] indi;
-  private float updateRate = 0.5f;
+  private float updateRate;
   public Transform grassObject;
-  public float chunkLength = 20f;
-  public float chunkDensity = 10f;
-  public int nChunks = 16;
+  public float chunkLength;
+  public float chunkDensity;
+  public int nChunks;
   public int iterations;
   private Dictionary<Vector3, bool> currentPositions;
   public Transform target;
   private Vector3 currentGridPos;
-  public int gridSize = 20;
+  public int gridSize;
 
   public void ClearMesh()
   {
@@ -77,8 +77,8 @@ public class DrawGrass : MonoBehaviour
   {
     if (!CurrentSettings.grass)
     {
-      Object.Destroy((Object) this.grassObject.gameObject);
-      Object.Destroy((Object) this.gameObject);
+      Object.Destroy((Object) ((Component) this.grassObject).get_gameObject());
+      Object.Destroy((Object) ((Component) this).get_gameObject());
     }
     else
     {
@@ -92,8 +92,8 @@ public class DrawGrass : MonoBehaviour
   {
     if (!CurrentSettings.grass)
     {
-      Object.Destroy((Object) this.grassObject.gameObject);
-      Object.Destroy((Object) this.gameObject);
+      Object.Destroy((Object) ((Component) this.grassObject).get_gameObject());
+      Object.Destroy((Object) ((Component) this).get_gameObject());
     }
     else
       this.UpdateGrass();
@@ -101,16 +101,16 @@ public class DrawGrass : MonoBehaviour
 
   private void UpdateGrass()
   {
-    if (!(bool) (Object) this.target)
+    if (!Object.op_Implicit((Object) this.target))
     {
-      if (!(bool) (Object) PlayerMovement.Instance)
+      if (!Object.op_Implicit((Object) PlayerMovement.Instance))
         return;
       this.target = PlayerMovement.Instance.playerCam;
     }
-    Vector3 gridPos = this.posToGridPos(this.target.position);
-    if (!(this.currentGridPos != gridPos))
+    Vector3 gridPos = this.posToGridPos(this.target.get_position());
+    if (!Vector3.op_Inequality(this.currentGridPos, gridPos))
       return;
-    Vector3 vector3 = (gridPos - this.currentGridPos) / this.chunkLength;
+    Vector3.op_Division(Vector3.op_Subtraction(gridPos, this.currentGridPos), this.chunkLength);
     this.ClearMesh();
     this.currentGridPos = gridPos;
     int num1 = 5;
@@ -126,10 +126,10 @@ public class DrawGrass : MonoBehaviour
         int d = 1;
         if (index1 <= -num5 || index1 >= num6 || (index2 <= -num5 || index2 >= num6))
           d = 2;
-        Vector3 start = this.currentGridPos + new Vector3((float) index1, 0.0f, (float) index2) * (float) this.gridSize;
-        this.CreateNewMesh(new Vector3((float) index1, 0.0f, (float) index2) * (float) this.gridSize, d);
+        Vector3 vector3 = Vector3.op_Addition(this.currentGridPos, Vector3.op_Multiply(new Vector3((float) index1, 0.0f, (float) index2), (float) this.gridSize));
+        this.CreateNewMesh(Vector3.op_Multiply(new Vector3((float) index1, 0.0f, (float) index2), (float) this.gridSize), d);
         ++num2;
-        Debug.DrawLine(start, start + Vector3.up * 50f, Color.red, 50f);
+        Debug.DrawLine(vector3, Vector3.op_Addition(vector3, Vector3.op_Multiply(Vector3.get_up(), 50f)), Color.get_red(), 50f);
       }
     }
     try
@@ -138,11 +138,11 @@ public class DrawGrass : MonoBehaviour
       this.mesh = new Mesh();
       this.mesh.SetVertices(this.positions);
       this.indi = this.indicies.ToArray();
-      this.mesh.SetIndices(this.indi, MeshTopology.Points, 0);
+      this.mesh.SetIndices(this.indi, (MeshTopology) 5, 0);
       this.mesh.SetUVs(0, this.length);
       this.mesh.SetColors(this.colors);
       this.mesh.SetNormals(this.normals);
-      this.filter.mesh = this.mesh;
+      this.filter.set_mesh(this.mesh);
     }
     catch
     {
@@ -152,8 +152,8 @@ public class DrawGrass : MonoBehaviour
 
   public Vector3 posToGridPos(Vector3 point)
   {
-    float x = point.x;
-    float z = point.z;
+    float x = (float) point.x;
+    float z = (float) point.z;
     if ((double) x < 0.0)
       x -= (float) this.gridSize;
     if ((double) z < 0.0)
@@ -166,31 +166,37 @@ public class DrawGrass : MonoBehaviour
 
   private void CreateNewMesh(Vector3 offset, int d)
   {
-    if ((bool) (Object) PlayerMovement.Instance)
-      this.transform.position = PlayerMovement.Instance.transform.position;
+    if (Object.op_Implicit((Object) PlayerMovement.Instance))
+      ((Component) this).get_transform().set_position(((Component) PlayerMovement.Instance).get_transform().get_position());
     float num1 = this.chunkDensity / (float) d;
     float num2 = this.chunkLength / num1;
     for (int index1 = 0; (double) index1 < (double) num1; ++index1)
     {
       for (int index2 = 0; (double) index2 < (double) num1; ++index2)
       {
-        double num3 = (double) this.currentGridPos.x + (double) offset.x - (double) this.currentGridPos.x % (double) num2;
-        float num4 = (float) ((double) this.currentGridPos.z + (double) offset.z - (double) this.currentGridPos.z % (double) num2);
+        double num3 = this.currentGridPos.x + offset.x - this.currentGridPos.x % (double) num2;
+        float num4 = (float) (this.currentGridPos.z + offset.z - this.currentGridPos.z % (double) num2);
         double num5 = ((double) index1 - (double) num1 / 2.0) / (double) num1 * (double) this.chunkLength;
-        RaycastHit hitInfo;
-        if (Physics.Raycast(new Ray(new Vector3((float) (num3 + num5), this.transform.position.y + 50f, num4 + ((float) index2 - num1 / 2f) / num1 * this.chunkLength), Vector3.down), out hitInfo, 200f, this.hitMask.value) && this.i < this.grassLimit && ((double) hitInfo.normal.y <= 1.0 + (double) this.normalLimit && (double) hitInfo.normal.y >= 1.0 - (double) this.normalLimit) && (WorldUtility.WorldHeightToBiome(hitInfo.point.y) == TextureData.TerrainType.Grass && hitInfo.collider.gameObject.CompareTag("Terrain")))
+        float num6 = (float) (num3 + num5);
+        float num7 = num4 + ((float) index2 - num1 / 2f) / num1 * this.chunkLength;
+        Vector3 vector3;
+        ((Vector3) ref vector3).\u002Ector(num6, (float) (((Component) this).get_transform().get_position().y + 50.0), num7);
+        RaycastHit raycastHit;
+        if (Physics.Raycast(new Ray(vector3, Vector3.get_down()), ref raycastHit, 200f, ((LayerMask) ref this.hitMask).get_value()) && this.i < this.grassLimit && (((RaycastHit) ref raycastHit).get_normal().y <= 1.0 + (double) this.normalLimit && ((RaycastHit) ref raycastHit).get_normal().y >= 1.0 - (double) this.normalLimit) && (WorldUtility.WorldHeightToBiome((float) ((RaycastHit) ref raycastHit).get_point().y) == TextureData.TerrainType.Grass && ((Component) ((RaycastHit) ref raycastHit).get_collider()).get_gameObject().CompareTag("Terrain")))
         {
-          this.hitPos = hitInfo.point;
-          this.hitNormal = hitInfo.normal;
-          this.hitPos -= this.grassObject.transform.position;
+          this.hitPos = ((RaycastHit) ref raycastHit).get_point();
+          this.hitNormal = ((RaycastHit) ref raycastHit).get_normal();
+          this.hitPos = Vector3.op_Subtraction(this.hitPos, ((Component) this.grassObject).get_transform().get_position());
           this.positions.Add(this.hitPos);
           this.indicies.Add(this.i);
           this.length.Add(new Vector2(this.sizeWidth, this.sizeLength));
-          this.colors.Add(new Color(this.AdjustedColor.r + Random.Range(0.0f, 1f) * this.rangeR, this.AdjustedColor.g + Random.Range(0.0f, 1f) * this.rangeG, this.AdjustedColor.b + Random.Range(0.0f, 1f) * this.rangeB, 1f));
-          this.normals.Add(hitInfo.normal);
+          this.colors.Add(new Color((float) (this.AdjustedColor.r + (double) Random.Range(0.0f, 1f) * (double) this.rangeR), (float) (this.AdjustedColor.g + (double) Random.Range(0.0f, 1f) * (double) this.rangeG), (float) (this.AdjustedColor.b + (double) Random.Range(0.0f, 1f) * (double) this.rangeB), 1f));
+          this.normals.Add(((RaycastHit) ref raycastHit).get_normal());
           ++this.i;
         }
       }
     }
   }
+
+  public DrawGrass() => base.\u002Ector();
 }

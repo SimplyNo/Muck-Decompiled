@@ -1,14 +1,14 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: MoveCameraTowards
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
 public class MoveCameraTowards : MonoBehaviour
 {
-  public float speed = 1f;
+  public float speed;
   public Transform target;
   private bool ready;
 
@@ -20,6 +20,8 @@ public class MoveCameraTowards : MonoBehaviour
   {
     if (!this.ready)
       return;
-    this.transform.position = Vector3.Lerp(this.transform.position, this.target.position, Time.deltaTime * this.speed);
+    ((Component) this).get_transform().set_position(Vector3.Lerp(((Component) this).get_transform().get_position(), this.target.get_position(), Time.get_deltaTime() * this.speed));
   }
+
+  public MoveCameraTowards() => base.\u002Ector();
 }

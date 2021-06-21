@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: InventoryItem
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using UnityEngine;
@@ -22,16 +22,16 @@ public class InventoryItem : ScriptableObject
   public Mesh mesh;
   public Vector3 rotationOffset;
   public Vector3 positionOffset;
-  public float scale = 1f;
+  public float scale;
   [Header("Inventory details")]
-  public bool stackable = true;
+  public bool stackable;
   public int amount;
-  public int max = 69;
+  public int max;
   [Header("Weapon")]
-  public int resourceDamage = 1;
-  public int attackDamage = 1;
-  public float attackSpeed = 1f;
-  public Vector3 attackRange = Vector3.one;
+  public int resourceDamage;
+  public int attackDamage;
+  public float attackSpeed;
+  public Vector3 attackRange;
   public float sharpness;
   [Header("Crafting")]
   public bool craftable;
@@ -55,13 +55,15 @@ public class InventoryItem : ScriptableObject
   public float stamina;
   [Header("Other")]
   public int armor;
-  public float projectileSpeed;
   public bool swingFx;
+  public BowComponent bowComponent;
+  public ArmorComponent armorComponent;
   [Header("Fuel")]
   public ItemFuel fuel;
   [Header("Meta")]
   public InventoryItem.ItemTag tag;
   public InventoryItem.ItemRarity rarity;
+  public MobType.Weakness[] attackTypes;
 
   public void Copy(InventoryItem item, int amount)
   {
@@ -99,12 +101,14 @@ public class InventoryItem : ScriptableObject
     this.hunger = item.hunger;
     this.stamina = item.stamina;
     this.armor = item.armor;
-    this.projectileSpeed = item.projectileSpeed;
+    this.armorComponent = item.armorComponent;
+    this.bowComponent = item.bowComponent;
     this.swingFx = item.swingFx;
     this.processTime = item.processTime;
-    if ((bool) (UnityEngine.Object) item.fuel)
-      this.fuel = UnityEngine.Object.Instantiate<ItemFuel>(item.fuel);
+    if (Object.op_Implicit((Object) item.fuel))
+      this.fuel = (ItemFuel) Object.Instantiate<ItemFuel>((M0) item.fuel);
     this.rarity = item.rarity;
+    this.attackTypes = item.attackTypes;
   }
 
   public bool IsArmour() => this.tag == InventoryItem.ItemTag.Helmet || this.tag == InventoryItem.ItemTag.Torso || this.tag == InventoryItem.ItemTag.Legs || this.tag == InventoryItem.ItemTag.Feet;
@@ -114,19 +118,21 @@ public class InventoryItem : ScriptableObject
     switch (this.rarity)
     {
       case InventoryItem.ItemRarity.Common:
-        return Color.white;
+        return Color.get_white();
       case InventoryItem.ItemRarity.Uncommon:
-        return Color.green;
+        return Color.get_green();
       case InventoryItem.ItemRarity.Rare:
-        return Color.red;
+        return Color.get_red();
       default:
-        return Color.white;
+        return Color.get_white();
     }
   }
 
-  public bool Compare(InventoryItem other) => !((UnityEngine.Object) other == (UnityEngine.Object) null) && this.id == other.id;
+  public bool Compare(InventoryItem other) => !Object.op_Equality((Object) other, (Object) null) && this.id == other.id;
 
   public string GetAmount() => !this.stackable || this.amount == 1 ? "" : this.amount.ToString();
+
+  public InventoryItem() => base.\u002Ector();
 
   public enum ItemType
   {

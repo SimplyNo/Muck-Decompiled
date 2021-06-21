@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: RespawnPrefab
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
 using UnityEngine;
@@ -19,9 +19,9 @@ public class RespawnPrefab : MonoBehaviour
   public void Set(int id, bool active, string username)
   {
     this.playerId = id;
-    this.overlay.gameObject.SetActive(!active);
-    this.button.enabled = active;
-    this.nameText.text = username;
+    ((Component) this.overlay).get_gameObject().SetActive(!active);
+    ((Behaviour) this.button).set_enabled(active);
+    ((TMP_Text) this.nameText).set_text(username);
   }
 
   public void RespawnPlayer()
@@ -29,4 +29,6 @@ public class RespawnPrefab : MonoBehaviour
     Debug.LogError((object) "requesting revive");
     RespawnTotemUI.Instance.RequestRevive(this.playerId);
   }
+
+  public RespawnPrefab() => base.\u002Ector();
 }

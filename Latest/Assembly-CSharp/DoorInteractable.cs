@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: DoorInteractable
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -28,9 +28,9 @@ public class DoorInteractable : MonoBehaviour, Interactable, SharedObject
       this.desiredYRotation = 0.0f;
   }
 
-  private void Update() => this.pivot.rotation = Quaternion.Lerp(this.pivot.rotation, Quaternion.Euler(0.0f, this.desiredYRotation, 0.0f), Time.deltaTime * 5f);
+  private void Update() => this.pivot.set_rotation(Quaternion.Lerp(this.pivot.get_rotation(), Quaternion.Euler(0.0f, this.desiredYRotation, 0.0f), Time.get_deltaTime() * 5f));
 
-  public void ServerExecute()
+  public void ServerExecute(int fromClient)
   {
   }
 
@@ -46,7 +46,11 @@ public class DoorInteractable : MonoBehaviour, Interactable, SharedObject
 
   public string GetName() => this.opened ? "Close Door" : "Open Door";
 
+  public bool IsStarted() => false;
+
   public void SetId(int id) => this.id = id;
 
   public int GetId() => this.id;
+
+  public DoorInteractable() => base.\u002Ector();
 }

@@ -1,15 +1,15 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: PlayerInput
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
 public class PlayerInput : MonoBehaviour
 {
   private float xRotation;
-  private float sensitivity = 50f;
+  private float sensitivity;
   public static float sensMultiplier = 1f;
   private float desiredX;
   private float x;
@@ -21,7 +21,7 @@ public class PlayerInput : MonoBehaviour
   private Transform playerCam;
   private Transform orientation;
   private PlayerMovement playerMovement;
-  public bool active = true;
+  public bool active;
   private float actualWallRotation;
   private float wallRotationVel;
   public Vector3 cameraRot;
@@ -33,7 +33,7 @@ public class PlayerInput : MonoBehaviour
   private void Awake()
   {
     PlayerInput.Instance = this;
-    this.playerMovement = (PlayerMovement) this.GetComponent("PlayerMovement");
+    this.playerMovement = (PlayerMovement) ((Component) this).GetComponent("PlayerMovement");
     this.playerCam = this.playerMovement.playerCam;
     this.orientation = this.playerMovement.orientation;
   }
@@ -73,7 +73,7 @@ public class PlayerInput : MonoBehaviour
     }
     else
     {
-      if (!(bool) (Object) this.playerMovement)
+      if (!Object.op_Implicit((Object) this.playerMovement))
         return;
       this.x = 0.0f;
       this.y = 0.0f;
@@ -87,7 +87,7 @@ public class PlayerInput : MonoBehaviour
         ++this.x;
       this.jumping = Input.GetKey(InputManager.jump);
       this.sprinting = Input.GetKey(InputManager.sprint);
-      this.mouseScroll = Input.mouseScrollDelta.y;
+      this.mouseScroll = (float) Input.get_mouseScrollDelta().y;
       if (Input.GetKeyDown(InputManager.jump))
         this.playerMovement.Jump();
       if (Input.GetKey(InputManager.leftClick))
@@ -98,7 +98,7 @@ public class PlayerInput : MonoBehaviour
         BuildManager.Instance.RequestBuildItem();
       if ((double) this.mouseScroll != 0.0)
         BuildManager.Instance.RotateBuild((int) Mathf.Sign(this.mouseScroll));
-      if (Input.GetKeyDown(KeyCode.R))
+      if (Input.GetKeyDown((KeyCode) 114))
         BuildManager.Instance.RotateBuild(1);
       this.playerMovement.SetInput(new Vector2(this.x, this.y), this.crouching, this.jumping, this.sprinting);
     }
@@ -106,21 +106,21 @@ public class PlayerInput : MonoBehaviour
 
   private void Look()
   {
-    if (Cursor.lockState == CursorLockMode.None || OtherInput.lockCamera)
+    if (Cursor.get_lockState() == null || OtherInput.lockCamera)
       return;
     float num1 = this.GetMouseX();
     float num2 = (float) ((double) Input.GetAxis("Mouse Y") * (double) this.sensitivity * 0.0199999995529652) * PlayerInput.sensMultiplier;
-    if (CurrentSettings.inverted)
-    {
+    if (CurrentSettings.invertedHor)
       num1 = -num1;
+    if (CurrentSettings.invertedVer)
       num2 = -num2;
-    }
-    this.desiredX = this.playerCam.transform.localRotation.eulerAngles.y + num1;
+    Quaternion localRotation = ((Component) this.playerCam).get_transform().get_localRotation();
+    this.desiredX = (float) ((Quaternion) ref localRotation).get_eulerAngles().y + num1;
     this.xRotation -= num2;
     this.xRotation = Mathf.Clamp(this.xRotation, -90f, 90f);
     this.actualWallRotation = Mathf.SmoothDamp(this.actualWallRotation, this.wallRunRotation, ref this.wallRotationVel, 0.2f);
     this.cameraRot = new Vector3(this.xRotation, this.desiredX, this.actualWallRotation);
-    this.orientation.transform.localRotation = Quaternion.Euler(0.0f, this.desiredX, 0.0f);
+    ((Component) this.orientation).get_transform().set_localRotation(Quaternion.Euler(0.0f, this.desiredX, 0.0f));
   }
 
   public Vector2 GetAxisInput() => new Vector2(this.x, this.y);
@@ -130,4 +130,6 @@ public class PlayerInput : MonoBehaviour
   public void SetMouseOffset(float o) => this.xRotation = o;
 
   public float GetMouseOffset() => this.xRotation;
+
+  public PlayerInput() => base.\u002Ector();
 }

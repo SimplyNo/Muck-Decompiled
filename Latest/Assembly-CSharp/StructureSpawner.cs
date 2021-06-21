@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: StructureSpawner
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using System.Collections.Generic;
@@ -12,8 +12,8 @@ public class StructureSpawner : MonoBehaviour
 {
   public StructureSpawner.WeightedSpawn[] structurePrefabs;
   private int mapChunkSize;
-  private float worldEdgeBuffer = 0.6f;
-  public int nShrines = 50;
+  private float worldEdgeBuffer;
+  public int nShrines;
   protected ConsistentRandom randomGen;
   public LayerMask whatIsTerrain;
   private List<GameObject> structures;
@@ -21,7 +21,7 @@ public class StructureSpawner : MonoBehaviour
   private Vector3[] shrines;
   private float totalWeight;
 
-  public float worldScale { get; set; } = 12f;
+  public float worldScale { get; set; }
 
   private void Start()
   {
@@ -35,20 +35,20 @@ public class StructureSpawner : MonoBehaviour
     int num = 0;
     for (int index = 0; index < this.nShrines; ++index)
     {
-      Vector3 vector3 = new Vector3((float) ((this.randomGen.NextDouble() * 2.0 - 1.0) * (double) this.mapChunkSize / 2.0), 0.0f, (float) ((this.randomGen.NextDouble() * 2.0 - 1.0) * (double) this.mapChunkSize / 2.0)) * this.worldScale;
-      vector3.y = 200f;
-      Debug.DrawLine(vector3, vector3 + Vector3.down * 500f, Color.cyan, 50f);
-      RaycastHit hitInfo;
-      if (Physics.Raycast(vector3, Vector3.down, out hitInfo, 500f, (int) this.whatIsTerrain) && WorldUtility.WorldHeightToBiome(hitInfo.point.y) == TextureData.TerrainType.Grass)
+      Vector3 vector3 = Vector3.op_Multiply(new Vector3((float) ((this.randomGen.NextDouble() * 2.0 - 1.0) * (double) this.mapChunkSize / 2.0), 0.0f, (float) ((this.randomGen.NextDouble() * 2.0 - 1.0) * (double) this.mapChunkSize / 2.0)), this.worldScale);
+      vector3.y = (__Null) 200.0;
+      Debug.DrawLine(vector3, Vector3.op_Addition(vector3, Vector3.op_Multiply(Vector3.get_down(), 500f)), Color.get_cyan(), 50f);
+      RaycastHit hit;
+      if (Physics.Raycast(vector3, Vector3.get_down(), ref hit, 500f, LayerMask.op_Implicit(this.whatIsTerrain)) && WorldUtility.WorldHeightToBiome((float) ((RaycastHit) ref hit).get_point().y) == TextureData.TerrainType.Grass)
       {
-        this.shrines[index] = hitInfo.point;
+        this.shrines[index] = ((RaycastHit) ref hit).get_point();
         ++num;
         GameObject objectToSpawn = this.FindObjectToSpawn(this.structurePrefabs, this.totalWeight);
-        GameObject newStructure = UnityEngine.Object.Instantiate<GameObject>(objectToSpawn, hitInfo.point, objectToSpawn.transform.rotation);
+        GameObject newStructure = (GameObject) Object.Instantiate<GameObject>((M0) objectToSpawn, ((RaycastHit) ref hit).get_point(), objectToSpawn.get_transform().get_rotation());
         if (!this.dontAddToResourceManager)
-          newStructure.GetComponentInChildren<SharedObject>().SetId(ResourceManager.Instance.GetNextId());
+          ((SharedObject) newStructure.GetComponentInChildren<SharedObject>()).SetId(ResourceManager.Instance.GetNextId());
         this.structures.Add(newStructure);
-        this.Process(newStructure, hitInfo);
+        this.Process(newStructure, hit);
       }
     }
     if (!this.dontAddToResourceManager)
@@ -78,6 +78,8 @@ public class StructureSpawner : MonoBehaviour
     }
     return structurePrefabs[0].prefab;
   }
+
+  public StructureSpawner() => base.\u002Ector();
 
   [Serializable]
   public class WeightedSpawn

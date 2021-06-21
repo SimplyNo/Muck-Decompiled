@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: Billboard
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -13,33 +13,40 @@ public class Billboard : MonoBehaviour
   public bool affectScale;
   private Transform t;
 
-  private void Awake() => this.defaultScale = this.transform.localScale;
+  private void Awake() => this.defaultScale = ((Component) this).get_transform().get_localScale();
 
   private void Update()
   {
-    if (!(bool) (Object) this.t)
+    if (!Object.op_Implicit((Object) this.t))
     {
-      if (!((Object) this.t == (Object) null) && this.t.gameObject.activeInHierarchy)
+      if (!Object.op_Equality((Object) this.t, (Object) null) && ((Component) this.t).get_gameObject().get_activeInHierarchy())
         return;
-      if ((bool) (Object) PlayerMovement.Instance)
+      if (Object.op_Implicit((Object) PlayerMovement.Instance))
       {
         this.t = PlayerMovement.Instance.playerCam;
       }
       else
       {
-        if (!(bool) (Object) Camera.main)
+        if (!Object.op_Implicit((Object) Camera.get_main()))
           return;
-        this.t = Camera.main.transform;
+        this.t = ((Component) Camera.get_main()).get_transform();
       }
     }
     else
     {
-      this.transform.LookAt(this.t);
+      ((Component) this).get_transform().LookAt(this.t);
       if (!this.xz)
-        this.transform.rotation = Quaternion.Euler(0.0f, this.transform.rotation.eulerAngles.y + 180f, 0.0f);
+      {
+        Transform transform = ((Component) this).get_transform();
+        Quaternion rotation = ((Component) this).get_transform().get_rotation();
+        Quaternion quaternion = Quaternion.Euler(0.0f, (float) (((Quaternion) ref rotation).get_eulerAngles().y + 180.0), 0.0f);
+        transform.set_rotation(quaternion);
+      }
       if (!this.affectScale)
         return;
-      this.transform.localScale = this.defaultScale;
+      ((Component) this).get_transform().set_localScale(this.defaultScale);
     }
   }
+
+  public Billboard() => base.\u002Ector();
 }

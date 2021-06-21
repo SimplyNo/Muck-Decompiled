@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: HandheldCamera
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using MilkShake;
 using UnityEngine;
@@ -14,7 +14,9 @@ public class HandheldCamera : MonoBehaviour
 
   private void Start()
   {
-    this.shaker = this.GetComponent<Shaker>();
-    this.shaker.Shake((IShakeParameters) this.cameraShake);
+    this.shaker = (Shaker) ((Component) this).GetComponent<Shaker>();
+    this.shaker.Shake((IShakeParameters) this.cameraShake, new int?());
   }
+
+  public HandheldCamera() => base.\u002Ector();
 }

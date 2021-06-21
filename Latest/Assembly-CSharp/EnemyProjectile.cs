@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: EnemyProjectile
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -12,7 +12,8 @@ public class EnemyProjectile : MonoBehaviour
   private bool done;
   public bool collideWithPlayerAndBuildOnly;
   public bool ignoreGround;
-  public float hideFxDistance = 40f;
+  public Transform spawnPos;
+  public float hideFxDistance;
 
   public int damage { get; set; }
 
@@ -20,30 +21,42 @@ public class EnemyProjectile : MonoBehaviour
 
   public void DisableCollider(float time)
   {
-    this.GetComponent<Collider>().enabled = false;
+    ((Collider) ((Component) this).GetComponent<Collider>()).set_enabled(false);
     this.Invoke("ActivateCollider", time);
   }
 
-  private void ActivateCollider() => this.GetComponent<Collider>().enabled = true;
+  private void ActivateCollider() => ((Collider) ((Component) this).GetComponent<Collider>()).set_enabled(true);
 
   private void OnCollisionEnter(Collision other)
   {
-    int layer = other.gameObject.layer;
-    if (this.ignoreGround && other.collider.gameObject.layer == LayerMask.NameToLayer("Ground") || this.collideWithPlayerAndBuildOnly && layer != LayerMask.NameToLayer("Player") && layer != LayerMask.NameToLayer("Object") || this.done)
+    int layer = other.get_gameObject().get_layer();
+    if (this.ignoreGround && ((Component) other.get_collider()).get_gameObject().get_layer() == LayerMask.NameToLayer("Ground") || this.collideWithPlayerAndBuildOnly && layer != LayerMask.NameToLayer("Player") && layer != LayerMask.NameToLayer("Object") || this.done)
       return;
     this.done = true;
-    bool flag = layer == LayerMask.NameToLayer("Player") && other.gameObject.CompareTag("Local");
+    bool flag = layer == LayerMask.NameToLayer("Player") && other.get_gameObject().CompareTag("Local");
     if (LocalClient.serverOwner && layer == LayerMask.NameToLayer("Object"))
-      other.gameObject.CompareTag("Build");
-    Object.Destroy((Object) this.gameObject);
-    if ((double) Vector3.Distance(this.transform.position, PlayerMovement.Instance.playerCam.position) >= (double) this.hideFxDistance)
+      other.get_gameObject().CompareTag("Build");
+    Object.Destroy((Object) ((Component) this).get_gameObject());
+    if ((double) Vector3.Distance(((Component) this).get_transform().get_position(), PlayerMovement.Instance.playerCam.get_position()) >= (double) this.hideFxDistance)
       return;
-    GameObject gameObject = Object.Instantiate<GameObject>(this.hitFx, this.transform.position, Quaternion.LookRotation(other.GetContact(0).normal));
-    gameObject.transform.rotation = Quaternion.LookRotation(other.GetContact(0).normal);
-    ImpactDamage componentInChildren = gameObject.GetComponentInChildren<ImpactDamage>();
-    componentInChildren.SetDamage(this.damage);
-    componentInChildren.hitPlayer = flag;
+    GameObject hitFx = this.hitFx;
+    Vector3 position = ((Component) this).get_transform().get_position();
+    ContactPoint contact1 = other.GetContact(0);
+    Quaternion quaternion1 = Quaternion.LookRotation(((ContactPoint) ref contact1).get_normal());
+    GameObject gameObject = (GameObject) Object.Instantiate<GameObject>((M0) hitFx, position, quaternion1);
+    Transform transform = gameObject.get_transform();
+    ContactPoint contact2 = other.GetContact(0);
+    Quaternion quaternion2 = Quaternion.LookRotation(((ContactPoint) ref contact2).get_normal());
+    transform.set_rotation(quaternion2);
+    M0 componentInChildren = gameObject.GetComponentInChildren<ImpactDamage>();
+    ((ImpactDamage) componentInChildren).SetDamage(this.damage);
+    ((ImpactDamage) componentInChildren).hitPlayer = flag;
+    if (!Object.op_Implicit((Object) this.spawnPos))
+      return;
+    gameObject.get_transform().set_position(this.spawnPos.get_position());
   }
 
-  private void DestroySelf() => Object.Destroy((Object) this.gameObject);
+  private void DestroySelf() => Object.Destroy((Object) ((Component) this).get_gameObject());
+
+  public EnemyProjectile() => base.\u002Ector();
 }

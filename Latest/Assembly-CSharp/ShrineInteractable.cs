@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ShrineInteractable
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -29,13 +29,13 @@ public class ShrineInteractable : MonoBehaviour, SharedObject, Interactable
         ++num;
     }
     for (int index = 0; index < num; ++index)
-      this.lights[index].material = this.lightMat;
+      ((Renderer) this.lights[index]).set_material(this.lightMat);
     if (num < 3)
       return;
     this.CancelInvoke(nameof (CheckLights));
     if (LocalClient.serverOwner)
       this.Invoke("DropPowerup", 1.33f);
-    Object.Instantiate<GameObject>(this.destroyShrineFx, this.transform.position, this.destroyShrineFx.transform.rotation);
+    Object.Instantiate<GameObject>((M0) this.destroyShrineFx, ((Component) this).get_transform().get_position(), this.destroyShrineFx.get_transform().get_rotation());
     this.Invoke("DestroyShrine", 1.33f);
   }
 
@@ -45,8 +45,8 @@ public class ShrineInteractable : MonoBehaviour, SharedObject, Interactable
   {
     Powerup randomPowerup = ItemManager.Instance.GetRandomPowerup(0.3f, 0.2f, 0.1f);
     int nextId = ItemManager.Instance.GetNextId();
-    ItemManager.Instance.DropPowerupAtPosition(randomPowerup.id, this.transform.position, nextId);
-    ServerSend.DropPowerupAtPosition(randomPowerup.id, nextId, this.transform.position);
+    ItemManager.Instance.DropPowerupAtPosition(randomPowerup.id, ((Component) this).get_transform().get_position(), nextId);
+    ServerSend.DropPowerupAtPosition(randomPowerup.id, nextId, ((Component) this).get_transform().get_position());
   }
 
   public void Interact()
@@ -69,23 +69,26 @@ public class ShrineInteractable : MonoBehaviour, SharedObject, Interactable
     this.mobIds = mobIds;
     this.started = true;
     this.InvokeRepeating("CheckLights", 0.5f, 0.5f);
-    Object.Destroy((Object) this.GetComponent<Collider>());
+    Object.Destroy((Object) ((Component) this).GetComponent<Collider>());
   }
 
-  public void ServerExecute()
+  public void ServerExecute(int fromClient)
   {
     if (this.started)
       return;
     this.mobIds = new int[3];
     MobType spawn = GameLoop.Instance.SelectMobToSpawn(true);
-    for (int index = 0; index < 3; ++index)
+    int num = 3;
+    if (spawn.boss)
+      num = 2;
+    for (int index = 0; index < num; ++index)
     {
       int nextId = MobManager.Instance.GetNextId();
       int id = spawn.id;
-      RaycastHit hitInfo;
-      if (Physics.Raycast(this.transform.position + new Vector3(Random.Range(-1f, 1f) * 10f, 100f, Random.Range(-1f, 1f) * 10f), Vector3.down, out hitInfo, 200f, (int) this.whatIsGround))
+      RaycastHit raycastHit;
+      if (Physics.Raycast(Vector3.op_Addition(((Component) this).get_transform().get_position(), new Vector3(Random.Range(-1f, 1f) * 10f, 100f, Random.Range(-1f, 1f) * 10f)), Vector3.get_down(), ref raycastHit, 200f, LayerMask.op_Implicit(this.whatIsGround)))
       {
-        MobSpawner.Instance.ServerSpawnNewMob(nextId, id, hitInfo.point, 1.75f, 1f);
+        MobSpawner.Instance.ServerSpawnNewMob(nextId, id, ((RaycastHit) ref raycastHit).get_point(), 1.75f, 1f);
         this.mobIds[index] = nextId;
       }
     }
@@ -93,11 +96,15 @@ public class ShrineInteractable : MonoBehaviour, SharedObject, Interactable
     ServerSend.ShrineStart(this.mobIds, this.id);
   }
 
-  public void RemoveObject() => Object.Destroy((Object) this.gameObject.transform.root.gameObject);
+  public void RemoveObject() => Object.Destroy((Object) ((Component) ((Component) this).get_gameObject().get_transform().get_root()).get_gameObject());
 
   public string GetName() => "Start battle";
+
+  public bool IsStarted() => this.started;
 
   public void SetId(int id) => this.id = id;
 
   public int GetId() => this.id;
+
+  public ShrineInteractable() => base.\u002Ector();
 }

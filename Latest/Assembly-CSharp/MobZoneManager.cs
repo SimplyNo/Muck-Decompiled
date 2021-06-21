@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: MobZoneManager
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System.Collections.Generic;
 using UnityEngine;
@@ -34,10 +34,12 @@ public class MobZoneManager : MonoBehaviour
     this.zones.Add(id, mz);
     if (!this.attatchDebug)
       return;
-    Object.Instantiate<GameObject>(this.debug, mz.transform).GetComponentInChildren<DebugObject>().text = nameof (id) + (object) id;
+    ((DebugObject) ((GameObject) Object.Instantiate<GameObject>((M0) this.debug, ((Component) mz).get_transform())).GetComponentInChildren<DebugObject>()).text = nameof (id) + (object) id;
   }
 
   public int GetNextId() => MobZoneManager.zoneId++;
 
   public void RemoveZone(int mobId) => this.zones.Remove(mobId);
+
+  public MobZoneManager() => base.\u002Ector();
 }

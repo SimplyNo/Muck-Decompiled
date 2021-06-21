@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: TextureGenerator
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using UnityEngine;
 
@@ -10,9 +10,9 @@ public static class TextureGenerator
 {
   public static Texture2D textureFromColorMap(Color[] colorMap, int width, int height)
   {
-    Texture2D texture2D = new Texture2D(width, height, TextureFormat.RGBA32, false);
-    texture2D.filterMode = FilterMode.Point;
-    texture2D.wrapMode = TextureWrapMode.Clamp;
+    Texture2D texture2D = new Texture2D(width, height, (TextureFormat) 4, false);
+    ((Texture) texture2D).set_filterMode((FilterMode) 0);
+    ((Texture) texture2D).set_wrapMode((TextureWrapMode) 1);
     texture2D.SetPixels(colorMap);
     texture2D.Apply();
     return texture2D;
@@ -26,7 +26,7 @@ public static class TextureGenerator
     for (int index1 = 0; index1 < length2; ++index1)
     {
       for (int index2 = 0; index2 < length1; ++index2)
-        colorMap[index1 * length1 + index2] = Color.Lerp(Color.black, Color.white, heightMap[index2, index1]);
+        colorMap[index1 * length1 + index2] = Color.Lerp(Color.get_black(), Color.get_white(), heightMap[index2, index1]);
     }
     return TextureGenerator.textureFromColorMap(colorMap, length1, length2);
   }

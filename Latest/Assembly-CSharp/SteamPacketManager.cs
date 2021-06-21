@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: SteamPacketManager
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using Steamworks;
 using Steamworks.Data;
@@ -12,7 +12,7 @@ public class SteamPacketManager : MonoBehaviour
 {
   private void Start()
   {
-    Object.DontDestroyOnLoad((Object) this.gameObject);
+    Object.DontDestroyOnLoad((Object) ((Component) this).get_gameObject());
     Server.InitializeServerPackets();
     LocalClient.InitializeClientData();
   }
@@ -39,11 +39,12 @@ public class SteamPacketManager : MonoBehaviour
   {
     if (!p2Packet.HasValue)
       return;
-    SteamId steamid = (SteamId) p2Packet.Value.SteamId.Value;
-    byte[] data = p2Packet.Value.Data;
-    if (!LocalClient.serverOwner && (long) steamid.Value != (long) LocalClient.instance.serverHost.Value)
+    SteamId steamId = SteamId.op_Implicit((ulong) ((SteamId) p2Packet.Value.SteamId).Value);
+    byte[] data = (byte[]) p2Packet.Value.Data;
+    if (!LocalClient.serverOwner && steamId.Value != LocalClient.instance.serverHost.Value)
     {
-      Debug.LogError((object) ("Received packet from someone other than server: " + new Friend(steamid).Name + "\nDenying packet..."));
+      Friend friend = new Friend(steamId);
+      Debug.LogError((object) ("Received packet from someone other than server: " + ((Friend) ref friend).get_Name() + "\nDenying packet..."));
     }
     else
     {
@@ -54,12 +55,12 @@ public class SteamPacketManager : MonoBehaviour
       int key = packet.ReadInt();
       if (channel == 0)
       {
-        if ((long) steamid.Value != (long) LocalClient.instance.serverHost.Value)
+        if (steamId.Value != LocalClient.instance.serverHost.Value)
           return;
         LocalClient.packetHandlers[key](packet);
       }
       else
-        Server.PacketHandlers[key](SteamLobby.steamIdToClientId[steamid.Value], packet);
+        Server.PacketHandlers[key](SteamLobby.steamIdToClientId[(ulong) steamId.Value], packet);
     }
   }
 
@@ -69,16 +70,19 @@ public class SteamPacketManager : MonoBehaviour
     P2PSend p2pSend,
     SteamPacketManager.NetworkChannel channel)
   {
-    int length = p.Length();
-    byte[] data = p.CloneBytes();
-    if ((long) steamId.Value != (long) SteamManager.Instance.PlayerSteamId.Value)
-      SteamNetworking.SendP2PPacket((SteamId) steamId.Value, data, length, (int) channel, p2pSend);
+    int num = p.Length();
+    byte[] numArray = p.CloneBytes();
+    if (steamId.Value != SteamManager.Instance.PlayerSteamId.Value)
+    {
+      SteamNetworking.SendP2PPacket(SteamId.op_Implicit((ulong) steamId.Value), numArray, num, (int) channel, p2pSend);
+    }
     else
-      SteamPacketManager.HandlePacket(new P2Packet?(new P2Packet()
-      {
-        SteamId = (SteamId) steamId.Value,
-        Data = data
-      }), (int) channel);
+    {
+      P2Packet p2Packet = (P2Packet) null;
+      p2Packet.SteamId = (__Null) SteamId.op_Implicit((ulong) steamId.Value);
+      p2Packet.Data = (__Null) numArray;
+      SteamPacketManager.HandlePacket(new P2Packet?(p2Packet), (int) channel);
+    }
   }
 
   private void OnApplicationQuit() => SteamPacketManager.CloseConnections();
@@ -86,7 +90,7 @@ public class SteamPacketManager : MonoBehaviour
   public static void CloseConnections()
   {
     foreach (ulong key in SteamLobby.steamIdToClientId.Keys)
-      SteamNetworking.CloseP2PSessionWithUser((SteamId) key);
+      SteamNetworking.CloseP2PSessionWithUser(SteamId.op_Implicit(key));
     try
     {
       SteamNetworking.CloseP2PSessionWithUser(LocalClient.instance.serverHost);
@@ -97,6 +101,8 @@ public class SteamPacketManager : MonoBehaviour
     }
     SteamClient.Shutdown();
   }
+
+  public SteamPacketManager() => base.\u002Ector();
 
   public enum NetworkChannel
   {

@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: Packet
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using System.Collections.Generic;
@@ -90,17 +90,17 @@ public class Packet : IDisposable
 
   public void Write(Vector3 _value)
   {
-    this.Write(_value.x);
-    this.Write(_value.y);
-    this.Write(_value.z);
+    this.Write((float) _value.x);
+    this.Write((float) _value.y);
+    this.Write((float) _value.z);
   }
 
   public void Write(Quaternion _value)
   {
-    this.Write(_value.x);
-    this.Write(_value.y);
-    this.Write(_value.z);
-    this.Write(_value.w);
+    this.Write((float) _value.x);
+    this.Write((float) _value.y);
+    this.Write((float) _value.z);
+    this.Write((float) _value.w);
   }
 
   public byte ReadByte(bool _moveReadPos = true)

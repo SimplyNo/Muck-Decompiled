@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: BuildDoor
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using UnityEngine;
@@ -10,6 +10,8 @@ using UnityEngine;
 public class BuildDoor : MonoBehaviour
 {
   public BuildDoor.Door[] doors;
+
+  public BuildDoor() => base.\u002Ector();
 
   [Serializable]
   public class Door
@@ -21,7 +23,7 @@ public class BuildDoor : MonoBehaviour
     {
       this.hitable.SetId(id);
       this.doorInteractable.SetId(id);
-      ResourceManager.Instance.AddObject(id, this.hitable.gameObject);
+      ResourceManager.Instance.AddObject(id, ((Component) this.hitable).get_gameObject());
     }
   }
 }

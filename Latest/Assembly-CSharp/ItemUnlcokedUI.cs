@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: ItemUnlcokedUI
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using TMPro;
 using UnityEngine;
@@ -15,41 +15,42 @@ public class ItemUnlcokedUI : MonoBehaviour
   public TextMeshProUGUI item;
   private HorizontalLayoutGroup layout;
   private float desiredPad;
-  private float fadeStart = 1.5f;
-  private float fadeTime = 0.5f;
+  private float fadeStart;
+  private float fadeTime;
   private float padUp;
 
   private void Awake()
   {
-    this.layout = this.GetComponent<HorizontalLayoutGroup>();
-    this.desiredPad = (float) this.layout.padding.top;
-    this.layout.padding.top = 400;
-    this.padUp = (float) this.layout.padding.top;
+    this.layout = (HorizontalLayoutGroup) ((Component) this).GetComponent<HorizontalLayoutGroup>();
+    this.desiredPad = (float) ((LayoutGroup) this.layout).get_padding().get_top();
+    ((LayoutGroup) this.layout).get_padding().set_top(400);
+    this.padUp = (float) ((LayoutGroup) this.layout).get_padding().get_top();
     this.Invoke("StartFade", this.fadeStart);
   }
 
   private void StartFade()
   {
-    this.icon.CrossFadeAlpha(0.0f, this.fadeTime, true);
-    this.item.CrossFadeAlpha(0.0f, this.fadeTime, true);
-    this.overlay.CrossFadeAlpha(0.0f, this.fadeTime, true);
+    ((Graphic) this.icon).CrossFadeAlpha(0.0f, this.fadeTime, true);
+    ((Graphic) this.item).CrossFadeAlpha(0.0f, this.fadeTime, true);
+    ((Graphic) this.overlay).CrossFadeAlpha(0.0f, this.fadeTime, true);
     this.Invoke("DestroySelf", this.fadeTime);
   }
 
-  private void DestroySelf() => Object.Destroy((Object) this.gameObject);
+  private void DestroySelf() => Object.Destroy((Object) ((Component) this).get_gameObject());
 
   public void SetItem(InventoryItem i)
   {
-    this.icon.sprite = i.sprite;
-    this.item.text = "Unlocked " + i.name;
+    this.icon.set_sprite(i.sprite);
+    ((TMP_Text) this.item).set_text("Unlocked " + i.name);
   }
 
   public void Update()
   {
-    this.padUp = Mathf.Lerp(this.padUp, this.desiredPad, Time.deltaTime * 10f);
-    this.layout.padding = new RectOffset(this.layout.padding.left, this.layout.padding.right, this.layout.padding.top, this.layout.padding.bottom)
-    {
-      top = (int) this.padUp
-    };
+    this.padUp = Mathf.Lerp(this.padUp, this.desiredPad, Time.get_deltaTime() * 10f);
+    RectOffset rectOffset = new RectOffset(((LayoutGroup) this.layout).get_padding().get_left(), ((LayoutGroup) this.layout).get_padding().get_right(), ((LayoutGroup) this.layout).get_padding().get_top(), ((LayoutGroup) this.layout).get_padding().get_bottom());
+    rectOffset.set_top((int) this.padUp);
+    ((LayoutGroup) this.layout).set_padding(rectOffset);
   }
+
+  public ItemUnlcokedUI() => base.\u002Ector();
 }

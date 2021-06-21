@@ -1,8 +1,8 @@
 ﻿// Decompiled with JetBrains decompiler
 // Type: CraftingUI
 // Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
-// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+// MVID: 68ECCA8E-CF88-4CE2-9D74-1A5BFC0637BB
+// Assembly location: D:\Repo\Muck Update2\Assembly-CSharp.dll
 
 using System;
 using System.Collections.Generic;
@@ -39,8 +39,8 @@ public class CraftingUI : InventoryExtensions
     this.tabTexts = new TextMeshProUGUI[this.tabs.Length];
     for (int index = 0; index < this.tabs.Length; ++index)
     {
-      this.tabImgs[index] = this.tabParent.GetChild(index).GetComponent<RawImage>();
-      this.tabTexts[index] = this.tabParent.GetChild(index).GetComponentInChildren<TextMeshProUGUI>();
+      this.tabImgs[index] = (RawImage) ((Component) this.tabParent.GetChild(index)).GetComponent<RawImage>();
+      this.tabTexts[index] = (TextMeshProUGUI) ((Component) this.tabParent.GetChild(index)).GetComponentInChildren<TextMeshProUGUI>();
     }
   }
 
@@ -69,13 +69,13 @@ public class CraftingUI : InventoryExtensions
     {
       if (index == this.tabSelected)
       {
-        this.tabImgs[index].color = this.selectedTabColor;
-        this.tabTexts[index].color = this.selectedTextColor;
+        ((Graphic) this.tabImgs[index]).set_color(this.selectedTabColor);
+        ((Graphic) this.tabTexts[index]).set_color(this.selectedTextColor);
       }
       else
       {
-        this.tabImgs[index].color = this.unselectedTabColor;
-        this.tabTexts[index].color = this.unselectedTextColor;
+        ((Graphic) this.tabImgs[index]).set_color(this.unselectedTabColor);
+        ((Graphic) this.tabTexts[index]).set_color(this.unselectedTextColor);
       }
     }
   }
@@ -84,23 +84,23 @@ public class CraftingUI : InventoryExtensions
   {
     for (int index = 0; index < this.cells.Count; ++index)
     {
-      if ((bool) (UnityEngine.Object) this.cells[index].gameObject)
-        UnityEngine.Object.Destroy((UnityEngine.Object) this.cells[index].gameObject);
+      if (Object.op_Implicit((Object) ((Component) this.cells[index]).get_gameObject()))
+        Object.Destroy((Object) ((Component) this.cells[index]).get_gameObject());
     }
     this.cells = new List<InventoryCell>();
     foreach (InventoryItem inventoryItem in this.tabs[this.tabSelected].items)
     {
       if (UiEvents.Instance.IsSoftUnlocked(inventoryItem.id))
       {
-        InventoryCell component = UnityEngine.Object.Instantiate<GameObject>(this.cellPrefab, (Transform) this.cellsParent).GetComponent<InventoryCell>();
-        component.currentItem = ScriptableObject.CreateInstance<InventoryItem>();
+        InventoryCell component = (InventoryCell) ((GameObject) Object.Instantiate<GameObject>((M0) this.cellPrefab, (Transform) this.cellsParent)).GetComponent<InventoryCell>();
+        component.currentItem = (InventoryItem) ScriptableObject.CreateInstance<InventoryItem>();
         component.currentItem.Copy(inventoryItem, 1);
         component.cellType = InventoryCell.CellType.Crafting;
         foreach (InventoryItem.CraftRequirement requirement in component.currentItem.requirements)
         {
-          GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(this.requirementPrefab);
-          gameObject.GetComponent<Image>().sprite = requirement.item.sprite;
-          gameObject.transform.SetParent(component.transform.GetChild(component.transform.childCount - 2));
+          M0 m0 = Object.Instantiate<GameObject>((M0) this.requirementPrefab);
+          ((Image) ((GameObject) m0).GetComponent<Image>()).set_sprite(requirement.item.sprite);
+          ((GameObject) m0).get_transform().SetParent(((Component) component).get_transform().GetChild(((Component) component).get_transform().get_childCount() - 2));
         }
         this.cells.Add(component);
         component.SetColor(component.idle);
