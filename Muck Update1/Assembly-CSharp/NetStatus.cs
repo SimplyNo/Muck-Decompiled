@@ -1,0 +1,34 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: NetStatus
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: BACBFE5D-6724-4F02-B6BB-D6D37EC5478A
+// Assembly location: D:\SteamLibrary\steamapps\common\Muck\Muck_Data\Managed\Assembly-CSharp.dll
+
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+public class NetStatus : MonoBehaviour
+{
+  private static LinkedList<int> pings = new LinkedList<int>();
+  private static int pingBuffer = 2;
+
+  private void Awake() => this.InvokeRepeating("SlowUpdate", 1f, 1f);
+
+  private void SlowUpdate()
+  {
+    if (!(bool) (Object) GameManager.instance)
+      return;
+    ClientSend.PingServer();
+  }
+
+  public static void AddPing(int p)
+  {
+    NetStatus.pings.AddFirst(p);
+    if (NetStatus.pings.Count <= NetStatus.pingBuffer)
+      return;
+    NetStatus.pings.RemoveLast();
+  }
+
+  public static int GetPing() => NetStatus.pings.Count > 0 ? (int) NetStatus.pings.Average() : 0;
+}
